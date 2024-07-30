@@ -86,36 +86,36 @@ class _ContractFeatureState extends State<ContractFeature> {
       Rect.fromLTWH(imageWidth * 0.125, imageHeight * 0.267, imageWidth * 0.311,
           imageHeight * 0.023), // C12 차대번호
       Rect.fromLTWH(imageWidth * 0.125, imageHeight * 0.290, imageWidth * 0.311,
-          imageHeight * 0.023), // G11-K11 등록비용
+          imageHeight * 0.023), // C13 등록비용
       Rect.fromLTWH(imageWidth * 0.545, imageHeight * 0.221, imageWidth * 0.452,
-          imageHeight * 0.023), // C13 리스승계
+          imageHeight * 0.023), // G10-K10 리스승계
       Rect.fromLTWH(imageWidth * 0.545, imageHeight * 0.244, imageWidth * 0.452,
-          imageHeight * 0.023), // G13 인도금
+          imageHeight * 0.023), // G11-K11 인도금
       Rect.fromLTWH(imageWidth * 0.545, imageHeight * 0.267, imageWidth * 0.452,
-          imageHeight * 0.023), // A39 잔금
+          imageHeight * 0.023), // G12-K12 잔금
       Rect.fromLTWH(imageWidth * 0.545, imageHeight * 0.290, imageWidth * 0.452,
-          imageHeight * 0.023), // D43 비고
+          imageHeight * 0.023), // G13 비고
       Rect.fromLTWH(imageWidth * 0.285, imageHeight * 0.132, imageWidth * 0.2,
-          imageHeight * 0.023), // D44 상단 날짜
+          imageHeight * 0.023), // A5 상단 날짜
       // // 하단
       Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.770, imageWidth * 0.72,
-          imageHeight * 0.023), // D45 계약년월일
+          imageHeight * 0.023), // A5 계약년월일
       Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.794, imageWidth * 0.482,
-          imageHeight * 0.023), // D46 양도인 성명
+          imageHeight * 0.023), // D43 양도인 성명
       Rect.fromLTWH(imageWidth * 0.764, imageHeight * 0.794, imageWidth * 0.238,
-          imageHeight * 0.023), // D47 양도인 서명 또는 날인
+          imageHeight * 0.023), // J43 양도인 서명 또는 날인
       Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.818, imageWidth * 0.482,
-          imageHeight * 0.023), // D48 양도인 주민등록(사업자)번호
+          imageHeight * 0.023), // D44 양도인 주민등록(사업자)번호
       Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.843, imageWidth * 0.482,
-          imageHeight * 0.023), // J44 양도인 주소일전화번호
+          imageHeight * 0.023), // D45 양도인 주소및전화번호
       Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.867, imageWidth * 0.482,
-          imageHeight * 0.023), // J47 양수인 성명
+          imageHeight * 0.023), // D46 양수인 성명
       Rect.fromLTWH(imageWidth * 0.764, imageHeight * 0.867, imageWidth * 0.238,
-          imageHeight * 0.023), // 양수인 서명 또는 날인
+          imageHeight * 0.023), // J46 양수인 서명 또는 날인
       Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.892, imageWidth * 0.482,
-          imageHeight * 0.023), // J47 양수인 주민등록(사업자)번호
+          imageHeight * 0.023), // D47 양수인 주민등록(사업자)번호
       Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.916, imageWidth * 0.482,
-          imageHeight * 0.023), // J47 양수인 성명
+          imageHeight * 0.023), // D48 양수인 주소민전화번호
     ];
   }
 

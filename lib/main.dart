@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'features/contract_debug.dart';
 import 'features/report.dart';
 import 'features/contract.dart';
 import 'splash.dart'; // splash.dart 파일 경로 추가
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       home: SplashScreen(), // 초기 화면을 스플래시 화면으로 설정
-      // home: ContractFeature(), // 서명 칸 간격 디버깅용ㅓ
+      // home: ContractFeature(), // 서명 칸 간격 디버깅용
     );
   }
 }
@@ -52,7 +53,7 @@ class MyHomePage extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ContractFeature()),
+                  MaterialPageRoute(builder: (context) => ContractFeatureDebug()),
                 );
               },
               child: Text('관인 계약서'),

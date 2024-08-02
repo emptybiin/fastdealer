@@ -16,49 +16,30 @@ class ContractFeatureDebug extends StatefulWidget {
 }
 
 class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
-  // 서명 패드의 컨트롤러 설정
   SignatureController _controller = SignatureController(
     penStrokeWidth: 5,
     penColor: Colors.black,
     exportBackgroundColor: Colors.white,
   );
 
-  ui.Image? contractImage; // 계약서 이미지 저장 변수
-  bool isImageLoaded = false; // 이미지 로딩 상태
-  bool isSignatureMode = false; // 서명 모드 여부
-  bool isTextInputMode = false; // 텍스트 입력 모드 여부
-  String selectedCell = ''; // 선택된 셀 위치
-  Rect? selectedArea; // 선택된 영역
-  TextEditingController textEditingController =
-  TextEditingController(); // 텍스트 입력 컨트롤러
-  List<Map<String, dynamic>> predefinedAreas = []; // 미리 정의된 영역 리스트
+  ui.Image? contractImage;
+  ui.Image? combinedImage; // Initialize combinedImage
+  bool isImageLoaded = false;
+  bool isSignatureMode = false;
+  bool isTextInputMode = false;
+
+  Rect? selectedArea;
+  TextEditingController textEditingController = TextEditingController();
+  List<Rect> predefinedAreas = [];
+  double signatureHeight = 0.0;
 
   @override
   void initState() {
     super.initState();
-    // 에셋 파일을 로컬 디렉토리로 복사
     copyAssetFileToLocalDir('assets/contract.xlsx', 'contract.xlsx');
-    loadContractImage(); // 계약서 이미지 로드
+    loadContractImage();
   }
 
-  // 로컬 파일 경로 가져오기
-  Future<String> getFilePath(String fileName) async {
-    Directory directory = await getApplicationDocumentsDirectory();
-    String path = directory.path;
-    return '$path/$fileName';
-  }
-
-  // 에셋 파일을 로컬 디렉토리로 복사
-  Future<void> copyAssetFileToLocalDir(String assetPath,
-      String localFileName) async {
-    ByteData data = await rootBundle.load(assetPath);
-    List<int> bytes = data.buffer.asUint8List();
-    String localPath = await getFilePath(localFileName);
-    File localFile = File(localPath);
-    await localFile.writeAsBytes(bytes);
-  }
-
-  // 계약서 이미지 로드
   Future<void> loadContractImage() async {
     ByteData data = await rootBundle.load('assets/contract_image.png');
     final codec = await ui.instantiateImageCodec(data.buffer.asUint8List());
@@ -66,208 +47,172 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
     setState(() {
       contractImage = frame.image;
       isImageLoaded = true;
-      // Set predefinedAreas with the list of maps
       predefinedAreas = _calculatePredefinedAreas(
           contractImage!.width.toDouble(), contractImage!.height.toDouble());
     });
   }
 
-// 계약서 이미지의 크기에 따라 미리 정의된 영역 계산
-  List<Map<String, dynamic>> _calculatePredefinedAreas(double imageWidth,
-      double imageHeight) {
+  List<Rect> _calculatePredefinedAreas(double imageWidth, double imageHeight) {
     return [
-      {
-        'rect': Rect.fromLTWH(
-            imageWidth * 0.6, imageHeight * 0.12, imageWidth * 0.1,
-            imageHeight * 0.023),
-        'cell': 'H5'
-      }, // 양도인 이름
-      {
-        'rect': Rect.fromLTWH(
-            imageWidth * 0.6, imageHeight * 0.143, imageWidth * 0.1,
-            imageHeight * 0.023),
-        'cell': 'H6'
-      }, // 양수인 이름
-      {
-        'rect': Rect.fromLTWH(
-            imageWidth * 0.85, imageHeight * 0.115, imageWidth * 0.15,
-            imageHeight * 0.023),
-        'cell': 'K5'
-      }, // 양도인 서명
-      {
-        'rect': Rect.fromLTWH(
-            imageWidth * 0.85, imageHeight * 0.138, imageWidth * 0.15,
-            imageHeight * 0.023),
-        'cell': 'K6'
-      }, // 양수인 서명
-      {
-        'rect': Rect.fromLTWH(
-            imageWidth * 0.125, imageHeight * 0.196, imageWidth * 0.311,
-            imageHeight * 0.023),
-        'cell': 'C9'
-      }, // 자동차등록번호
-      {
-        'rect': Rect.fromLTWH(
-            imageWidth * 0.545, imageHeight * 0.196, imageWidth * 0.452,
-            imageHeight * 0.023),
-        'cell': 'G9'
-      }, // 매매금액
-      {
-        'rect': Rect.fromLTWH(
-            imageWidth * 0.125, imageHeight * 0.221, imageWidth * 0.16,
-            imageHeight * 0.023),
-        'cell': 'C10'
-      }, // 차종
-      {
-        'rect': Rect.fromLTWH(
-            imageWidth * 0.125, imageHeight * 0.244, imageWidth * 0.311,
-            imageHeight * 0.023),
-        'cell': 'G10-K10'
-      }, // 차명
-      {
-        'rect': Rect.fromLTWH(
-            imageWidth * 0.125, imageHeight * 0.267, imageWidth * 0.311,
-            imageHeight * 0.023),
-        'cell': 'C12'
-      }, // 차대번호
-      {
-        'rect': Rect.fromLTWH(
-            imageWidth * 0.125, imageHeight * 0.290, imageWidth * 0.311,
-            imageHeight * 0.023),
-        'cell': 'C13'
-      }, // 등록비용
-      {
-        'rect': Rect.fromLTWH(
-            imageWidth * 0.545, imageHeight * 0.221, imageWidth * 0.452,
-            imageHeight * 0.023),
-        'cell': 'G10-K10'
-      }, // 리스승계
-      {
-        'rect': Rect.fromLTWH(
-            imageWidth * 0.545, imageHeight * 0.244, imageWidth * 0.452,
-            imageHeight * 0.023),
-        'cell': 'G11-K11'
-      }, // 인도금
-      {
-        'rect': Rect.fromLTWH(
-            imageWidth * 0.545, imageHeight * 0.267, imageWidth * 0.452,
-            imageHeight * 0.023),
-        'cell': 'G12-K12'
-      }, // 잔금
-      {
-        'rect': Rect.fromLTWH(
-            imageWidth * 0.545, imageHeight * 0.290, imageWidth * 0.452,
-            imageHeight * 0.023),
-        'cell': 'G13'
-      }, // 비고
-      {
-        'rect': Rect.fromLTWH(
-            imageWidth * 0.285, imageHeight * 0.132, imageWidth * 0.2,
-            imageHeight * 0.023),
-        'cell': 'A5'
-      }, // 상단 날짜
-      {
-        'rect': Rect.fromLTWH(
-            imageWidth * 0.282, imageHeight * 0.770, imageWidth * 0.72,
-            imageHeight * 0.023),
-        'cell': 'A5'
-      }, // 계약년월일
-      {
-        'rect': Rect.fromLTWH(
-            imageWidth * 0.282, imageHeight * 0.794, imageWidth * 0.482,
-            imageHeight * 0.023),
-        'cell': 'D43'
-      }, // 양도인 성명
-      {
-        'rect': Rect.fromLTWH(
-            imageWidth * 0.764, imageHeight * 0.794, imageWidth * 0.238,
-            imageHeight * 0.023),
-        'cell': 'J43'
-      }, // 양도인 서명 또는 날인
-      {
-        'rect': Rect.fromLTWH(
-            imageWidth * 0.282, imageHeight * 0.818, imageWidth * 0.482,
-            imageHeight * 0.023),
-        'cell': 'D44'
-      }, // 양도인 주민등록(사업자)번호
-      {
-        'rect': Rect.fromLTWH(
-            imageWidth * 0.282, imageHeight * 0.843, imageWidth * 0.482,
-            imageHeight * 0.023),
-        'cell': 'D45'
-      }, // 양도인 주소및전화번호
-      {
-        'rect': Rect.fromLTWH(
-            imageWidth * 0.282, imageHeight * 0.867, imageWidth * 0.482,
-            imageHeight * 0.023),
-        'cell': 'D46'
-      }, // 양수인 성명
-      {
-        'rect': Rect.fromLTWH(
-            imageWidth * 0.764, imageHeight * 0.867, imageWidth * 0.238,
-            imageHeight * 0.023),
-        'cell': 'J46'
-      }, // 양수인 서명 또는 날인
-      {
-        'rect': Rect.fromLTWH(
-            imageWidth * 0.282, imageHeight * 0.892, imageWidth * 0.482,
-            imageHeight * 0.023),
-        'cell': 'D47'
-      }, // 양수인 주민등록(사업자)번호
-      {
-        'rect': Rect.fromLTWH(
-            imageWidth * 0.282, imageHeight * 0.916, imageWidth * 0.482,
-            imageHeight * 0.023),
-        'cell': 'D48'
-      }, // 양수인 주소및전화번호
+      Rect.fromLTWH(imageWidth * 0.6, imageHeight * 0.12, imageWidth * 0.1,
+          imageHeight * 0.023), // H5 양도인 이름
+      Rect.fromLTWH(imageWidth * 0.6, imageHeight * 0.143, imageWidth * 0.1,
+          imageHeight * 0.023), // H6 양수인 이름
+      Rect.fromLTWH(imageWidth * 0.85, imageHeight * 0.115, imageWidth * 0.15,
+          imageHeight * 0.023), // K5 양도인 서명
+      Rect.fromLTWH(imageWidth * 0.85, imageHeight * 0.138, imageWidth * 0.15,
+          imageHeight * 0.023), // K6 양수인 서명
+      Rect.fromLTWH(imageWidth * 0.125, imageHeight * 0.196, imageWidth * 0.311,
+          imageHeight * 0.023), // C9 자동차등록번호
+      Rect.fromLTWH(imageWidth * 0.545, imageHeight * 0.196, imageWidth * 0.452,
+          imageHeight * 0.023), // G9 매매금액
+      Rect.fromLTWH(imageWidth * 0.125, imageHeight * 0.221, imageWidth * 0.16,
+          imageHeight * 0.023), // C10 차종
+      Rect.fromLTWH(imageWidth * 0.125, imageHeight * 0.244, imageWidth * 0.311,
+          imageHeight * 0.023), // G10-K10 차명
+      Rect.fromLTWH(imageWidth * 0.125, imageHeight * 0.267, imageWidth * 0.311,
+          imageHeight * 0.023), // C12 차대번호
+      Rect.fromLTWH(imageWidth * 0.125, imageHeight * 0.290, imageWidth * 0.311,
+          imageHeight * 0.023), // C13 등록비용
+      Rect.fromLTWH(imageWidth * 0.545, imageHeight * 0.221, imageWidth * 0.452,
+          imageHeight * 0.023), // G10-K10 리스승계
+      Rect.fromLTWH(imageWidth * 0.545, imageHeight * 0.244, imageWidth * 0.452,
+          imageHeight * 0.023), // G11-K11 인도금
+      Rect.fromLTWH(imageWidth * 0.545, imageHeight * 0.267, imageWidth * 0.452,
+          imageHeight * 0.023), // G12-K12 잔금
+      Rect.fromLTWH(imageWidth * 0.545, imageHeight * 0.290, imageWidth * 0.452,
+          imageHeight * 0.023), // G13 비고
+      Rect.fromLTWH(imageWidth * 0.285, imageHeight * 0.132, imageWidth * 0.2,
+          imageHeight * 0.023), // A5 상단 날짜
+      // 하단
+      Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.770, imageWidth * 0.72,
+          imageHeight * 0.023), // A5 계약년월일
+      Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.794, imageWidth * 0.482,
+          imageHeight * 0.023), // D43 양도인 성명
+      Rect.fromLTWH(imageWidth * 0.764, imageHeight * 0.794, imageWidth * 0.238,
+          imageHeight * 0.023), // J43 양도인 서명 또는 날인
+      Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.818, imageWidth * 0.482,
+          imageHeight * 0.023), // D44 양도인 주민등록(사업자)번호
+      Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.843, imageWidth * 0.482,
+          imageHeight * 0.023), // D45 양도인 주소및전화번호
+      Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.867, imageWidth * 0.482,
+          imageHeight * 0.023), // D46 양수인 성명
+      Rect.fromLTWH(imageWidth * 0.764, imageHeight * 0.867, imageWidth * 0.238,
+          imageHeight * 0.023), // J46 양수인 서명 또는 날인
+      Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.892, imageWidth * 0.482,
+          imageHeight * 0.023), // D47 양수인 주민등록(사업자)번호
+      Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.916, imageWidth * 0.482,
+          imageHeight * 0.023), // D48 양수인 주소민전화번호
     ];
   }
 
+  Future<ui.Image> _signatureToImage() async {
+    final signatureBytes = await _controller.toPngBytes();
+    final codec = await ui.instantiateImageCodec(signatureBytes!);
+    final frame = await codec.getNextFrame();
+    return frame.image;
+  }
 
-  // 서명을 엑셀 파일에 저장하는 함수
-  Future<void> saveSignatureToExcel(String cellPosition) async {
-    var signature = await _controller.toPngBytes(); // 서명 이미지를 PNG 바이트 배열로 변환
-    if (signature != null) {
-      String localPath = await getFilePath('contract.xlsx'); // 로컬 엑셀 파일 경로 가져오기
-      var bytes = File(localPath).readAsBytesSync();
-      var excel = Excel.decodeBytes(bytes);
+  Future<ui.Image> _textToImage(
+      String text, double width, double height) async {
+    final recorder = ui.PictureRecorder();
+    final canvas = Canvas(recorder, Rect.fromLTWH(0, 0, width, height));
+    final textPainter = TextPainter(
+      text: TextSpan(
+        text: text,
+        style: TextStyle(color: Colors.black, fontSize: 16),
+      ),
+      textDirection: TextDirection.ltr,
+    );
+    textPainter.layout();
+    textPainter.paint(canvas, Offset(0, 0));
+    final picture = recorder.endRecording();
+    return picture.toImage(width.toInt(), height.toInt());
+  }
 
-      // 서명 이미지를 파일 시스템에 저장
-      String signaturePath = await getFilePath('signature.png');
-      File(signaturePath).writeAsBytesSync(signature);
+  Future<ui.Image> _combineImages(
+      ui.Image baseImage, ui.Image overlayImage, Rect rect) async {
+    final recorder = ui.PictureRecorder();
+    final canvas = Canvas(
+        recorder,
+        Rect.fromLTWH(
+            0, 0, baseImage.width.toDouble(), baseImage.height.toDouble()));
+    final paint = Paint();
 
-      var sheet = excel['Sheet1'];
-      var cell = sheet.cell(CellIndex.indexByString(cellPosition));
-      cell.value = 'Signature' as CellValue?; // 셀에 서명 텍스트 추가
+    canvas.drawImage(baseImage, Offset(0, 0), paint);
 
-      // TODO: 라이브러리가 지원하면 엑셀 파일에 이미지를 삽입하기
+    final srcRect = Rect.fromLTWH(
+        0, 0, overlayImage.width.toDouble(), overlayImage.height.toDouble());
+    canvas.drawImageRect(overlayImage, srcRect, rect, paint);
 
-      var updatedBytes = excel.encode();
-      File(localPath)
-        ..createSync(recursive: true)
-        ..writeAsBytesSync(updatedBytes!);
+    final picture = recorder.endRecording();
+    return picture.toImage(baseImage.width, baseImage.height);
+  }
 
+  Future<String> getFilePath(String fileName) async {
+    Directory directory = await getApplicationDocumentsDirectory();
+    String path = directory.path;
+    return '$path/$fileName';
+  }
+
+  Future<void> _saveImage(ui.Image image, String fileName) async {
+    final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    final buffer = byteData!.buffer.asUint8List();
+    final directory = await getApplicationDocumentsDirectory();
+    final filePath = '${directory.path}/$fileName';
+    final file = File(filePath);
+    await file.writeAsBytes(buffer);
+    print('Image saved at $filePath');
+  }
+
+  void _saveSignatureOrText() async {
+    if (selectedArea != null) {
+      ui.Image? overlayImage;
+
+      if (isSignatureMode) {
+        overlayImage = await _signatureToImage();
+      } else if (isTextInputMode) {
+        overlayImage = await _textToImage(textEditingController.text,
+            selectedArea!.width, selectedArea!.height);
+      }
+
+      if (overlayImage != null) {
+        final updatedImage =
+            await _combineImages(contractImage!, overlayImage, selectedArea!);
+        await _saveImage(updatedImage, 'contract_with_overlay.png');
+
+        setState(() {
+          combinedImage = updatedImage;
+          contractImage =
+              updatedImage; // Update contractImage to the combined image
+        });
+      }
+    } else {
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Signature Saved to Excel!')));
+          .showSnackBar(SnackBar(content: Text('셀을 선택하세요.')));
     }
   }
 
-  // 텍스트를 엑셀 파일에 저장하는 함수
-  Future<void> saveTextToExcel(String text, String cellPosition) async {
-    String localPath = await getFilePath('contract.xlsx');
-    var bytes = File(localPath).readAsBytesSync();
-    var excel = Excel.decodeBytes(bytes);
+  Future<void> copyAssetFileToLocalDir(
+      String assetPath, String localFileName) async {
+    ByteData data = await rootBundle.load(assetPath);
+    List<int> bytes = data.buffer.asUint8List();
+    String localPath = await getFilePath(localFileName);
+    File localFile = File(localPath);
+    await localFile.writeAsBytes(bytes);
+  }
 
-    var sheet = excel['Sheet1'];
-    sheet.updateCell(CellIndex.indexByString(cellPosition), text as CellValue?);
+  void _handleCellSelection(Rect area) {
+    setState(() {
+      selectedArea = area;
+      isSignatureMode = false;
+      isTextInputMode = false;
 
-    var updatedBytes = excel.encode();
-    File(localPath)
-      ..createSync(recursive: true)
-      ..writeAsBytesSync(updatedBytes!);
-
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text('Text Saved to Excel!')));
+      if (selectedArea != null) {
+        double aspectRatio = selectedArea!.width / selectedArea!.height;
+        signatureHeight = MediaQuery.of(context).size.width / aspectRatio;
+      }
+    });
   }
 
   @override
@@ -282,15 +227,12 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
             Expanded(
               child: GestureDetector(
                 onTapDown: (details) {
-                  final imageScale = MediaQuery
-                      .of(context)
-                      .size
-                      .width / contractImage!.width;
+                  final imageScale =
+                      MediaQuery.of(context).size.width / contractImage!.width;
                   final scaledHeight = contractImage!.height * imageScale;
-                  final imageTopOffset = (MediaQuery
-                      .of(context)
-                      .size
-                      .height - scaledHeight-155) / 2;
+                  final imageTopOffset = (MediaQuery.of(context).size.height -
+                          scaledHeight * 1.23) /
+                      2;
 
                   final touchPosition = Offset(
                     details.localPosition.dx / imageScale,
@@ -298,30 +240,28 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
                   );
 
                   final tappedArea = predefinedAreas.firstWhere(
-                        (area) =>
-                        (area['rect'] as Rect).contains(touchPosition),
+                    (area) => (area).contains(touchPosition),
                   );
 
                   if (tappedArea != null) {
-                    setState(() {
-                      selectedCell = tappedArea['cell'] as String;
-                      selectedArea = tappedArea['rect'] as Rect;
-                      isSignatureMode = false;
-                      isTextInputMode = false;
-                    });
+                    _handleCellSelection(tappedArea);
                   }
                 },
                 child: CustomPaint(
                   size: Size(double.infinity, double.infinity),
                   painter: ContractPainter(
-                      contractImage!,
-                      predefinedAreas,
-                      selectedArea),
+                    contractImage!,
+                    predefinedAreas,
+                    selectedArea,
+                    combinedImage, // Pass the combinedImage to the painter
+                  ),
                 ),
               ),
             ),
           if (isSignatureMode)
-            Expanded(
+            Container(
+              width: MediaQuery.of(context).size.width,
+              height: signatureHeight,
               child: Signature(
                 controller: _controller,
                 backgroundColor: Colors.lightBlueAccent,
@@ -366,17 +306,7 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
               Expanded(
                 child: ElevatedButton(
                   onPressed: () {
-                    if (selectedCell.isNotEmpty) {
-                      if (isSignatureMode) {
-                        saveSignatureToExcel(selectedCell); // 서명 저장
-                      } else if (isTextInputMode) {
-                        saveTextToExcel(
-                            textEditingController.text, selectedCell); // 텍스트 저장
-                      }
-                    } else {
-                      ScaffoldMessenger.of(context)
-                          .showSnackBar(SnackBar(content: Text('셀을 선택하세요.')));
-                    }
+                    _saveSignatureOrText();
                   },
                   child: Text('저장'),
                 ),
@@ -401,12 +331,19 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
     );
   }
 }
+
 class ContractPainter extends CustomPainter {
   final ui.Image contractImage;
-  final List<Map<String, dynamic>> predefinedAreas;
+  final List<Rect> predefinedAreas;
   final Rect? selectedArea;
+  final ui.Image? combinedImage;
 
-  ContractPainter(this.contractImage, this.predefinedAreas, this.selectedArea);
+  ContractPainter(
+    this.contractImage,
+    this.predefinedAreas,
+    this.selectedArea,
+    this.combinedImage,
+  );
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -415,7 +352,7 @@ class ContractPainter extends CustomPainter {
     final scaledHeight = contractImage.height * imageScale;
     final centeredTop = (size.height - scaledHeight) / 2;
 
-    // Draw the contract image
+    // 계약서 이미지 그리기
     canvas.drawImageRect(
       contractImage,
       Rect.fromLTWH(0, 0, contractImage.width.toDouble(),
@@ -424,9 +361,19 @@ class ContractPainter extends CustomPainter {
       paint,
     );
 
-    // Draw predefined areas
-    for (var areaMap in predefinedAreas) {
-      final area = areaMap['rect'] as Rect; // Extract the Rect from the map
+    // Draw combined image if available
+    if (combinedImage != null) {
+      canvas.drawImageRect(
+        combinedImage!,
+        Rect.fromLTWH(0, 0, combinedImage!.width.toDouble(),
+            combinedImage!.height.toDouble()),
+        Rect.fromLTWH(0, centeredTop, size.width, scaledHeight),
+        paint,
+      );
+    }
+
+    // 미리 정의된 영역 그리기
+    for (Rect area in predefinedAreas) {
       final scaledRect = Rect.fromLTWH(
         area.left * imageScale,
         centeredTop + area.top * imageScale,
@@ -440,7 +387,7 @@ class ContractPainter extends CustomPainter {
       canvas.drawRect(scaledRect, rectPaint);
     }
 
-    // Draw the selected area
+    // 선택된 영역 그리기
     if (selectedArea != null) {
       final scaledSelectedRect = Rect.fromLTWH(
         selectedArea!.left * imageScale,

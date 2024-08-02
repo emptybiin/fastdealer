@@ -290,7 +290,7 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
                   final imageTopOffset = (MediaQuery
                       .of(context)
                       .size
-                      .height - scaledHeight-135) / 2;
+                      .height - scaledHeight-155) / 2;
 
                   final touchPosition = Offset(
                     details.localPosition.dx / imageScale,

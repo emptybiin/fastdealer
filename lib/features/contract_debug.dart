@@ -63,32 +63,81 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
     });
   }
 
-  List<CustomRect> _calculatePredefinedAreas(double imageWidth, double imageHeight) {
+  List<CustomRect> _calculatePredefinedAreas(double imageWidth,
+      double imageHeight) {
     return [
-      CustomRect(Rect.fromLTWH(imageWidth * 0.6, imageHeight * 0.12, imageWidth * 0.1,          imageHeight * 0.023)), // H5 양도인 이름
-      CustomRect(Rect.fromLTWH(imageWidth * 0.6, imageHeight * 0.143, imageWidth * 0.1,          imageHeight * 0.023)), // H6 양수인 이름
-      CustomRect(Rect.fromLTWH(imageWidth * 0.85, imageHeight * 0.115, imageWidth * 0.15,          imageHeight * 0.023)), // K5 양도인 서명
-      CustomRect(Rect.fromLTWH(imageWidth * 0.85, imageHeight * 0.138, imageWidth * 0.15,          imageHeight * 0.023)), // K6 양수인 서명
-      CustomRect(Rect.fromLTWH(imageWidth * 0.125, imageHeight * 0.196, imageWidth * 0.311,          imageHeight * 0.023)), // C9 자동차등록번호
-      CustomRect(Rect.fromLTWH(imageWidth * 0.545, imageHeight * 0.196, imageWidth * 0.452,          imageHeight * 0.023)), // G9 매매금액
-      CustomRect(Rect.fromLTWH(imageWidth * 0.125, imageHeight * 0.221, imageWidth * 0.16,          imageHeight * 0.023)), // C10 차종
-      CustomRect(Rect.fromLTWH(imageWidth * 0.125, imageHeight * 0.244, imageWidth * 0.311,          imageHeight * 0.023)), // G10-K10 차명
-      CustomRect(Rect.fromLTWH(imageWidth * 0.125, imageHeight * 0.267, imageWidth * 0.311,          imageHeight * 0.023)), // C12 차대번호
-      CustomRect(Rect.fromLTWH(imageWidth * 0.125, imageHeight * 0.290, imageWidth * 0.311,          imageHeight * 0.023)), // C13 등록비용
-      CustomRect(Rect.fromLTWH(imageWidth * 0.545, imageHeight * 0.221, imageWidth * 0.452,          imageHeight * 0.023)), // G10-K10 리스승계
-      CustomRect(Rect.fromLTWH(imageWidth * 0.545, imageHeight * 0.244, imageWidth * 0.452,          imageHeight * 0.023)), // G11-K11 인도금
-      CustomRect(Rect.fromLTWH(imageWidth * 0.545, imageHeight * 0.267, imageWidth * 0.452,          imageHeight * 0.023)), // G12-K12 잔금
-      CustomRect(Rect.fromLTWH(imageWidth * 0.545, imageHeight * 0.290, imageWidth * 0.452,imageHeight * 0.023)), // G13 비고
-      CustomRect(Rect.fromLTWH(imageWidth * 0.285, imageHeight * 0.132, imageWidth * 0.2,          imageHeight * 0.023)), // A5 상단 날짜
-      CustomRect(Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.770, imageWidth * 0.72,          imageHeight * 0.023)), // A5 계약년월일
-      CustomRect(Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.794, imageWidth * 0.241,          imageHeight * 0.023)), // D43 양도인 성명
-      CustomRect(Rect.fromLTWH(imageWidth * 0.764, imageHeight * 0.794, imageWidth * 0.238,          imageHeight * 0.023)), // J43 양도인 서명 또는 날인
-      CustomRect(Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.818, imageWidth * 0.482,          imageHeight * 0.023)), // D44 양도인 주민등록(사업자)번호
-      CustomRect(Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.843, imageWidth * 0.482,          imageHeight * 0.023)), // D45 양도인 주소및전화번호
-      CustomRect(Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.867, imageWidth * 0.482,          imageHeight * 0.023)), // D46 양수인 성명
-      CustomRect(Rect.fromLTWH(imageWidth * 0.764, imageHeight * 0.867, imageWidth * 0.238,          imageHeight * 0.023)), // J46 양수인 서명 또는 날인
-      CustomRect(Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.892, imageWidth * 0.482,          imageHeight * 0.023)), // D47 양수인 주민등록(사업자)번호
-      CustomRect(Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.916, imageWidth * 0.482,          imageHeight * 0.023)), // D48 양수인 주소민전화번호
+      CustomRect(Rect.fromLTWH(
+          imageWidth * 0.6, imageHeight * 0.12, imageWidth * 0.1,
+          imageHeight * 0.023)), // H5 양도인 이름
+      CustomRect(Rect.fromLTWH(
+          imageWidth * 0.6, imageHeight * 0.143, imageWidth * 0.1,
+          imageHeight * 0.023)), // H6 양수인 이름
+      CustomRect(Rect.fromLTWH(
+          imageWidth * 0.85, imageHeight * 0.115, imageWidth * 0.15,
+          imageHeight * 0.023)), // K5 양도인 서명
+      CustomRect(Rect.fromLTWH(
+          imageWidth * 0.85, imageHeight * 0.138, imageWidth * 0.15,
+          imageHeight * 0.023)), // K6 양수인 서명
+      CustomRect(Rect.fromLTWH(
+          imageWidth * 0.125, imageHeight * 0.196, imageWidth * 0.311,
+          imageHeight * 0.023)), // C9 자동차등록번호
+      CustomRect(Rect.fromLTWH(
+          imageWidth * 0.545, imageHeight * 0.196, imageWidth * 0.452,
+          imageHeight * 0.023)), // G9 매매금액
+      CustomRect(Rect.fromLTWH(
+          imageWidth * 0.125, imageHeight * 0.221, imageWidth * 0.16,
+          imageHeight * 0.023)), // C10 차종
+      CustomRect(Rect.fromLTWH(
+          imageWidth * 0.125, imageHeight * 0.244, imageWidth * 0.311,
+          imageHeight * 0.023)), // G10-K10 차명
+      CustomRect(Rect.fromLTWH(
+          imageWidth * 0.125, imageHeight * 0.267, imageWidth * 0.311,
+          imageHeight * 0.023)), // C12 차대번호
+      CustomRect(Rect.fromLTWH(
+          imageWidth * 0.125, imageHeight * 0.290, imageWidth * 0.311,
+          imageHeight * 0.023)), // C13 등록비용
+      CustomRect(Rect.fromLTWH(
+          imageWidth * 0.545, imageHeight * 0.221, imageWidth * 0.452,
+          imageHeight * 0.023)), // G10-K10 리스승계
+      CustomRect(Rect.fromLTWH(
+          imageWidth * 0.545, imageHeight * 0.244, imageWidth * 0.452,
+          imageHeight * 0.023)), // G11-K11 인도금
+      CustomRect(Rect.fromLTWH(
+          imageWidth * 0.545, imageHeight * 0.267, imageWidth * 0.452,
+          imageHeight * 0.023)), // G12-K12 잔금
+      CustomRect(Rect.fromLTWH(
+          imageWidth * 0.545, imageHeight * 0.290, imageWidth * 0.452,
+          imageHeight * 0.023)), // G13 비고
+      CustomRect(Rect.fromLTWH(
+          imageWidth * 0.285, imageHeight * 0.132, imageWidth * 0.2,
+          imageHeight * 0.023)), // A5 상단 날짜
+      CustomRect(Rect.fromLTWH(
+          imageWidth * 0.282, imageHeight * 0.770, imageWidth * 0.72,
+          imageHeight * 0.023)), // A5 계약년월일
+      CustomRect(Rect.fromLTWH(
+          imageWidth * 0.282, imageHeight * 0.794, imageWidth * 0.241,
+          imageHeight * 0.023)), // D43 양도인 성명
+      CustomRect(Rect.fromLTWH(
+          imageWidth * 0.764, imageHeight * 0.794, imageWidth * 0.238,
+          imageHeight * 0.023)), // J43 양도인 서명 또는 날인
+      CustomRect(Rect.fromLTWH(
+          imageWidth * 0.282, imageHeight * 0.818, imageWidth * 0.482,
+          imageHeight * 0.023)), // D44 양도인 주민등록(사업자)번호
+      CustomRect(Rect.fromLTWH(
+          imageWidth * 0.282, imageHeight * 0.843, imageWidth * 0.482,
+          imageHeight * 0.023)), // D45 양도인 주소및전화번호
+      CustomRect(Rect.fromLTWH(
+          imageWidth * 0.282, imageHeight * 0.867, imageWidth * 0.482,
+          imageHeight * 0.023)), // D46 양수인 성명
+      CustomRect(Rect.fromLTWH(
+          imageWidth * 0.764, imageHeight * 0.867, imageWidth * 0.238,
+          imageHeight * 0.023)), // J46 양수인 서명 또는 날인
+      CustomRect(Rect.fromLTWH(
+          imageWidth * 0.282, imageHeight * 0.892, imageWidth * 0.482,
+          imageHeight * 0.023)), // D47 양수인 주민등록(사업자)번호
+      CustomRect(Rect.fromLTWH(
+          imageWidth * 0.282, imageHeight * 0.916, imageWidth * 0.482,
+          imageHeight * 0.023)), // D48 양수인 주소민전화번호
     ];
   }
 
@@ -99,7 +148,8 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
     return frame.image;
   }
 
-  Future<ui.Image> _textToImage(String text, double width, double height, double fontSize) async {
+  Future<ui.Image> _textToImage(String text, double width, double height,
+      double fontSize) async {
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(recorder, Rect.fromLTWH(0, 0, width, height));
     final textPainter = TextPainter(
@@ -115,8 +165,8 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
     return picture.toImage(width.toInt(), height.toInt());
   }
 
-  Future<ui.Image> _combineImages(
-      ui.Image baseImage, ui.Image overlayImage, Rect rect) async {
+  Future<ui.Image> _combineImages(ui.Image baseImage, ui.Image overlayImage,
+      Rect rect) async {
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(
         recorder,
@@ -175,7 +225,8 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
           }
         }
 
-        final updatedImage = await _combineImages(contractImage!, overlayImage, selectedArea!);
+        final updatedImage = await _combineImages(
+            contractImage!, overlayImage, selectedArea!);
         await _saveImage(updatedImage, 'contract_with_overlay.png');
 
         setState(() {
@@ -188,12 +239,13 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
         });
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Select a cell.')));
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Select a cell.')));
     }
   }
 
-  Future<void> copyAssetFileToLocalDir(
-      String assetPath, String localFileName) async {
+  Future<void> copyAssetFileToLocalDir(String assetPath,
+      String localFileName) async {
     ByteData data = await rootBundle.load(assetPath);
     List<int> bytes = data.buffer.asUint8List();
     String localPath = await getFilePath(localFileName);
@@ -212,109 +264,161 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
 
       // Clear text input controller
       textEditingController.clear();
-
-      if (selectedArea != null) {
-        double aspectRatio = selectedArea!.width / selectedArea!.height;
-        signatureHeight = MediaQuery.of(context).size.width / aspectRatio;
-      }
     });
   }
 
 
+  bool _showSelectCellSnackBar = false;
+
   @override
   Widget build(BuildContext context) {
-    // Get the keyboard height from MediaQuery
-    final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+    final keyboardHeight = MediaQuery
+        .of(context)
+        .viewInsets
+        .bottom;
+
+    // Function to show snackbar
+    void _showSnackBar(String message) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+
+    // Show snackbar if needed
+    if (_showSelectCellSnackBar && selectedArea == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showSnackBar('셀을 선택해주세요');
+        // Reset the flag to prevent repeated snackbars
+        setState(() {
+          _showSelectCellSnackBar = false;
+        });
+      });
+    }
 
     return Scaffold(
       appBar: AppBar(
         title: Text('계약서 서명 기능'),
       ),
-      body: Stack(
-        children: [
-          // Image Container - Fixed Position
-          if (isImageLoaded)
-            Positioned.fill(
-              child: GestureDetector(
-                onTapDown: (details) {
-                  final imageScale = MediaQuery.of(context).size.width / contractImage!.width;
-                  final scaledHeight = contractImage!.height * imageScale;
-                  final imageTopOffset = (MediaQuery.of(context).size.height * imageScale - scaledHeight) / 2;
+      body: GestureDetector(
+        onTap: () {
+          // Reset state when tapping outside the editable areas
+          setState(() {
+            isSignatureMode = false;
+            isTextInputMode = false;
+            selectedArea = null;
+            _controller.clear();
+            textEditingController.clear();
+          });
+        },
+        child: Stack(
+          children: [
+            // Image Container - Fixed Position
+            if (isImageLoaded)
+              Positioned.fill(
+                child: GestureDetector(
+                  onTapDown: (details) {
+                    final imageScale = MediaQuery
+                        .of(context)
+                        .size
+                        .width / contractImage!.width;
+                    final scaledHeight = contractImage!.height * imageScale;
+                    final imageTopOffset = (MediaQuery
+                        .of(context)
+                        .size
+                        .height * imageScale - scaledHeight) / 2;
 
-                  final touchPosition = Offset(
-                    details.localPosition.dx / imageScale,
-                    (details.localPosition.dy / imageScale) + imageTopOffset * 3.2,
-                  );
+                    final touchPosition = Offset(
+                      details.localPosition.dx / imageScale,
+                      (details.localPosition.dy / imageScale) +
+                          imageTopOffset * 3.2,
+                    );
 
-                  final tappedArea = predefinedAreas.firstWhere(
-                        (area) => area.contains(touchPosition),
-                    orElse: () => CustomRect(Rect.zero),
-                  );
+                    final tappedArea = predefinedAreas.firstWhere(
+                          (area) => area.contains(touchPosition),
+                      orElse: () => CustomRect(Rect.zero),
+                    );
 
-                  if (tappedArea.rect != Rect.zero) {
-                    _handleCellSelection(tappedArea);
-                  }
-                },
-                child: CustomPaint(
-                  painter: ContractPainter(
-                    contractImage!,
-                    predefinedAreas,
-                    selectedArea,
-                    combinedImage,
+                    if (tappedArea.rect != Rect.zero) {
+                      _handleCellSelection(tappedArea);
+                    }
+                  },
+                  child: CustomPaint(
+                    painter: ContractPainter(
+                      contractImage!,
+                      predefinedAreas,
+                      selectedArea,
+                      combinedImage,
+                    ),
                   ),
                 ),
               ),
-            ),
 
-          // Overlay TextField or Signature
-          if (isTextInputMode || isSignatureMode)
-            Positioned(
-              bottom: keyboardHeight,
-              left: MediaQuery.of(context).size.width * 0.15,
-              right: MediaQuery.of(context).size.width * 0.15,
-              child: Container(
-                color: Colors.white.withOpacity(0.8),
-                width: MediaQuery.of(context).size.width * 0.7,
-                // Adjust the height for both modes
-                height: isSignatureMode
-                    ? MediaQuery.of(context).size.width * 1.5 * ((selectedArea?.height ?? 1) / (selectedArea?.width ?? 1)) + 100 // Height for signature mode
-                    : 150, // Height for text input mode
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Expanded(
-                      child: isSignatureMode
-                          ? Signature(
-                        controller: _controller,
-                        backgroundColor: Colors.lightBlueAccent,
-                      )
-                          : Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextField(
-                          controller: textEditingController,
-                          focusNode: textFocusNode,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: '텍스트를 입력하세요',
+            // Overlay TextField or Signature
+            if ((isTextInputMode || isSignatureMode) && selectedArea != null)
+              Positioned(
+                bottom: keyboardHeight,
+                left: MediaQuery
+                    .of(context)
+                    .size
+                    .width * 0.15,
+                right: MediaQuery
+                    .of(context)
+                    .size
+                    .width * 0.15,
+                child: Container(
+                  color: Colors.white.withOpacity(0.8),
+                  width: MediaQuery
+                      .of(context)
+                      .size
+                      .width * 0.7,
+                  height: isSignatureMode
+                      ? MediaQuery
+                      .of(context)
+                      .size
+                      .width * 1.5 * ((selectedArea?.height ?? 1) /
+                      (selectedArea?.width ?? 1)) + 100
+                      : 150,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Expanded(
+                        child: isSignatureMode
+                            ? Signature(
+                          controller: _controller,
+                          backgroundColor: Colors.lightBlueAccent,
+                        )
+                            : Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: TextField(
+                            controller: textEditingController,
+                            focusNode: textFocusNode,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: '텍스트를 입력하세요',
+                            ),
+                            autofocus: true,
+                            onTapOutside: (_) {
+                              FocusScope.of(context).unfocus();
+                            },
                           ),
-                          autofocus: true,
-                          onTapOutside: (_) {
-                            FocusScope.of(context).unfocus();
-                          },
                         ),
                       ),
-                    ),
-                    SizedBox(height: 16), // Space between Signature/TextField and Button
-                    ElevatedButton(
-                      onPressed: () {
-                        _saveSignatureOrText();
-                      },
-                      child: Text('저장'),
-                    ),
-                  ],
+                      SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () {
+                          _saveSignatureOrText();
+                        },
+                        child: Text('저장'),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),],
+          ],
+        ),
       ),
       bottomNavigationBar: BottomAppBar(
         child: Row(
@@ -324,8 +428,12 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
               child: ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    isSignatureMode = true;
-                    isTextInputMode = false;
+                    if (selectedArea == null) {
+                      _showSelectCellSnackBar = true;
+                    } else {
+                      isSignatureMode = true;
+                      isTextInputMode = false;
+                    }
                   });
                 },
                 child: Text('서명'),
@@ -335,12 +443,16 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
               child: ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    isTextInputMode = true;
-                    isSignatureMode = false;
-                  });
-                  // Request focus on the TextField
-                  Future.delayed(Duration(milliseconds: 100), () {
-                    FocusScope.of(context).requestFocus(textFocusNode);
+                    if (selectedArea == null) {
+                      _showSelectCellSnackBar = true;
+                    } else {
+                      isTextInputMode = true;
+                      isSignatureMode = false;
+                      // Request focus on the TextField
+                      Future.delayed(Duration(milliseconds: 100), () {
+                        FocusScope.of(context).requestFocus(textFocusNode);
+                      });
+                    }
                   });
                 },
                 child: Text('텍스트 입력'),
@@ -372,11 +484,9 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
       ),
     );
   }
+}
 
-
-
-
-}class ContractPainter extends CustomPainter {
+class ContractPainter extends CustomPainter {
   final ui.Image contractImage;
   final List<CustomRect> predefinedAreas;
   final ui.Rect? selectedArea;

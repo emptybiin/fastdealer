@@ -10,6 +10,17 @@ import 'package:image/image.dart' as img;
 import 'package:flutter/services.dart' show rootBundle, ByteData;
 import 'package:share_plus/share_plus.dart';
 
+class CustomRect {
+  final Rect rect;
+  ui.Image? overlayImage;
+
+  CustomRect(this.rect, {this.overlayImage});
+
+  bool contains(Offset point) {
+    return rect.contains(point);
+  }
+}
+
 class ContractFeatureDebug extends StatefulWidget {
   @override
   _ContractFeatureDebugState createState() => _ContractFeatureDebugState();
@@ -19,7 +30,7 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
   SignatureController _controller = SignatureController(
     penStrokeWidth: 5,
     penColor: Colors.black,
-    exportBackgroundColor: Colors.white,
+    exportBackgroundColor: Colors.transparent, // Use transparent background
   );
 
   ui.Image? contractImage;
@@ -30,7 +41,7 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
 
   Rect? selectedArea;
   TextEditingController textEditingController = TextEditingController();
-  List<Rect> predefinedAreas = [];
+  List<CustomRect> predefinedAreas = [];
   double signatureHeight = 0.0;
 
   @override
@@ -52,57 +63,32 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
     });
   }
 
-  List<Rect> _calculatePredefinedAreas(double imageWidth, double imageHeight) {
+  List<CustomRect> _calculatePredefinedAreas(double imageWidth, double imageHeight) {
     return [
-      Rect.fromLTWH(imageWidth * 0.6, imageHeight * 0.12, imageWidth * 0.1,
-          imageHeight * 0.023), // H5 양도인 이름
-      Rect.fromLTWH(imageWidth * 0.6, imageHeight * 0.143, imageWidth * 0.1,
-          imageHeight * 0.023), // H6 양수인 이름
-      Rect.fromLTWH(imageWidth * 0.85, imageHeight * 0.115, imageWidth * 0.15,
-          imageHeight * 0.023), // K5 양도인 서명
-      Rect.fromLTWH(imageWidth * 0.85, imageHeight * 0.138, imageWidth * 0.15,
-          imageHeight * 0.023), // K6 양수인 서명
-      Rect.fromLTWH(imageWidth * 0.125, imageHeight * 0.196, imageWidth * 0.311,
-          imageHeight * 0.023), // C9 자동차등록번호
-      Rect.fromLTWH(imageWidth * 0.545, imageHeight * 0.196, imageWidth * 0.452,
-          imageHeight * 0.023), // G9 매매금액
-      Rect.fromLTWH(imageWidth * 0.125, imageHeight * 0.221, imageWidth * 0.16,
-          imageHeight * 0.023), // C10 차종
-      Rect.fromLTWH(imageWidth * 0.125, imageHeight * 0.244, imageWidth * 0.311,
-          imageHeight * 0.023), // G10-K10 차명
-      Rect.fromLTWH(imageWidth * 0.125, imageHeight * 0.267, imageWidth * 0.311,
-          imageHeight * 0.023), // C12 차대번호
-      Rect.fromLTWH(imageWidth * 0.125, imageHeight * 0.290, imageWidth * 0.311,
-          imageHeight * 0.023), // C13 등록비용
-      Rect.fromLTWH(imageWidth * 0.545, imageHeight * 0.221, imageWidth * 0.452,
-          imageHeight * 0.023), // G10-K10 리스승계
-      Rect.fromLTWH(imageWidth * 0.545, imageHeight * 0.244, imageWidth * 0.452,
-          imageHeight * 0.023), // G11-K11 인도금
-      Rect.fromLTWH(imageWidth * 0.545, imageHeight * 0.267, imageWidth * 0.452,
-          imageHeight * 0.023), // G12-K12 잔금
-      Rect.fromLTWH(imageWidth * 0.545, imageHeight * 0.290, imageWidth * 0.452,
-          imageHeight * 0.023), // G13 비고
-      Rect.fromLTWH(imageWidth * 0.285, imageHeight * 0.132, imageWidth * 0.2,
-          imageHeight * 0.023), // A5 상단 날짜
-      // 하단
-      Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.770, imageWidth * 0.72,
-          imageHeight * 0.023), // A5 계약년월일
-      Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.794, imageWidth * 0.482,
-          imageHeight * 0.023), // D43 양도인 성명
-      Rect.fromLTWH(imageWidth * 0.764, imageHeight * 0.794, imageWidth * 0.238,
-          imageHeight * 0.023), // J43 양도인 서명 또는 날인
-      Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.818, imageWidth * 0.482,
-          imageHeight * 0.023), // D44 양도인 주민등록(사업자)번호
-      Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.843, imageWidth * 0.482,
-          imageHeight * 0.023), // D45 양도인 주소및전화번호
-      Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.867, imageWidth * 0.482,
-          imageHeight * 0.023), // D46 양수인 성명
-      Rect.fromLTWH(imageWidth * 0.764, imageHeight * 0.867, imageWidth * 0.238,
-          imageHeight * 0.023), // J46 양수인 서명 또는 날인
-      Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.892, imageWidth * 0.482,
-          imageHeight * 0.023), // D47 양수인 주민등록(사업자)번호
-      Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.916, imageWidth * 0.482,
-          imageHeight * 0.023), // D48 양수인 주소민전화번호
+      CustomRect(Rect.fromLTWH(imageWidth * 0.6, imageHeight * 0.12, imageWidth * 0.1,          imageHeight * 0.023)), // H5 양도인 이름
+      CustomRect(Rect.fromLTWH(imageWidth * 0.6, imageHeight * 0.143, imageWidth * 0.1,          imageHeight * 0.023)), // H6 양수인 이름
+      CustomRect(Rect.fromLTWH(imageWidth * 0.85, imageHeight * 0.115, imageWidth * 0.15,          imageHeight * 0.023)), // K5 양도인 서명
+      CustomRect(Rect.fromLTWH(imageWidth * 0.85, imageHeight * 0.138, imageWidth * 0.15,          imageHeight * 0.023)), // K6 양수인 서명
+      CustomRect(Rect.fromLTWH(imageWidth * 0.125, imageHeight * 0.196, imageWidth * 0.311,          imageHeight * 0.023)), // C9 자동차등록번호
+      CustomRect(Rect.fromLTWH(imageWidth * 0.545, imageHeight * 0.196, imageWidth * 0.452,          imageHeight * 0.023)), // G9 매매금액
+      CustomRect(Rect.fromLTWH(imageWidth * 0.125, imageHeight * 0.221, imageWidth * 0.16,          imageHeight * 0.023)), // C10 차종
+      CustomRect(Rect.fromLTWH(imageWidth * 0.125, imageHeight * 0.244, imageWidth * 0.311,          imageHeight * 0.023)), // G10-K10 차명
+      CustomRect(Rect.fromLTWH(imageWidth * 0.125, imageHeight * 0.267, imageWidth * 0.311,          imageHeight * 0.023)), // C12 차대번호
+      CustomRect(Rect.fromLTWH(imageWidth * 0.125, imageHeight * 0.290, imageWidth * 0.311,          imageHeight * 0.023)), // C13 등록비용
+      CustomRect(Rect.fromLTWH(imageWidth * 0.545, imageHeight * 0.221, imageWidth * 0.452,          imageHeight * 0.023)), // G10-K10 리스승계
+      CustomRect(Rect.fromLTWH(imageWidth * 0.545, imageHeight * 0.244, imageWidth * 0.452,          imageHeight * 0.023)), // G11-K11 인도금
+      CustomRect(Rect.fromLTWH(imageWidth * 0.545, imageHeight * 0.267, imageWidth * 0.452,          imageHeight * 0.023)), // G12-K12 잔금
+      CustomRect(Rect.fromLTWH(imageWidth * 0.545, imageHeight * 0.290, imageWidth * 0.452,imageHeight * 0.023)), // G13 비고
+      CustomRect(Rect.fromLTWH(imageWidth * 0.285, imageHeight * 0.132, imageWidth * 0.2,          imageHeight * 0.023)), // A5 상단 날짜
+      CustomRect(Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.770, imageWidth * 0.72,          imageHeight * 0.023)), // A5 계약년월일
+      CustomRect(Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.794, imageWidth * 0.241,          imageHeight * 0.023)), // D43 양도인 성명
+      CustomRect(Rect.fromLTWH(imageWidth * 0.764, imageHeight * 0.794, imageWidth * 0.238,          imageHeight * 0.023)), // J43 양도인 서명 또는 날인
+      CustomRect(Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.818, imageWidth * 0.482,          imageHeight * 0.023)), // D44 양도인 주민등록(사업자)번호
+      CustomRect(Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.843, imageWidth * 0.482,          imageHeight * 0.023)), // D45 양도인 주소및전화번호
+      CustomRect(Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.867, imageWidth * 0.482,          imageHeight * 0.023)), // D46 양수인 성명
+      CustomRect(Rect.fromLTWH(imageWidth * 0.764, imageHeight * 0.867, imageWidth * 0.238,          imageHeight * 0.023)), // J46 양수인 서명 또는 날인
+      CustomRect(Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.892, imageWidth * 0.482,          imageHeight * 0.023)), // D47 양수인 주민등록(사업자)번호
+      CustomRect(Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.916, imageWidth * 0.482,          imageHeight * 0.023)), // D48 양수인 주소민전화번호
     ];
   }
 
@@ -113,18 +99,17 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
     return frame.image;
   }
 
-  Future<ui.Image> _textToImage(
-      String text, double width, double height) async {
+  Future<ui.Image> _textToImage(String text, double width, double height, double fontSize) async {
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(recorder, Rect.fromLTWH(0, 0, width, height));
     final textPainter = TextPainter(
       text: TextSpan(
         text: text,
-        style: TextStyle(color: Colors.black, fontSize: 16),
+        style: TextStyle(color: Colors.black, fontSize: fontSize),
       ),
       textDirection: TextDirection.ltr,
     );
-    textPainter.layout();
+    textPainter.layout(maxWidth: width);
     textPainter.paint(canvas, Offset(0, 0));
     final picture = recorder.endRecording();
     return picture.toImage(width.toInt(), height.toInt());
@@ -172,24 +157,38 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
       if (isSignatureMode) {
         overlayImage = await _signatureToImage();
       } else if (isTextInputMode) {
-        overlayImage = await _textToImage(textEditingController.text,
-            selectedArea!.width, selectedArea!.height);
+        double fontSize = 50.0; // 원하는 폰트 크기를 설정하세요.
+        overlayImage = await _textToImage(
+          textEditingController.text,
+          selectedArea!.width,
+          selectedArea!.height,
+          fontSize,
+        );
       }
 
       if (overlayImage != null) {
-        final updatedImage =
-            await _combineImages(contractImage!, overlayImage, selectedArea!);
+        // Find and update the CustomRect with the overlayImage
+        for (var area in predefinedAreas) {
+          if (area.rect == selectedArea!) {
+            area.overlayImage = overlayImage;
+            break; // Stop iterating once we've found the matching area
+          }
+        }
+
+        final updatedImage = await _combineImages(contractImage!, overlayImage, selectedArea!);
         await _saveImage(updatedImage, 'contract_with_overlay.png');
 
         setState(() {
           combinedImage = updatedImage;
-          contractImage =
-              updatedImage; // Update contractImage to the combined image
+          // Reset the state
+          isSignatureMode = false;
+          isTextInputMode = false;
+          textEditingController.clear();
+          selectedArea = null;
         });
       }
     } else {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('셀을 선택하세요.')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Select a cell.')));
     }
   }
 
@@ -202,11 +201,17 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
     await localFile.writeAsBytes(bytes);
   }
 
-  void _handleCellSelection(Rect area) {
+  void _handleCellSelection(CustomRect area) {
     setState(() {
-      selectedArea = area;
+      selectedArea = area.rect;
       isSignatureMode = false;
       isTextInputMode = false;
+
+      // Reset signature controller
+      _controller.clear();
+
+      // Clear text input controller
+      textEditingController.clear();
 
       if (selectedArea != null) {
         double aspectRatio = selectedArea!.width / selectedArea!.height;
@@ -214,136 +219,142 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
       }
     });
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('계약서 서명 기능'),
       ),
-      body: Column(
+      body: Stack(
         children: [
+          // Main contract image and interaction area
           if (isImageLoaded)
-            Expanded(
-              child: GestureDetector(
-                onTapDown: (details) {
-                  final imageScale =
-                      MediaQuery.of(context).size.width / contractImage!.width;
-                  final scaledHeight = contractImage!.height * imageScale;
-                  final imageTopOffset = (MediaQuery.of(context).size.height -
-                          scaledHeight * 1.23) /
-                      2;
+            GestureDetector(
+              onTapDown: (details) {
+                final imageScale = MediaQuery.of(context).size.width / contractImage!.width;
+                final scaledHeight = contractImage!.height * imageScale;
+                final imageTopOffset = (MediaQuery.of(context).size.height * imageScale - scaledHeight) / 2;
 
-                  final touchPosition = Offset(
-                    details.localPosition.dx / imageScale,
-                    (details.localPosition.dy - imageTopOffset) / imageScale,
-                  );
+                final touchPosition = Offset(
+                  details.localPosition.dx / imageScale,
+                  (details.localPosition.dy / imageScale) + imageTopOffset * 4.2,
+                );
 
-                  final tappedArea = predefinedAreas.firstWhere(
-                    (area) => (area).contains(touchPosition),
-                  );
+                final tappedArea = predefinedAreas.firstWhere(
+                      (area) => area.contains(touchPosition),
+                  orElse: () => CustomRect(Rect.zero),
+                );
 
-                  if (tappedArea != null) {
-                    _handleCellSelection(tappedArea);
-                  }
-                },
-                child: CustomPaint(
-                  size: Size(double.infinity, double.infinity),
-                  painter: ContractPainter(
-                    contractImage!,
-                    predefinedAreas,
-                    selectedArea,
-                    combinedImage, // Pass the combinedImage to the painter
+                if (tappedArea.rect != Rect.zero) {
+                  _handleCellSelection(tappedArea);
+                }
+              },
+              child: CustomPaint(
+                size: Size(double.infinity, double.infinity),
+                painter: ContractPainter(
+                  contractImage!,
+                  predefinedAreas,
+                  selectedArea,
+                  combinedImage,
+                ),
+              ),
+            ),
+          // Centered signature or text input area
+          if (isSignatureMode || isTextInputMode)
+            Center(
+              child: Container(
+                color: Colors.white.withOpacity(0.8), // Optional: semi-transparent background
+                width: MediaQuery.of(context).size.width*0.7, // Full screen width
+                height: isSignatureMode
+                    ? MediaQuery.of(context).size.width*1.5 * ((selectedArea?.height ?? 1) / (selectedArea?.width ?? 1))
+                    : 100, // Calculate height based on aspect ratio
+                child: isSignatureMode
+                    ? Signature(
+                  controller: _controller,
+                  backgroundColor: Colors.lightBlueAccent,
+                )
+                    : Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    controller: textEditingController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: '텍스트를 입력하세요',
+                    ),
                   ),
                 ),
               ),
             ),
-          if (isSignatureMode)
-            Container(
-              width: MediaQuery.of(context).size.width,
-              height: signatureHeight,
-              child: Signature(
-                controller: _controller,
-                backgroundColor: Colors.lightBlueAccent,
-              ),
+          // Buttons at the bottom of the screen
+          Positioned(
+            bottom: 20,
+            left: 0,
+            right: 0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        isSignatureMode = true;
+                        isTextInputMode = false;
+                      });
+                    },
+                    child: Text('서명'),
+                  ),
+                ),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        isTextInputMode = true;
+                        isSignatureMode = false;
+                      });
+                    },
+                    child: Text('텍스트 입력'),
+                  ),
+                ),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _saveSignatureOrText();
+                    },
+                    child: Text('저장'),
+                  ),
+                ),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      String localPath = await getFilePath('contract.xlsx');
+                      String newFilePath = await getFilePath('new_contract.xlsx');
+                      File localFile = File(localPath);
+                      File newFile = File(newFilePath);
+                      await newFile.writeAsBytes(await localFile.readAsBytes());
+                      Share.shareFiles([newFilePath], text: '새로운 계약서 엑셀 파일');
+                    },
+                    child: Text('내보내기'),
+                  ),
+                ),
+              ],
             ),
-          if (isTextInputMode)
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                controller: textEditingController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: '텍스트를 입력하세요',
-                ),
-              ),
-            ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      isSignatureMode = true;
-                      isTextInputMode = false;
-                    });
-                  },
-                  child: Text('서명'),
-                ),
-              ),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      isTextInputMode = true;
-                      isSignatureMode = false;
-                    });
-                  },
-                  child: Text('텍스트 입력'),
-                ),
-              ),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () {
-                    _saveSignatureOrText();
-                  },
-                  child: Text('저장'),
-                ),
-              ),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () async {
-                    String localPath = await getFilePath('contract.xlsx');
-                    String newFilePath = await getFilePath('new_contract.xlsx');
-                    File localFile = File(localPath);
-                    File newFile = File(newFilePath);
-                    await newFile.writeAsBytes(await localFile.readAsBytes());
-                    Share.shareFiles([newFilePath], text: '새로운 계약서 엑셀 파일');
-                  },
-                  child: Text('내보내기'),
-                ),
-              ),
-            ],
           ),
         ],
       ),
     );
   }
-}
-
-class ContractPainter extends CustomPainter {
+}class ContractPainter extends CustomPainter {
   final ui.Image contractImage;
-  final List<Rect> predefinedAreas;
-  final Rect? selectedArea;
+  final List<CustomRect> predefinedAreas;
+  final ui.Rect? selectedArea;
   final ui.Image? combinedImage;
 
   ContractPainter(
-    this.contractImage,
-    this.predefinedAreas,
-    this.selectedArea,
-    this.combinedImage,
-  );
+      this.contractImage,
+      this.predefinedAreas,
+      this.selectedArea,
+      this.combinedImage,
+      );
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -352,11 +363,10 @@ class ContractPainter extends CustomPainter {
     final scaledHeight = contractImage.height * imageScale;
     final centeredTop = (size.height - scaledHeight) / 2;
 
-    // 계약서 이미지 그리기
+    // Draw contract image
     canvas.drawImageRect(
       contractImage,
-      Rect.fromLTWH(0, 0, contractImage.width.toDouble(),
-          contractImage.height.toDouble()),
+      Rect.fromLTWH(0, 0, contractImage.width.toDouble(), contractImage.height.toDouble()),
       Rect.fromLTWH(0, centeredTop, size.width, scaledHeight),
       paint,
     );
@@ -365,29 +375,44 @@ class ContractPainter extends CustomPainter {
     if (combinedImage != null) {
       canvas.drawImageRect(
         combinedImage!,
-        Rect.fromLTWH(0, 0, combinedImage!.width.toDouble(),
-            combinedImage!.height.toDouble()),
+        Rect.fromLTWH(0, 0, combinedImage!.width.toDouble(), combinedImage!.height.toDouble()),
         Rect.fromLTWH(0, centeredTop, size.width, scaledHeight),
         paint,
       );
     }
 
-    // 미리 정의된 영역 그리기
-    for (Rect area in predefinedAreas) {
+    // Draw predefined areas with overlay images
+    for (var area in predefinedAreas) {
       final scaledRect = Rect.fromLTWH(
-        area.left * imageScale,
-        centeredTop + area.top * imageScale,
-        area.width * imageScale,
-        area.height * imageScale,
+        area.rect.left * imageScale,
+        centeredTop + area.rect.top * imageScale,
+        area.rect.width * imageScale,
+        area.rect.height * imageScale,
       );
       final rectPaint = Paint()
         ..color = Colors.red
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2;
       canvas.drawRect(scaledRect, rectPaint);
+
+      // Draw overlay image if available
+      if (area.overlayImage != null) {
+        final overlayRect = Rect.fromLTWH(
+          scaledRect.left,
+          scaledRect.top,
+          scaledRect.width,
+          scaledRect.height,
+        );
+        canvas.drawImageRect(
+          area.overlayImage!,
+          Rect.fromLTWH(0, 0, area.overlayImage!.width.toDouble(), area.overlayImage!.height.toDouble()),
+          overlayRect,
+          Paint(),
+        );
+      }
     }
 
-    // 선택된 영역 그리기
+    // Draw selected area
     if (selectedArea != null) {
       final scaledSelectedRect = Rect.fromLTWH(
         selectedArea!.left * imageScale,

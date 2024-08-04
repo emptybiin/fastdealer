@@ -232,103 +232,109 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
   }
 
 
-
   @override
   Widget build(BuildContext context) {
-    // Get the keyboard height from MediaQuery
     final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
       appBar: AppBar(
         title: Text('계약서 서명 기능'),
       ),
-      body: Stack(
-        children: [
-          // Image Container - Fixed Position
-          if (isImageLoaded)
-            Positioned.fill(
-              child: GestureDetector(
-                onTapDown: (details) {
-                  final imageScale = MediaQuery.of(context).size.width / contractImage!.width;
-                  final scaledHeight = contractImage!.height * imageScale;
-                  final imageTopOffset = (MediaQuery.of(context).size.height * imageScale - scaledHeight) / 2;
+      body: GestureDetector(
+        onTap: () {
+          // Dismiss the keyboard when tapping outside of the input fields
+          FocusScope.of(context).unfocus();
+        },
+        child: Stack(
+          children: [
+            // Image Container - Fixed Position
+            if (isImageLoaded)
+              Positioned.fill(
+                child: GestureDetector(
+                  onTapDown: (details) {
+                    final imageScale = screenWidth / contractImage!.width;
+                    final scaledHeight = contractImage!.height * imageScale;
+                    final imageTopOffset = (screenHeight * imageScale - scaledHeight) / 2;
 
-                  final touchPosition = Offset(
-                    details.localPosition.dx / imageScale,
-                    (details.localPosition.dy / imageScale) + imageTopOffset * 3.2,
-                  );
+                    final touchPosition = Offset(
+                      details.localPosition.dx / imageScale,
+                      (details.localPosition.dy / imageScale) + imageTopOffset * 3.2,
+                    );
 
-                  final tappedArea = predefinedAreas.firstWhere(
-                        (area) => area.contains(touchPosition),
-                    orElse: () => CustomRect(Rect.zero),
-                  );
+                    final tappedArea = predefinedAreas.firstWhere(
+                          (area) => area.contains(touchPosition),
+                      orElse: () => CustomRect(Rect.zero),
+                    );
 
-                  if (tappedArea.rect != Rect.zero) {
-                    _handleCellSelection(tappedArea);
-                  }
-                },
-                child: CustomPaint(
-                  painter: ContractPainter(
-                    contractImage!,
-                    predefinedAreas,
-                    selectedArea,
-                    combinedImage,
+                    if (tappedArea.rect != Rect.zero) {
+                      _handleCellSelection(tappedArea);
+                    }
+                  },
+                  child: CustomPaint(
+                    painter: ContractPainter(
+                      contractImage!,
+                      predefinedAreas,
+                      selectedArea,
+                      combinedImage,
+                    ),
                   ),
                 ),
               ),
-            ),
 
-          // Overlay TextField or Signature
-          if (isTextInputMode || isSignatureMode)
-            Positioned(
-              bottom: keyboardHeight,
-              left: MediaQuery.of(context).size.width * 0.15,
-              right: MediaQuery.of(context).size.width * 0.15,
-              child: Container(
-                color: Colors.white.withOpacity(0.8),
-                width: MediaQuery.of(context).size.width * 0.7,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // TextField or Signature
-                    Container(
-                      height: isSignatureMode
-                          ? MediaQuery.of(context).size.width * 1.5 * ((selectedArea?.height ?? 1) / (selectedArea?.width ?? 1))
-                          : 100,
-                      child: isSignatureMode
-                          ? Signature(
-                        controller: _controller,
-                        backgroundColor: Colors.lightBlueAccent,
-                      )
-                          : Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextField(
-                          controller: textEditingController,
-                          focusNode: textFocusNode,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: '텍스트를 입력하세요',
+            // Overlay TextField or Signature
+            if (isTextInputMode || isSignatureMode)
+              Positioned(
+                bottom: keyboardHeight,
+                left: screenWidth * 0.15,
+                right: screenWidth * 0.15,
+                child: SingleChildScrollView(
+                  child: Container(
+                    color: Colors.white.withOpacity(0.8),
+                    width: screenWidth * 0.7,
+                    padding: EdgeInsets.all(8.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // TextField or Signature
+                        Container(
+                          height: isSignatureMode
+                              ? screenWidth * 1.5 * ((selectedArea?.height ?? 1) / (selectedArea?.width ?? 1))
+                              : 100,
+                          child: isSignatureMode
+                              ? Signature(
+                            controller: _controller,
+                            backgroundColor: Colors.lightBlueAccent,
+                          )
+                              : TextField(
+                            controller: textEditingController,
+                            focusNode: textFocusNode,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: '텍스트를 입력하세요',
+                            ),
+                            autofocus: true,
+                            // Dismiss keyboard when tapping outside of TextField
+                            onSubmitted: (text) {
+                              _saveSignatureOrText();
+                            },
                           ),
-                          autofocus: true,
-                          // Dismiss keyboard when touching outside
-                          onTapOutside: (_) {
-                            FocusScope.of(context).unfocus();
-                          },
                         ),
-                      ),
+                        SizedBox(height: 8), // Space between TextField and Button
+                        ElevatedButton(
+                          onPressed: () {
+                            _saveSignatureOrText(); // Call the save function
+                          },
+                          child: Text('저장'),
+                        ),
+                      ],
                     ),
-                    SizedBox(height: 8), // Space between TextField and Button
-                    ElevatedButton(
-                      onPressed: () {
-                        _saveSignatureOrText();
-                      },
-                      child: Text('저장'),
-                    ),
-                  ],
+                  ),
                 ),
               ),
-            ),
-        ],
+          ],
+        ),
       ),
       bottomNavigationBar: BottomAppBar(
         child: Row(

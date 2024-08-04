@@ -238,9 +238,6 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
           selectedArea = null;
         });
       }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Select a cell.')));
     }
   }
 
@@ -264,6 +261,7 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
 
       // Clear text input controller
       textEditingController.clear();
+
     });
   }
 
@@ -288,7 +286,7 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
     }
 
     // Show snackbar if needed
-    if (_showSelectCellSnackBar && selectedArea == null) {
+    if (_showSelectCellSnackBar) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _showSnackBar('셀을 선택해주세요');
         // Reset the flag to prevent repeated snackbars
@@ -303,16 +301,6 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
         title: Text('계약서 서명 기능'),
       ),
       body: GestureDetector(
-        onTap: () {
-          // Reset state when tapping outside the editable areas
-          setState(() {
-            isSignatureMode = false;
-            isTextInputMode = false;
-            selectedArea = null;
-            _controller.clear();
-            textEditingController.clear();
-          });
-        },
         child: Stack(
           children: [
             // Image Container - Fixed Position
@@ -341,9 +329,9 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
                       orElse: () => CustomRect(Rect.zero),
                     );
 
-                    if (tappedArea.rect != Rect.zero) {
-                      _handleCellSelection(tappedArea);
-                    }
+
+                    _handleCellSelection(tappedArea);
+
                   },
                   child: CustomPaint(
                     painter: ContractPainter(
@@ -357,7 +345,7 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
               ),
 
             // Overlay TextField or Signature
-            if ((isTextInputMode || isSignatureMode) && selectedArea != null)
+            if ((isTextInputMode || isSignatureMode) && selectedArea != null && selectedArea != Rect.zero)
               Positioned(
                 bottom: keyboardHeight,
                 left: MediaQuery

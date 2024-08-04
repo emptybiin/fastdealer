@@ -25,22 +25,22 @@ class ContractFeatureDebug extends StatefulWidget {
   @override
   _ContractFeatureDebugState createState() => _ContractFeatureDebugState();
 }
-
 class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
   SignatureController _controller = SignatureController(
     penStrokeWidth: 5,
     penColor: Colors.black,
-    exportBackgroundColor: Colors.transparent, // Use transparent background
+    exportBackgroundColor: Colors.transparent,
   );
 
   ui.Image? contractImage;
-  ui.Image? combinedImage; // Initialize combinedImage
+  ui.Image? combinedImage;
   bool isImageLoaded = false;
   bool isSignatureMode = false;
   bool isTextInputMode = false;
 
   Rect? selectedArea;
   TextEditingController textEditingController = TextEditingController();
+  FocusNode textFocusNode = FocusNode(); // Add a FocusNode
   List<CustomRect> predefinedAreas = [];
   double signatureHeight = 0.0;
 
@@ -219,6 +219,7 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
       }
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -227,7 +228,6 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
       ),
       body: Stack(
         children: [
-          // Main contract image and interaction area
           if (isImageLoaded)
             GestureDetector(
               onTapDown: (details) {
@@ -259,15 +259,14 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
                 ),
               ),
             ),
-          // Centered signature or text input area
           if (isSignatureMode || isTextInputMode)
             Center(
               child: Container(
-                color: Colors.white.withOpacity(0.8), // Optional: semi-transparent background
-                width: MediaQuery.of(context).size.width*0.7, // Full screen width
+                color: Colors.white.withOpacity(0.8),
+                width: MediaQuery.of(context).size.width*0.7,
                 height: isSignatureMode
                     ? MediaQuery.of(context).size.width*1.5 * ((selectedArea?.height ?? 1) / (selectedArea?.width ?? 1))
-                    : 100, // Calculate height based on aspect ratio
+                    : 100,
                 child: isSignatureMode
                     ? Signature(
                   controller: _controller,
@@ -277,15 +276,16 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
                   padding: const EdgeInsets.all(8.0),
                   child: TextField(
                     controller: textEditingController,
+                    focusNode: textFocusNode, // Assign the FocusNode
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: '텍스트를 입력하세요',
                     ),
+                    autofocus: true, // Automatically focus the TextField
                   ),
                 ),
               ),
             ),
-          // Buttons at the bottom of the screen
           Positioned(
             bottom: 20,
             left: 0,
@@ -310,6 +310,10 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
                       setState(() {
                         isTextInputMode = true;
                         isSignatureMode = false;
+                      });
+                      // Request focus on the TextField
+                      Future.delayed(Duration(milliseconds: 100), () {
+                        FocusScope.of(context).requestFocus(textFocusNode);
                       });
                     },
                     child: Text('텍스트 입력'),
@@ -343,6 +347,7 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
       ),
     );
   }
+
 }class ContractPainter extends CustomPainter {
   final ui.Image contractImage;
   final List<CustomRect> predefinedAreas;

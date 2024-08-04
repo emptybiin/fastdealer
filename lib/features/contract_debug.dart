@@ -287,29 +287,44 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
               child: Container(
                 color: Colors.white.withOpacity(0.8),
                 width: MediaQuery.of(context).size.width * 0.7,
-                height: isSignatureMode
-                    ? MediaQuery.of(context).size.width * 1.5 * ((selectedArea?.height ?? 1) / (selectedArea?.width ?? 1))
-                    : 100,
-                child: isSignatureMode
-                    ? Signature(
-                  controller: _controller,
-                  backgroundColor: Colors.lightBlueAccent,
-                )
-                    : Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    controller: textEditingController,
-                    focusNode: textFocusNode,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: '텍스트를 입력하세요',
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // TextField or Signature
+                    Container(
+                      height: isSignatureMode
+                          ? MediaQuery.of(context).size.width * 1.5 * ((selectedArea?.height ?? 1) / (selectedArea?.width ?? 1))
+                          : 100,
+                      child: isSignatureMode
+                          ? Signature(
+                        controller: _controller,
+                        backgroundColor: Colors.lightBlueAccent,
+                      )
+                          : Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextField(
+                          controller: textEditingController,
+                          focusNode: textFocusNode,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: '텍스트를 입력하세요',
+                          ),
+                          autofocus: true,
+                          // Dismiss keyboard when touching outside
+                          onTapOutside: (_) {
+                            FocusScope.of(context).unfocus();
+                          },
+                        ),
+                      ),
                     ),
-                    autofocus: true,
-                    // Dismiss keyboard when touching outside
-                    onTapOutside: (_) {
-                      FocusScope.of(context).unfocus();
-                    },
-                  ),
+                    SizedBox(height: 8), // Space between TextField and Button
+                    ElevatedButton(
+                      onPressed: () {
+                        _saveSignatureOrText();
+                      },
+                      child: Text('저장'),
+                    ),
+                  ],
                 ),
               ),
             ),

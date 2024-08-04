@@ -49,6 +49,17 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
     super.initState();
     copyAssetFileToLocalDir('assets/contract.xlsx', 'contract.xlsx');
     loadContractImage();
+
+    // Add a listener to the FocusNode to handle keyboard dismissal
+    textFocusNode.addListener(() {
+      if (!textFocusNode.hasFocus) {
+        // Clear or dismiss the TextField when keyboard is dismissed
+        setState(() {
+          isTextInputMode = false;
+          textEditingController.clear();
+        });
+      }
+    });
   }
 
   Future<void> loadContractImage() async {
@@ -219,6 +230,9 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
       }
     });
   }
+
+
+
   @override
   Widget build(BuildContext context) {
     // Get the keyboard height from MediaQuery

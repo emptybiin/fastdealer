@@ -219,53 +219,62 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
       }
     });
   }
-
   @override
   Widget build(BuildContext context) {
+    // Get the keyboard height from MediaQuery
+    final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('계약서 서명 기능'),
       ),
       body: Stack(
         children: [
+          // Image Container - Fixed Position
           if (isImageLoaded)
-            GestureDetector(
-              onTapDown: (details) {
-                final imageScale = MediaQuery.of(context).size.width / contractImage!.width;
-                final scaledHeight = contractImage!.height * imageScale;
-                final imageTopOffset = (MediaQuery.of(context).size.height * imageScale - scaledHeight) / 2;
+            Positioned.fill(
+              child: GestureDetector(
+                onTapDown: (details) {
+                  final imageScale = MediaQuery.of(context).size.width / contractImage!.width;
+                  final scaledHeight = contractImage!.height * imageScale;
+                  final imageTopOffset = (MediaQuery.of(context).size.height * imageScale - scaledHeight) / 2;
 
-                final touchPosition = Offset(
-                  details.localPosition.dx / imageScale,
-                  (details.localPosition.dy / imageScale) + imageTopOffset * 4.2,
-                );
+                  final touchPosition = Offset(
+                    details.localPosition.dx / imageScale,
+                    (details.localPosition.dy / imageScale) + imageTopOffset * 3.2,
+                  );
 
-                final tappedArea = predefinedAreas.firstWhere(
-                      (area) => area.contains(touchPosition),
-                  orElse: () => CustomRect(Rect.zero),
-                );
+                  final tappedArea = predefinedAreas.firstWhere(
+                        (area) => area.contains(touchPosition),
+                    orElse: () => CustomRect(Rect.zero),
+                  );
 
-                if (tappedArea.rect != Rect.zero) {
-                  _handleCellSelection(tappedArea);
-                }
-              },
-              child: CustomPaint(
-                size: Size(double.infinity, double.infinity),
-                painter: ContractPainter(
-                  contractImage!,
-                  predefinedAreas,
-                  selectedArea,
-                  combinedImage,
+                  if (tappedArea.rect != Rect.zero) {
+                    _handleCellSelection(tappedArea);
+                  }
+                },
+                child: CustomPaint(
+                  painter: ContractPainter(
+                    contractImage!,
+                    predefinedAreas,
+                    selectedArea,
+                    combinedImage,
+                  ),
                 ),
               ),
             ),
-          if (isSignatureMode || isTextInputMode)
-            Center(
+
+          // Overlay TextField or Signature
+          if (isTextInputMode || isSignatureMode)
+            Positioned(
+              bottom: keyboardHeight,
+              left: MediaQuery.of(context).size.width * 0.15,
+              right: MediaQuery.of(context).size.width * 0.15,
               child: Container(
                 color: Colors.white.withOpacity(0.8),
-                width: MediaQuery.of(context).size.width*0.7,
+                width: MediaQuery.of(context).size.width * 0.7,
                 height: isSignatureMode
-                    ? MediaQuery.of(context).size.width*1.5 * ((selectedArea?.height ?? 1) / (selectedArea?.width ?? 1))
+                    ? MediaQuery.of(context).size.width * 1.5 * ((selectedArea?.height ?? 1) / (selectedArea?.width ?? 1))
                     : 100,
                 child: isSignatureMode
                     ? Signature(
@@ -276,77 +285,81 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
                   padding: const EdgeInsets.all(8.0),
                   child: TextField(
                     controller: textEditingController,
-                    focusNode: textFocusNode, // Assign the FocusNode
+                    focusNode: textFocusNode,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: '텍스트를 입력하세요',
                     ),
-                    autofocus: true, // Automatically focus the TextField
+                    autofocus: true,
+                    // Dismiss keyboard when touching outside
+                    onTapOutside: (_) {
+                      FocusScope.of(context).unfocus();
+                    },
                   ),
                 ),
               ),
             ),
-          Positioned(
-            bottom: 20,
-            left: 0,
-            right: 0,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        isSignatureMode = true;
-                        isTextInputMode = false;
-                      });
-                    },
-                    child: Text('서명'),
-                  ),
-                ),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        isTextInputMode = true;
-                        isSignatureMode = false;
-                      });
-                      // Request focus on the TextField
-                      Future.delayed(Duration(milliseconds: 100), () {
-                        FocusScope.of(context).requestFocus(textFocusNode);
-                      });
-                    },
-                    child: Text('텍스트 입력'),
-                  ),
-                ),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      _saveSignatureOrText();
-                    },
-                    child: Text('저장'),
-                  ),
-                ),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      String localPath = await getFilePath('contract.xlsx');
-                      String newFilePath = await getFilePath('new_contract.xlsx');
-                      File localFile = File(localPath);
-                      File newFile = File(newFilePath);
-                      await newFile.writeAsBytes(await localFile.readAsBytes());
-                      Share.shareFiles([newFilePath], text: '새로운 계약서 엑셀 파일');
-                    },
-                    child: Text('내보내기'),
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
+      ),
+      bottomNavigationBar: BottomAppBar(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    isSignatureMode = true;
+                    isTextInputMode = false;
+                  });
+                },
+                child: Text('서명'),
+              ),
+            ),
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    isTextInputMode = true;
+                    isSignatureMode = false;
+                  });
+                  // Request focus on the TextField
+                  Future.delayed(Duration(milliseconds: 100), () {
+                    FocusScope.of(context).requestFocus(textFocusNode);
+                  });
+                },
+                child: Text('텍스트 입력'),
+              ),
+            ),
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () {
+                  _saveSignatureOrText();
+                },
+                child: Text('저장'),
+              ),
+            ),
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () async {
+                  String localPath = await getFilePath('contract.xlsx');
+                  String newFilePath = await getFilePath('new_contract.xlsx');
+                  File localFile = File(localPath);
+                  File newFile = File(newFilePath);
+                  await newFile.writeAsBytes(await localFile.readAsBytes());
+                  Share.shareFiles([newFilePath], text: '새로운 계약서 엑셀 파일');
+                },
+                child: Text('내보내기'),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
+
+
+
 
 }class ContractPainter extends CustomPainter {
   final ui.Image contractImage;

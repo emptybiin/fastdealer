@@ -313,7 +313,6 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
               ),
 
             // Overlay TextField or Signature
-            // Overlay TextField or Signature
             if ((isTextInputMode || isSignatureMode) &&
                 selectedArea != null &&
                 selectedArea != Rect.zero)
@@ -344,9 +343,19 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
                                   controller: textEditingController,
                                   focusNode: textFocusNode,
                                   decoration: InputDecoration(
-                                    border: OutlineInputBorder(),
+                                    border: OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.black), // Black border
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.black, width: 2.0), // Black border when focused
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.black, width: 1.0), // Black border when not focused
+                                    ),
                                     labelText: '텍스트를 입력하세요',
+                                    labelStyle: TextStyle(color: Colors.black), // Black label text
                                   ),
+                                  style: TextStyle(color: Colors.black), // Black text in the field
                                   autofocus: true,
                                   onTapOutside: (_) {
                                     FocusScope.of(context).unfocus();

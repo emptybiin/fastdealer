@@ -347,37 +347,30 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
       ui.Image? overlayImage;
 
       if (isSignatureMode) {
+        // Ensure _signatureToImage is correctly implemented
         overlayImage = await _signatureToImage();
       } else if (isTextInputMode) {
         double fontSize = 40.0;
         TextAlign textAlign = TextAlign.center;
 
-        // Handle specific conditions for '_fee' types
         if (['leaseTransfer_fee', 'downPayment_fee', 'remainingBalance_fee']
             .contains(selectedArea!.name)) {
-          fontSize = 38.0; // Adjust font size
-          textAlign = TextAlign.left; // Left align text
-        }
-        // Handle other conditions
-        else if (['leaseTransfer', 'downPayment', 'remainingBalance']
+          fontSize = 35.0;
+          textAlign = TextAlign.left;
+        } else if (['leaseTransfer', 'downPayment', 'remainingBalance']
             .contains(selectedArea!.name)) {
-          textAlign = TextAlign.left; // Left align text
+          textAlign = TextAlign.left;
         }
 
         final imageWidth = selectedArea!.rect.width;
-        final spaceWidth =
-            fontSize / 2; // Estimate the width of a space character
+        final spaceWidth = fontSize / 2;
 
         String textToRender = textEditingController.text;
-
-        // Split the text by '-' to handle each segment separately
         final segments = textToRender.split('-');
 
-        // Create a new string with variable spaces
         StringBuffer sb = StringBuffer();
         for (int i = 0; i < segments.length; i++) {
           if (i > 0) {
-            // Calculate the number of spaces based on position
             int numSpaces;
             if (i == 1) {
               numSpaces = (0.3 * (imageWidth / spaceWidth)).floor();
@@ -386,9 +379,9 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
             } else {
               numSpaces = (imageWidth / spaceWidth).floor();
             }
-            sb.write(' ' * numSpaces); // Append the calculated number of spaces
+            sb.write(' ' * numSpaces);
           }
-          sb.write(segments[i]); // Append the current segment
+          sb.write(segments[i]);
         }
         textToRender = sb.toString();
 
@@ -398,30 +391,42 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
           selectedArea!.rect.height,
           fontSize,
           align: textAlign,
-          name: selectedArea!.name, // Add this parameter
+          name: selectedArea!.name,
         );
-
-        if (overlayImage != null) {
-          for (var area in predefinedAreas) {
-            if (area.rect == selectedArea!.rect) {
-              area.overlayImage = overlayImage;
-              break;
-            }
-          }
-
-          final updatedImage = await _combineImages(
-              contractImage!, overlayImage, selectedArea!.rect);
-          await _saveImage(updatedImage, 'contract_with_overlay.png');
-
-          setState(() {
-            combinedImage = updatedImage;
-            isSignatureMode = false;
-            isTextInputMode = false;
-            textEditingController.clear();
-            selectedArea = null;
-          });
-        }
       }
+
+      if (overlayImage != null) {
+        bool areaUpdated = false;
+        for (var area in predefinedAreas) {
+          if (area.rect == selectedArea!.rect) {
+            area.overlayImage = overlayImage;
+            areaUpdated = true;
+            break;
+          }
+        }
+        if (!areaUpdated) {
+          print('Selected area not found in predefinedAreas.');
+        }
+
+        final updatedImage = await _combineImages(
+          contractImage!,
+          overlayImage,
+          selectedArea!.rect,
+        );
+        await _saveImage(updatedImage, 'contract_with_overlay.png');
+
+        setState(() {
+          combinedImage = updatedImage;
+          isSignatureMode = false;
+          isTextInputMode = false;
+          textEditingController.clear();
+          selectedArea = null;
+        });
+      } else {
+        print('Overlay image is null.');
+      }
+    } else {
+      print('Selected area is null.');
     }
   }
 
@@ -535,7 +540,7 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
                 child: Container(
                   color: Colors.white.withOpacity(0.8),
                   width: MediaQuery.of(context).size.width * 0.7,
-                  height: isSignatureMode
+                  height: isTextInputMode
                       ? MediaQuery.of(context).size.width *
                       1.5 *
                       ((selectedArea?.rect.height ?? 1) /
@@ -544,41 +549,17 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
                       : 150,
 
 
-                  child: Column(mainAxisSize: MainAxisSize.min, children: [
-                    Expanded(
-                      child: isSignatureMode
-                          ? Signature(
-                        controller: _controller,
-                        backgroundColor: Colors.lightBlueAccent,
-                      )
-                          : Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextField(
-                          controller: textEditingController,
-                          focusNode: textFocusNode,
-                          keyboardType: [
-                            'transactionAmount_fee',
-                            'leaseTransfer_fee',
-                            'remainingBalance_fee',
-                            'downPayment_fee',
-                            'registrationFee',
-                            'year',
-                            'transferorIdNumber',
-                            'transfereeIdNumber'
-                          ].contains(selectedArea!.name)
-                              ? TextInputType.numberWithOptions(decimal: true, signed: false)
-                              : TextInputType.text,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black, width: 2.0),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black, width: 1.0),
-                            ),
-                            labelText: [
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Expanded(
+                        child: isTextInputMode
+                            ? Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: TextField(
+                            controller: textEditingController,
+                            focusNode: textFocusNode,
+                            keyboardType: [
                               'transactionAmount_fee',
                               'leaseTransfer_fee',
                               'remainingBalance_fee',
@@ -588,65 +569,95 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
                               'transferorIdNumber',
                               'transfereeIdNumber'
                             ].contains(selectedArea!.name)
-                                ? '숫자를 입력하세요'
-                                : '텍스트를 입력하세요',
-                            labelStyle: TextStyle(color: Colors.black),
-                          ),
-                          readOnly: [
-                            'leaseTransfer',
-                            'downPayment',
-                            'remainingBalance'
-                          ].contains(selectedArea!.name),
-                          onTap: () async {
-                            if ([
+                                ? TextInputType.numberWithOptions(decimal: true, signed: false)
+                                : TextInputType.text,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black, width: 2.0),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black, width: 1.0),
+                              ),
+                              labelText: [
+                                'transactionAmount_fee',
+                                'leaseTransfer_fee',
+                                'remainingBalance_fee',
+                                'downPayment_fee',
+                                'registrationFee',
+                                'year',
+                                'transferorIdNumber',
+                                'transfereeIdNumber'
+                              ].contains(selectedArea!.name)
+                                  ? '숫자를 입력하세요'
+                                  : '텍스트를 입력하세요',
+                              labelStyle: TextStyle(color: Colors.black),
+                            ),
+                            readOnly: [
                               'leaseTransfer',
                               'downPayment',
                               'remainingBalance'
-                            ].contains(selectedArea!.name)) {
-                              DateTime? selectedDate = await showDatePicker(
-                                context: context,
-                                initialDate: DateTime.now(),
-                                firstDate: DateTime(1990),
-                                lastDate: DateTime(2101),
-                              );
+                            ].contains(selectedArea!.name),
+                            onTap: () async {
+                              if ([
+                                'leaseTransfer',
+                                'downPayment',
+                                'remainingBalance'
+                              ].contains(selectedArea!.name)) {
+                                DateTime? selectedDate = await showDatePicker(
+                                  context: context,
+                                  initialDate: DateTime.now(),
+                                  firstDate: DateTime(1990),
+                                  lastDate: DateTime(2101),
+                                );
 
-                              if (selectedDate != null) {
-                                textEditingController.text =
-                                "${selectedDate.toLocal()}".split(' ')[0];
+                                if (selectedDate != null) {
+                                  textEditingController.text =
+                                  "${selectedDate.toLocal()}".split(' ')[0];
+                                }
+                              } else {
+                                FocusScope.of(context).requestFocus(textFocusNode);
                               }
-                            } else {
-                              FocusScope.of(context).requestFocus(textFocusNode);
-                            }
-                          },
-                        ),
-                      ),
-                    ),
-
-
-                    SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              // Functionality for the Initialize button will be added later
                             },
-                            child: Text('Initialize'),
-                          ),
-                        ),
-                        SizedBox(width: 8),
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              _saveSignatureOrText();
-                            },
-                            child: Text('Save'),
                           ),
                         )
-                      ],
-                    ),
-                  ]),
+                            : Signature(
+                          controller: _controller,
+                          backgroundColor: Colors.lightBlueAccent,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // Initialize Button
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                // Functionality for the Initialize button will be added later
+                                print('Initialize button pressed');
+                              },
+                              child: Text('Initialize'),
+                            ),
+                          ),
+                          SizedBox(width: 8),
+                          // Save Button
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                _saveSignatureOrText();
+                              },
+                              child: Text('Save'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+
+
                 ),
               ),
 

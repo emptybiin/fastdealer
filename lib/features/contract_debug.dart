@@ -781,6 +781,8 @@ class ContractPainter extends CustomPainter {
     final scaledHeight = contractImage.height * imageScale;
     final centeredTop = (size.height - scaledHeight) / 2;
 
+
+
     // Draw contract image
     canvas.drawImageRect(
       contractImage,
@@ -801,8 +803,22 @@ class ContractPainter extends CustomPainter {
       );
     }
 
+
+    // Prepare text style
+    final textStyle = TextStyle(
+      color: Colors.black,
+      fontSize: 10.4,
+      fontWeight: FontWeight.bold,
+      backgroundColor: Colors.white,
+    );
+
+    // Get today's date as a string
+    final todayDate = DateTime.now().toLocal().toString().split(' ')[0]; // Format: YYYY-MM-DD
+
     // Draw predefined areas with overlay images
     for (var area in predefinedAreas) {
+
+
       final scaledRect = Rect.fromLTWH(
         area.rect.left * imageScale,
         centeredTop + area.rect.top * imageScale,
@@ -831,6 +847,30 @@ class ContractPainter extends CustomPainter {
           Paint(),
         );
       }
+      if (['topDate', 'contractDate'].contains(area.name)) {
+        // Prepare text for drawing with today's date
+        final textSpan = TextSpan(
+          text: todayDate,
+          style: textStyle,
+        );
+        final textPainter = TextPainter(
+          text: textSpan,
+          textAlign: TextAlign.center,
+          textDirection: TextDirection.ltr,
+        );
+
+        // Layout the text within the bounds of the scaledRect
+        textPainter.layout(maxWidth: scaledRect.width);
+
+        // Calculate position within the scaledRect
+        final offset = Offset(
+          scaledRect.left + (scaledRect.width - textPainter.width) / 2,
+          scaledRect.top + (scaledRect.height - textPainter.height) / 2,
+        );
+
+        // Draw text
+        textPainter.paint(canvas, offset);
+      }
     }
 
     // Draw selected area
@@ -846,6 +886,7 @@ class ContractPainter extends CustomPainter {
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2;
       canvas.drawRect(scaledSelectedRect, selectedPaint);
+
     }
   }
 
@@ -867,6 +908,7 @@ class OverlayPainter extends CustomPainter {
         this.onSave,
       });
 
+
   @override
   void paint(Canvas canvas, Size size) async {
     final paint = Paint()..isAntiAlias = true;
@@ -881,6 +923,10 @@ class OverlayPainter extends CustomPainter {
       Rect.fromLTWH(0, centeredTop, size.width, scaledHeight),
       paint,
     );
+
+
+
+    // Get today's date as a string
 
     // Draw overlay images within their predefined areas
     for (var area in predefinedAreas) {
@@ -908,7 +954,8 @@ class OverlayPainter extends CustomPainter {
           paint,
         );
       }
-    }
+      }
+
 
     // Convert the current canvas into an image and save it
     await _saveCanvasAsImage(size, canvas);

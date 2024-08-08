@@ -230,15 +230,52 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
     final frame = await codec.getNextFrame();
     return frame.image;
   }
+  String formatNumberWithCommas(String text) {
+    try {
+      final intValue = int.parse(text);
+      final numberBuffer = StringBuffer();
+
+      String intValueStr = intValue.toString();
+      int length = intValueStr.length;
+
+      for (int i = 0; i < length; i++) {
+        if (i > 0 && (length - i) % 3 == 0) {
+          numberBuffer.write(',');
+        }
+        numberBuffer.write(intValueStr[i]);
+      }
+
+      return numberBuffer.toString();
+    } catch (e) {
+      return text;
+    }
+  }
 
   Future<ui.Image> _textToImage(
-      String text, double width, double height, double fontSize,
-      {TextAlign align = TextAlign.center}) async {
+      String text,
+      double width,
+      double height,
+      double fontSize, {
+        TextAlign align = TextAlign.center,
+        required String name // Add this parameter to pass the name
+      }) async {
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(recorder, Rect.fromLTWH(0, 0, width, height));
+
+    // Conditionally format the text based on the name
+    final shouldFormat = [
+      'transactionAmount_fee',
+      'leaseTransfer_fee',
+      'remainingBalance_fee',
+      'downPayment_fee',
+      'registrationFee'
+    ].contains(name);
+
+    final formattedText = shouldFormat ? formatNumberWithCommas(text) : text;
+
     final textPainter = TextPainter(
       text: TextSpan(
-        text: text,
+        text: formattedText,
         style: TextStyle(color: Colors.black, fontSize: fontSize),
       ),
       textDirection: TextDirection.ltr,
@@ -249,7 +286,6 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
     final textWidth = textPainter.width;
     final textHeight = textPainter.height;
 
-    // Calculate the offset based on alignment
     final Offset textOffset;
     switch (align) {
       case TextAlign.left:
@@ -268,6 +304,8 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
     final picture = recorder.endRecording();
     return picture.toImage(width.toInt(), height.toInt());
   }
+
+
 
   Future<ui.Image> _combineImages(
       ui.Image baseImage, ui.Image overlayImage, Rect rect) async {
@@ -360,6 +398,7 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
           selectedArea!.rect.height,
           fontSize,
           align: textAlign,
+          name: selectedArea!.name, // Add this parameter
         );
 
         if (overlayImage != null) {
@@ -521,8 +560,9 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
                             'transactionAmount_fee',
                             'leaseTransfer_fee',
                             'remainingBalance_fee',
-                            'year',
+                            'downPayment_fee',
                             'registrationFee',
+                            'year',
                             'transferorIdNumber',
                             'transfereeIdNumber'
                           ].contains(selectedArea!.name)
@@ -542,8 +582,9 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
                               'transactionAmount_fee',
                               'leaseTransfer_fee',
                               'remainingBalance_fee',
-                              'year',
+                              'downPayment_fee',
                               'registrationFee',
+                              'year',
                               'transferorIdNumber',
                               'transfereeIdNumber'
                             ].contains(selectedArea!.name)

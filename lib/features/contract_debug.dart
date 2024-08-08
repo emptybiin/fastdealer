@@ -748,7 +748,7 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
                   overlayPainter.paint(canvas, size);
 
                   // Save the resulting image to a file
-                  await overlayPainter._saveCanvasAsImage(size, canvas);
+                  await overlayPainter.saveCanvasAsImage(size);
                 },
                 // /data/data/com.groonui.fastdealer/app_flutter/contract_with_overlay.png
                 child: Text('내보내기'),
@@ -897,6 +897,9 @@ class ContractPainter extends CustomPainter {
 }
 
 
+
+
+
 class OverlayPainter extends CustomPainter {
   final ui.Image contractImage;
   final List<CustomRect> predefinedAreas;
@@ -908,9 +911,8 @@ class OverlayPainter extends CustomPainter {
         this.onSave,
       });
 
-
   @override
-  void paint(Canvas canvas, Size size) async {
+  void paint(Canvas canvas, Size size) {
     final paint = Paint()..isAntiAlias = true;
     final imageScale = size.width / contractImage.width;
     final scaledHeight = contractImage.height * imageScale;
@@ -923,10 +925,6 @@ class OverlayPainter extends CustomPainter {
       Rect.fromLTWH(0, centeredTop, size.width, scaledHeight),
       paint,
     );
-
-
-
-    // Get today's date as a string
 
     // Draw overlay images within their predefined areas
     for (var area in predefinedAreas) {
@@ -954,14 +952,10 @@ class OverlayPainter extends CustomPainter {
           paint,
         );
       }
-      }
-
-
-    // Convert the current canvas into an image and save it
-    await _saveCanvasAsImage(size, canvas);
+    }
   }
 
-  Future<void> _saveCanvasAsImage(Size size, Canvas canvas) async {
+  Future<void> saveCanvasAsImage(Size size) async {
     final recorder = ui.PictureRecorder();
     final tempCanvas = Canvas(recorder, Rect.fromLTWH(0, 0, size.width, size.height));
 
@@ -988,7 +982,6 @@ class OverlayPainter extends CustomPainter {
 
     // Get the path to save the image
     final directory = await getApplicationDocumentsDirectory();
-    // /data/data/com.groonui.fastdealer/app_flutter/contract_with_overlay.png
     final path = '${directory.path}/contract_with_overlay.png';
 
     // Save the image to the file

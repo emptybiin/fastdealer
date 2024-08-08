@@ -10,6 +10,9 @@ import 'package:image/image.dart' as img;
 import 'package:flutter/services.dart' show rootBundle, ByteData;
 import 'package:share_plus/share_plus.dart';
 
+
+
+
 class CustomRect {
   final Rect rect;
   final String name; // Add a name field
@@ -75,6 +78,8 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
           contractImage!.width.toDouble(), contractImage!.height.toDouble());
     });
   }
+
+
 
   List<CustomRect> _calculatePredefinedAreas(
       double imageWidth, double imageHeight) {
@@ -534,7 +539,13 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
                 selectedArea != null &&
                 selectedArea!.rect != Rect.zero)
               Positioned(
-                bottom: keyboardHeight,
+                bottom: MediaQuery.of(context).size.height * 0.25 - (isTextInputMode
+                    ? MediaQuery.of(context).size.width *
+                    1.5 *
+                    ((selectedArea?.rect.height ?? 1) /
+                        (selectedArea?.rect.width ?? 1)) +
+                    100
+                    : 150),
                 left: MediaQuery.of(context).size.width * 0.15,
                 right: MediaQuery.of(context).size.width * 0.15,
                 child: Container(
@@ -547,7 +558,6 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
                           (selectedArea?.rect.width ?? 1)) +
                       100
                       : 150,
-
 
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -571,6 +581,7 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
                             ].contains(selectedArea!.name)
                                 ? TextInputType.numberWithOptions(decimal: true, signed: false)
                                 : TextInputType.text,
+                            style: TextStyle(color: Colors.black), // Set text color to black
                             decoration: InputDecoration(
                               border: OutlineInputBorder(
                                 borderSide: BorderSide(color: Colors.black),
@@ -628,20 +639,20 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
                           backgroundColor: Colors.lightBlueAccent,
                         ),
                       ),
-                      SizedBox(height: 8),
+                      SizedBox(height: 4), // Reduced height between the TextField and buttons
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           // Initialize Button
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                // Functionality for the Initialize button will be added later
-                                print('Initialize button pressed');
-                              },
-                              child: Text('Initialize'),
-                            ),
-                          ),
+                          // Expanded(
+                          //   child: ElevatedButton(
+                          //     onPressed: () {
+                          //       // Functionality for the Initialize button will be added later
+                          //       print('Initialize button pressed');
+                          //     },
+                          //     child: Text('초기화'),
+                          //   ),
+                          // ),
                           SizedBox(width: 8),
                           // Save Button
                           Expanded(
@@ -649,7 +660,7 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
                               onPressed: () {
                                 _saveSignatureOrText();
                               },
-                              child: Text('Save'),
+                              child: Text('저장'),
                             ),
                           ),
                         ],
@@ -660,10 +671,6 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
 
                 ),
               ),
-
-
-
-
           ],
         ),
       ),
@@ -718,24 +725,32 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
             Expanded(
               child: ElevatedButton(
                 onPressed: () async {
-                  // Save the combined image locally
-                  if (combinedImage != null) {
-                    await _saveImage(
-                        combinedImage!, 'contract_with_overlay.png');
-                  }
+                  // Define your CustomRect list and contractImage here or ensure they are accessible within this scope.
 
-                  // Get the local path for the Excel file
-                  String localPath = await getFilePath('contract.xlsx');
-                  String newFilePath = await getFilePath('new_contract.xlsx');
-                  File localFile = File(localPath);
-                  File newFile = File(newFilePath);
+                  // Initialize the painter with the contract image and predefined areas
+                  final overlayPainter = OverlayPainter(
+                    contractImage!,       // Your contract image
+                    predefinedAreas,     // Your list of CustomRect objects
+                    onSave: (savedImage) {
+                      // You can perform additional actions with the saved image if needed
+                      print('Image saved successfully!');
+                    },
+                  );
 
-                  // Copy the Excel file to the new path
-                  await newFile.writeAsBytes(await localFile.readAsBytes());
+                  // Create a picture recorder and canvas to draw the image
+                  final recorder = ui.PictureRecorder();
+                  final canvas = Canvas(recorder, Rect.fromLTWH(0, 0, contractImage!.width.toDouble(), contractImage!.height.toDouble()));
 
-                  // Share the new Excel file
-                  Share.shareFiles([newFilePath], text: '새로운 계약서 엑셀 파일');
+                  // Set the canvas size to match the contract image
+                  final size = Size(contractImage!.width.toDouble(), contractImage!.height.toDouble());
+
+                  // Paint the overlay image onto the canvas
+                  overlayPainter.paint(canvas, size);
+
+                  // Save the resulting image to a file
+                  await overlayPainter._saveCanvasAsImage(size, canvas);
                 },
+                // /data/data/com.groonui.fastdealer/app_flutter/contract_with_overlay.png
                 child: Text('내보내기'),
               ),
             ),
@@ -832,6 +847,108 @@ class ContractPainter extends CustomPainter {
         ..strokeWidth = 2;
       canvas.drawRect(scaledSelectedRect, selectedPaint);
     }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}
+
+
+class OverlayPainter extends CustomPainter {
+  final ui.Image contractImage;
+  final List<CustomRect> predefinedAreas;
+  final Function(ui.Image)? onSave;
+
+  OverlayPainter(
+      this.contractImage,
+      this.predefinedAreas, {
+        this.onSave,
+      });
+
+  @override
+  void paint(Canvas canvas, Size size) async {
+    final paint = Paint()..isAntiAlias = true;
+    final imageScale = size.width / contractImage.width;
+    final scaledHeight = contractImage.height * imageScale;
+    final centeredTop = (size.height - scaledHeight) / 2;
+
+    // Draw the contract image
+    canvas.drawImageRect(
+      contractImage,
+      Rect.fromLTWH(0, 0, contractImage.width.toDouble(), contractImage.height.toDouble()),
+      Rect.fromLTWH(0, centeredTop, size.width, scaledHeight),
+      paint,
+    );
+
+    // Draw overlay images within their predefined areas
+    for (var area in predefinedAreas) {
+      if (area.overlayImage != null) {
+        final scaledRect = Rect.fromLTWH(
+          area.rect.left * imageScale,
+          centeredTop + area.rect.top * imageScale,
+          area.rect.width * imageScale,
+          area.rect.height * imageScale,
+        );
+
+        // Define the source rectangle from the overlay image
+        final srcRect = Rect.fromLTWH(
+          0,
+          0,
+          area.overlayImage!.width.toDouble(),
+          area.overlayImage!.height.toDouble(),
+        );
+
+        // Draw the overlay image within the area
+        canvas.drawImageRect(
+          area.overlayImage!,
+          srcRect,
+          scaledRect,
+          paint,
+        );
+      }
+    }
+
+    // Convert the current canvas into an image and save it
+    await _saveCanvasAsImage(size, canvas);
+  }
+
+  Future<void> _saveCanvasAsImage(Size size, Canvas canvas) async {
+    final recorder = ui.PictureRecorder();
+    final tempCanvas = Canvas(recorder, Rect.fromLTWH(0, 0, size.width, size.height));
+
+    // Re-draw everything onto the temp canvas
+    paint(tempCanvas, size);
+
+    // Create an image from the canvas
+    final picture = recorder.endRecording();
+    final img = await picture.toImage(size.width.toInt(), size.height.toInt());
+
+    // Optionally, call a callback if provided
+    if (onSave != null) {
+      onSave!(img);
+    }
+
+    // Save the image as a PNG file
+    await _saveImageAsPng(img);
+  }
+
+  Future<void> _saveImageAsPng(ui.Image image) async {
+    // Convert the image to a byte array (PNG format)
+    final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    final pngBytes = byteData!.buffer.asUint8List();
+
+    // Get the path to save the image
+    final directory = await getApplicationDocumentsDirectory();
+    // /data/data/com.groonui.fastdealer/app_flutter/contract_with_overlay.png
+    final path = '${directory.path}/contract_with_overlay.png';
+
+    // Save the image to the file
+    final file = File(path);
+    await file.writeAsBytes(pngBytes);
+
+    print('Image saved to $path');
   }
 
   @override

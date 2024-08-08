@@ -12,9 +12,10 @@ import 'package:share_plus/share_plus.dart';
 
 class CustomRect {
   final Rect rect;
+  final String name; // Add a name field
   ui.Image? overlayImage;
 
-  CustomRect(this.rect, {this.overlayImage});
+  CustomRect(this.rect, this.name, {this.overlayImage});
 
   bool contains(Offset point) {
     return rect.contains(point);
@@ -32,18 +33,29 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
     penColor: Colors.black,
     exportBackgroundColor: Colors.transparent,
   );
-
   ui.Image? contractImage;
   ui.Image? combinedImage;
+
   bool isImageLoaded = false;
   bool isSignatureMode = false;
   bool isTextInputMode = false;
 
-  Rect? selectedArea;
+  CustomRect? _selectedArea; // Private variable
+
   TextEditingController textEditingController = TextEditingController();
   FocusNode textFocusNode = FocusNode(); // Add a FocusNode
   List<CustomRect> predefinedAreas = [];
   double signatureHeight = 0.0;
+
+  CustomRect? get selectedArea => _selectedArea;
+
+  set selectedArea(CustomRect? area) {
+    setState(() {
+      _selectedArea = area;
+      print(
+          'Selected Area Updated: ${_selectedArea?.name}'); // CustomRect의 name 속성 사용
+    });
+  }
 
   @override
   void initState() {
@@ -67,54 +79,148 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
   List<CustomRect> _calculatePredefinedAreas(
       double imageWidth, double imageHeight) {
     return [
-      CustomRect(Rect.fromLTWH(imageWidth * 0.6, imageHeight * 0.12,
-          imageWidth * 0.1, imageHeight * 0.023)), // H5 양도인 이름
-      CustomRect(Rect.fromLTWH(imageWidth * 0.6, imageHeight * 0.143,
-          imageWidth * 0.1, imageHeight * 0.023)), // H6 양수인 이름
-      CustomRect(Rect.fromLTWH(imageWidth * 0.85, imageHeight * 0.115,
-          imageWidth * 0.15, imageHeight * 0.023)), // K5 양도인 서명
-      CustomRect(Rect.fromLTWH(imageWidth * 0.85, imageHeight * 0.138,
-          imageWidth * 0.15, imageHeight * 0.023)), // K6 양수인 서명
-      CustomRect(Rect.fromLTWH(imageWidth * 0.125, imageHeight * 0.196,
-          imageWidth * 0.311, imageHeight * 0.023)), // C9 자동차등록번호
-      CustomRect(Rect.fromLTWH(imageWidth * 0.545, imageHeight * 0.196,
-          imageWidth * 0.452, imageHeight * 0.023)), // G9 매매금액
-      CustomRect(Rect.fromLTWH(imageWidth * 0.125, imageHeight * 0.221,
-          imageWidth * 0.16, imageHeight * 0.023)), // C10 차종
-      CustomRect(Rect.fromLTWH(imageWidth * 0.125, imageHeight * 0.244,
-          imageWidth * 0.311, imageHeight * 0.023)), // G10-K10 차명
-      CustomRect(Rect.fromLTWH(imageWidth * 0.125, imageHeight * 0.267,
-          imageWidth * 0.311, imageHeight * 0.023)), // C12 차대번호
-      CustomRect(Rect.fromLTWH(imageWidth * 0.125, imageHeight * 0.290,
-          imageWidth * 0.311, imageHeight * 0.023)), // C13 등록비용
-      CustomRect(Rect.fromLTWH(imageWidth * 0.545, imageHeight * 0.221,
-          imageWidth * 0.452, imageHeight * 0.023)), // G10-K10 리스승계
-      CustomRect(Rect.fromLTWH(imageWidth * 0.545, imageHeight * 0.244,
-          imageWidth * 0.452, imageHeight * 0.023)), // G11-K11 인도금
-      CustomRect(Rect.fromLTWH(imageWidth * 0.545, imageHeight * 0.267,
-          imageWidth * 0.452, imageHeight * 0.023)), // G12-K12 잔금
-      CustomRect(Rect.fromLTWH(imageWidth * 0.545, imageHeight * 0.290,
-          imageWidth * 0.452, imageHeight * 0.023)), // G13 비고
-      CustomRect(Rect.fromLTWH(imageWidth * 0.285, imageHeight * 0.132,
-          imageWidth * 0.2, imageHeight * 0.023)), // A5 상단 날짜
-      CustomRect(Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.770,
-          imageWidth * 0.72, imageHeight * 0.023)), // A5 계약년월일
-      CustomRect(Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.794,
-          imageWidth * 0.241, imageHeight * 0.023)), // D43 양도인 성명
-      CustomRect(Rect.fromLTWH(imageWidth * 0.764, imageHeight * 0.794,
-          imageWidth * 0.238, imageHeight * 0.023)), // J43 양도인 서명 또는 날인
-      CustomRect(Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.818,
-          imageWidth * 0.482, imageHeight * 0.023)), // D44 양도인 주민등록(사업자)번호
-      CustomRect(Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.843,
-          imageWidth * 0.482, imageHeight * 0.023)), // D45 양도인 주소및전화번호
-      CustomRect(Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.867,
-          imageWidth * 0.482, imageHeight * 0.023)), // D46 양수인 성명
-      CustomRect(Rect.fromLTWH(imageWidth * 0.764, imageHeight * 0.867,
-          imageWidth * 0.238, imageHeight * 0.023)), // J46 양수인 서명 또는 날인
-      CustomRect(Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.892,
-          imageWidth * 0.482, imageHeight * 0.023)), // D47 양수인 주민등록(사업자)번호
-      CustomRect(Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.916,
-          imageWidth * 0.482, imageHeight * 0.023)), // D48 양수인 주소민전화번호
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.6, imageHeight * 0.117, imageWidth * 0.1,
+              imageHeight * 0.023),
+          'transferorName'),
+      // 양도인 이름
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.6, imageHeight * 0.140, imageWidth * 0.1,
+              imageHeight * 0.023),
+          'transfereeName'),
+      // 양수인 이름
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.85, imageHeight * 0.115,
+              imageWidth * 0.12, imageHeight * 0.023),
+          'transferorSignature'),
+      // 양도인 서명
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.85, imageHeight * 0.138,
+              imageWidth * 0.12, imageHeight * 0.023),
+          'transfereeSignature'),
+      // 양수인 서명
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.124, imageHeight * 0.191,
+              imageWidth * 0.312, imageHeight * 0.024),
+          'vehicleRegistrationNumber'),
+      // 차량 등록 번호
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.124, imageHeight * (0.191 + 0.024 * 1),
+              imageWidth * 0.16, imageHeight * 0.024),
+          'vehicleType'),
+      // 차량 종류
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.37, imageHeight * (0.191 + 0.024 * 1),
+              imageWidth * 0.067, imageHeight * 0.024),
+          'year'),
+      // 연식
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.124, imageHeight * (0.191 + 0.024 * 2),
+              imageWidth * 0.312, imageHeight * 0.024),
+          'carModel'),
+      // 차종
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.124, imageHeight * (0.191 + 0.024 * 3),
+              imageWidth * 0.312, imageHeight * 0.024),
+          'chassisNumber'),
+      // 차대 번호
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.124, imageHeight * (0.191 + 0.024 * 4),
+              imageWidth * 0.312, imageHeight * 0.025),
+          'registrationFee'),
+      // 등록비
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.543, imageHeight * 0.191,
+              imageWidth * 0.453, imageHeight * 0.024),
+          'transactionAmount'),
+      // 매매 금액
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.543, imageHeight * (0.191 + 0.024 * 1),
+              imageWidth * 0.3, imageHeight * 0.024),
+          'leaseTransfer'),
+      // 리스 승계
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.543, imageHeight * (0.191 + 0.024 * 2),
+              imageWidth * 0.3, imageHeight * 0.024),
+          'downPayment'),
+      // 인도금
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.543, imageHeight * (0.191 + 0.024 * 3),
+              imageWidth * 0.3, imageHeight * 0.024),
+          'remainingBalance'),
+      // 잔금
+
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.843, imageHeight * (0.191 + 0.024 * 1),
+              imageWidth * 0.153, imageHeight * 0.024),
+          'leaseTransfer_fee'),
+      // 리스 승계
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.843, imageHeight * (0.191 + 0.024 * 2),
+              imageWidth * 0.153, imageHeight * 0.024),
+          'downPayment_fee'),
+      // 인도금
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.843, imageHeight * (0.191 + 0.024 * 3),
+              imageWidth * 0.153, imageHeight * 0.024),
+          'remainingBalance_fee'),
+      // 잔금
+
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.543, imageHeight * (0.191 + 0.024 * 4),
+              imageWidth * 0.453, imageHeight * 0.025),
+          'remarks'),
+      // 비고
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.285, imageHeight * 0.128,
+              imageWidth * 0.18, imageHeight * 0.024),
+          'topDate'),
+      // 상단 날짜
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.770,
+              imageWidth * 0.72, imageHeight * 0.024),
+          'contractDate'),
+      // 계약 날짜
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.794,
+              imageWidth * 0.241, imageHeight * 0.024),
+          'transferorNameFull'),
+      // 양도인 이름 (풀네임)
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.764, imageHeight * 0.794,
+              imageWidth * 0.238, imageHeight * 0.024),
+          'transferorSignatureOrSeal'),
+      // 양도인 서명 또는 도장
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.818,
+              imageWidth * 0.482, imageHeight * 0.024),
+          'transferorIdNumber'),
+      // 양도인 주민등록번호
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.843,
+              imageWidth * 0.482, imageHeight * 0.024),
+          'transferorAddressAndPhone'),
+      // 양도인 주소 및 전화번호
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.867,
+              imageWidth * 0.482, imageHeight * 0.024),
+          'transfereeNameFull'),
+      // 양수인 이름 (풀네임)
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.764, imageHeight * 0.867,
+              imageWidth * 0.238, imageHeight * 0.024),
+          'transfereeSignatureOrSeal'),
+      // 양수인 서명 또는 도장
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.892,
+              imageWidth * 0.482, imageHeight * 0.024),
+          'transfereeIdNumber'),
+      // 양수인 주민등록번호
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.916,
+              imageWidth * 0.482, imageHeight * 0.024),
+          'transfereeAddressAndPhone'),
+      // 양수인 주소 및 전화번호
     ];
   }
 
@@ -126,7 +232,8 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
   }
 
   Future<ui.Image> _textToImage(
-      String text, double width, double height, double fontSize) async {
+      String text, double width, double height, double fontSize,
+      {TextAlign align = TextAlign.center}) async {
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(recorder, Rect.fromLTWH(0, 0, width, height));
     final textPainter = TextPainter(
@@ -135,9 +242,29 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
         style: TextStyle(color: Colors.black, fontSize: fontSize),
       ),
       textDirection: TextDirection.ltr,
+      textAlign: align,
     );
     textPainter.layout(maxWidth: width);
-    textPainter.paint(canvas, Offset(0, 0));
+
+    final textWidth = textPainter.width;
+    final textHeight = textPainter.height;
+
+    // Calculate the offset based on alignment
+    final Offset textOffset;
+    switch (align) {
+      case TextAlign.left:
+        textOffset = Offset(-2, (height - textHeight) / 2);
+        break;
+      case TextAlign.right:
+        textOffset = Offset(width - textWidth, (height - textHeight) / 2);
+        break;
+      case TextAlign.center:
+      default:
+        textOffset = Offset((width - textWidth) / 2, (height - textHeight) / 2);
+        break;
+    }
+
+    textPainter.paint(canvas, textOffset);
     final picture = recorder.endRecording();
     return picture.toImage(width.toInt(), height.toInt());
   }
@@ -174,46 +301,87 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
     final filePath = '${directory.path}/$fileName';
     final file = File(filePath);
     await file.writeAsBytes(buffer);
-    print('Image saved at $filePath');
+    print('Image saved at $filePath'); // Log the file path for debugging
   }
 
-  void _saveSignatureOrText() async {
+  Future<void> _saveSignatureOrText() async {
     if (selectedArea != null) {
       ui.Image? overlayImage;
 
       if (isSignatureMode) {
         overlayImage = await _signatureToImage();
       } else if (isTextInputMode) {
-        double fontSize = 50.0; // 원하는 폰트 크기를 설정하세요.
-        overlayImage = await _textToImage(
-          textEditingController.text,
-          selectedArea!.width,
-          selectedArea!.height,
-          fontSize,
-        );
-      }
+        double fontSize = 40.0;
+        TextAlign textAlign = TextAlign.center;
 
-      if (overlayImage != null) {
-        // Find and update the CustomRect with the overlayImage
-        for (var area in predefinedAreas) {
-          if (area.rect == selectedArea!) {
-            area.overlayImage = overlayImage;
-            break; // Stop iterating once we've found the matching area
-          }
+        // Handle specific conditions for '_fee' types
+        if (['leaseTransfer_fee', 'downPayment_fee', 'remainingBalance_fee']
+            .contains(selectedArea!.name)) {
+          fontSize = 38.0; // Adjust font size
+          textAlign = TextAlign.left; // Left align text
+        }
+        // Handle other conditions
+        else if (['leaseTransfer', 'downPayment', 'remainingBalance']
+            .contains(selectedArea!.name)) {
+          textAlign = TextAlign.left; // Left align text
         }
 
-        final updatedImage =
-            await _combineImages(contractImage!, overlayImage, selectedArea!);
-        await _saveImage(updatedImage, 'contract_with_overlay.png');
+        final imageWidth = selectedArea!.rect.width;
+        final spaceWidth =
+            fontSize / 2; // Estimate the width of a space character
 
-        setState(() {
-          combinedImage = updatedImage;
-          // Reset the state
-          isSignatureMode = false;
-          isTextInputMode = false;
-          textEditingController.clear();
-          selectedArea = null;
-        });
+        String textToRender = textEditingController.text;
+
+        // Split the text by '-' to handle each segment separately
+        final segments = textToRender.split('-');
+
+        // Create a new string with variable spaces
+        StringBuffer sb = StringBuffer();
+        for (int i = 0; i < segments.length; i++) {
+          if (i > 0) {
+            // Calculate the number of spaces based on position
+            int numSpaces;
+            if (i == 1) {
+              numSpaces = (0.3 * (imageWidth / spaceWidth)).floor();
+            } else if (i == 2) {
+              numSpaces = (0.3 * (imageWidth / spaceWidth)).floor();
+            } else {
+              numSpaces = (imageWidth / spaceWidth).floor();
+            }
+            sb.write(' ' * numSpaces); // Append the calculated number of spaces
+          }
+          sb.write(segments[i]); // Append the current segment
+        }
+        textToRender = sb.toString();
+
+        overlayImage = await _textToImage(
+          textToRender,
+          selectedArea!.rect.width,
+          selectedArea!.rect.height,
+          fontSize,
+          align: textAlign,
+        );
+
+        if (overlayImage != null) {
+          for (var area in predefinedAreas) {
+            if (area.rect == selectedArea!.rect) {
+              area.overlayImage = overlayImage;
+              break;
+            }
+          }
+
+          final updatedImage = await _combineImages(
+              contractImage!, overlayImage, selectedArea!.rect);
+          await _saveImage(updatedImage, 'contract_with_overlay.png');
+
+          setState(() {
+            combinedImage = updatedImage;
+            isSignatureMode = false;
+            isTextInputMode = false;
+            textEditingController.clear();
+            selectedArea = null;
+          });
+        }
       }
     }
   }
@@ -229,7 +397,8 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
 
   void _handleCellSelection(CustomRect area) {
     setState(() {
-      selectedArea = area.rect;
+      selectedArea = area;
+      print('Selected Area Name: ${area.name}');
       isSignatureMode = false;
       isTextInputMode = false;
 
@@ -273,6 +442,10 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
         title: Text('계약서 서명 기능'),
       ),
       body: GestureDetector(
+        onTap: () {
+          // Dismiss keyboard or any overlay input when tapped outside
+          FocusScope.of(context).unfocus();
+        },
         child: Stack(
           children: [
             // Image Container - Fixed Position
@@ -291,12 +464,12 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
                     final touchPosition = Offset(
                       details.localPosition.dx / imageScale,
                       (details.localPosition.dy / imageScale) +
-                          imageTopOffset * 3.2,
+                          imageTopOffset * 2.6,
                     );
 
                     final tappedArea = predefinedAreas.firstWhere(
                       (area) => area.contains(touchPosition),
-                      orElse: () => CustomRect(Rect.zero),
+                      orElse: () => CustomRect(Rect.zero, ''),
                     );
 
                     _handleCellSelection(tappedArea);
@@ -315,86 +488,136 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
             // Overlay TextField or Signature
             if ((isTextInputMode || isSignatureMode) &&
                 selectedArea != null &&
-                selectedArea != Rect.zero)
+                selectedArea!.rect != Rect.zero)
               Positioned(
                 bottom: keyboardHeight,
                 left: MediaQuery.of(context).size.width * 0.15,
                 right: MediaQuery.of(context).size.width * 0.15,
                 child: Container(
-                    color: Colors.white.withOpacity(0.8),
-                    width: MediaQuery.of(context).size.width * 0.7,
-                    height: isSignatureMode
-                        ? MediaQuery.of(context).size.width *
-                                1.5 *
-                                ((selectedArea?.height ?? 1) /
-                                    (selectedArea?.width ?? 1)) +
-                            100
-                        : 150,
-                    child: Column(mainAxisSize: MainAxisSize.min, children: [
-                      Expanded(
-                        child: isSignatureMode
-                            ? Signature(
-                                controller: _controller,
-                                backgroundColor: Colors.lightBlueAccent,
-                              )
-                            : Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: TextField(
-                                  controller: textEditingController,
-                                  focusNode: textFocusNode,
-                                  decoration: InputDecoration(
-                                    border: OutlineInputBorder(
-                                      borderSide: BorderSide(color: Colors.black), // Black border
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(color: Colors.black, width: 2.0), // Black border when focused
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(color: Colors.black, width: 1.0), // Black border when not focused
-                                    ),
-                                    labelText: '텍스트를 입력하세요',
-                                    labelStyle: TextStyle(color: Colors.black), // Black label text
-                                  ),
-                                  style: TextStyle(color: Colors.black), // Black text in the field
-                                  autofocus: true,
-                                  onTapOutside: (_) {
-                                    FocusScope.of(context).unfocus();
-                                  },
-                                ),
-                              ),
-                      ),
-                      SizedBox(height: 8),
-                      // Spacing between input field and buttons
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          // Initialize Button
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                // Functionality for the Initialize button will be added later
-                              },
-                              child: Text('Initialize'),
+                  color: Colors.white.withOpacity(0.8),
+                  width: MediaQuery.of(context).size.width * 0.7,
+                  height: isSignatureMode
+                      ? MediaQuery.of(context).size.width *
+                      1.5 *
+                      ((selectedArea?.rect.height ?? 1) /
+                          (selectedArea?.rect.width ?? 1)) +
+                      100
+                      : 150,
+
+
+                  child: Column(mainAxisSize: MainAxisSize.min, children: [
+                    Expanded(
+                      child: isSignatureMode
+                          ? Signature(
+                        controller: _controller,
+                        backgroundColor: Colors.lightBlueAccent,
+                      )
+                          : Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextField(
+                          controller: textEditingController,
+                          focusNode: textFocusNode,
+                          keyboardType: [
+                            'transactionAmount_fee',
+                            'leaseTransfer_fee',
+                            'remainingBalance_fee',
+                            'year',
+                            'registrationFee',
+                            'transferorIdNumber',
+                            'transfereeIdNumber'
+                          ].contains(selectedArea!.name)
+                              ? TextInputType.numberWithOptions(decimal: true, signed: false)
+                              : TextInputType.text,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black),
                             ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black, width: 2.0),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black, width: 1.0),
+                            ),
+                            labelText: [
+                              'transactionAmount_fee',
+                              'leaseTransfer_fee',
+                              'remainingBalance_fee',
+                              'year',
+                              'registrationFee',
+                              'transferorIdNumber',
+                              'transfereeIdNumber'
+                            ].contains(selectedArea!.name)
+                                ? '숫자를 입력하세요'
+                                : '텍스트를 입력하세요',
+                            labelStyle: TextStyle(color: Colors.black),
                           ),
-                          SizedBox(width: 8),
-                          // Add some space between the buttons
-                          // Save Button
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                _saveSignatureOrText();
-                              },
-                              child: Text('Save'),
-                            ),
-                          )
-                        ],
+                          readOnly: [
+                            'leaseTransfer',
+                            'downPayment',
+                            'remainingBalance'
+                          ].contains(selectedArea!.name),
+                          onTap: () async {
+                            if ([
+                              'leaseTransfer',
+                              'downPayment',
+                              'remainingBalance'
+                            ].contains(selectedArea!.name)) {
+                              DateTime? selectedDate = await showDatePicker(
+                                context: context,
+                                initialDate: DateTime.now(),
+                                firstDate: DateTime(1990),
+                                lastDate: DateTime(2101),
+                              );
+
+                              if (selectedDate != null) {
+                                textEditingController.text =
+                                "${selectedDate.toLocal()}".split(' ')[0];
+                              }
+                            } else {
+                              FocusScope.of(context).requestFocus(textFocusNode);
+                            }
+                          },
+                        ),
                       ),
-                    ])),
+                    ),
+
+
+                    SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              // Functionality for the Initialize button will be added later
+                            },
+                            child: Text('Initialize'),
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              _saveSignatureOrText();
+                            },
+                            child: Text('Save'),
+                          ),
+                        )
+                      ],
+                    ),
+                  ]),
+                ),
               ),
+
+
+
+
           ],
         ),
       ),
+
+
+
       bottomNavigationBar: BottomAppBar(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -423,7 +646,6 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
                     } else {
                       isTextInputMode = true;
                       isSignatureMode = false;
-                      // Request focus on the TextField
                       Future.delayed(Duration(milliseconds: 100), () {
                         FocusScope.of(context).requestFocus(textFocusNode);
                       });
@@ -444,11 +666,22 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
             Expanded(
               child: ElevatedButton(
                 onPressed: () async {
+                  // Save the combined image locally
+                  if (combinedImage != null) {
+                    await _saveImage(
+                        combinedImage!, 'contract_with_overlay.png');
+                  }
+
+                  // Get the local path for the Excel file
                   String localPath = await getFilePath('contract.xlsx');
                   String newFilePath = await getFilePath('new_contract.xlsx');
                   File localFile = File(localPath);
                   File newFile = File(newFilePath);
+
+                  // Copy the Excel file to the new path
                   await newFile.writeAsBytes(await localFile.readAsBytes());
+
+                  // Share the new Excel file
                   Share.shareFiles([newFilePath], text: '새로운 계약서 엑셀 파일');
                 },
                 child: Text('내보내기'),
@@ -464,7 +697,7 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
 class ContractPainter extends CustomPainter {
   final ui.Image contractImage;
   final List<CustomRect> predefinedAreas;
-  final ui.Rect? selectedArea;
+  final CustomRect? selectedArea;
   final ui.Image? combinedImage;
 
   ContractPainter(
@@ -536,10 +769,10 @@ class ContractPainter extends CustomPainter {
     // Draw selected area
     if (selectedArea != null) {
       final scaledSelectedRect = Rect.fromLTWH(
-        selectedArea!.left * imageScale,
-        centeredTop + selectedArea!.top * imageScale,
-        selectedArea!.width * imageScale,
-        selectedArea!.height * imageScale,
+        selectedArea!.rect.left * imageScale,
+        centeredTop + selectedArea!.rect.top * imageScale,
+        selectedArea!.rect.width * imageScale,
+        selectedArea!.rect.height * imageScale,
       );
       final selectedPaint = Paint()
         ..color = Colors.blue

@@ -1,14 +1,14 @@
-import 'dart:async';
 import 'dart:typed_data';
+import 'dart:async';
+import 'dart:convert';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:signature/signature.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
-import 'package:excel/excel.dart';
-import 'package:image/image.dart' as img;
 import 'package:flutter/services.dart' show rootBundle, ByteData;
-import 'package:share_plus/share_plus.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 
 
 
@@ -513,7 +513,7 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
                     final touchPosition = Offset(
                       details.localPosition.dx / imageScale,
                       (details.localPosition.dy / imageScale) +
-                          imageTopOffset * 2.6,
+                          imageTopOffset * 3,
                     );
 
                     final tappedArea = predefinedAreas.firstWhere(
@@ -767,20 +767,18 @@ class ContractPainter extends CustomPainter {
   final CustomRect? selectedArea;
   final ui.Image? combinedImage;
 
-  ContractPainter(
-    this.contractImage,
-    this.predefinedAreas,
-    this.selectedArea,
-    this.combinedImage,
-  );
+  ContractPainter(this.contractImage,
+      this.predefinedAreas,
+      this.selectedArea,
+      this.combinedImage,);
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..isAntiAlias = true;
+    final paint = Paint()
+      ..isAntiAlias = true;
     final imageScale = size.width / contractImage.width;
     final scaledHeight = contractImage.height * imageScale;
     final centeredTop = (size.height - scaledHeight) / 2;
-
 
 
     // Draw contract image
@@ -813,12 +811,11 @@ class ContractPainter extends CustomPainter {
     );
 
     // Get today's date as a string
-    final todayDate = DateTime.now().toLocal().toString().split(' ')[0]; // Format: YYYY-MM-DD
+    final todayDate = DateTime.now().toLocal().toString().split(
+        ' ')[0]; // Format: YYYY-MM-DD
 
     // Draw predefined areas with overlay images
     for (var area in predefinedAreas) {
-
-
       final scaledRect = Rect.fromLTWH(
         area.rect.left * imageScale,
         centeredTop + area.rect.top * imageScale,
@@ -886,7 +883,6 @@ class ContractPainter extends CustomPainter {
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2;
       canvas.drawRect(scaledSelectedRect, selectedPaint);
-
     }
   }
 
@@ -895,8 +891,6 @@ class ContractPainter extends CustomPainter {
     return true;
   }
 }
-
-
 
 
 
@@ -971,28 +965,95 @@ class OverlayPainter extends CustomPainter {
       onSave!(img);
     }
 
-    // Save the image as a PNG file
-    await _saveImageAsPng(img);
-  }
-
-  Future<void> _saveImageAsPng(ui.Image image) async {
-    // Convert the image to a byte array (PNG format)
-    final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    // Convert the image to PNG byte data
+    final byteData = await img.toByteData(format: ui.ImageByteFormat.png);
     final pngBytes = byteData!.buffer.asUint8List();
 
-    // Get the path to save the image
-    final directory = await getApplicationDocumentsDirectory();
-    final path = '${directory.path}/contract_with_overlay.png';
+    // Send the image via HTTP POST
+    await _uploadImage(pngBytes);
+  }
 
-    // Save the image to the file
-    final file = File(path);
-    await file.writeAsBytes(pngBytes);
+  Future<void> _uploadImage(Uint8List imageBytes) async {
+    // URL of the API endpoint
+    final url = Uri.parse('https://your-api-gateway-endpoint.amazonaws.com/your-lambda-function');
 
-    print('Image saved to $path');
+    // Create a multipart request
+    final request = http.MultipartRequest('POST', url)
+      ..fields['metadata'] = jsonEncode({
+        'key1': 'value1',
+        'key2': 'value2'
+      })
+      ..files.add(http.MultipartFile.fromBytes(
+        'image_data',
+        imageBytes,
+        filename: 'image.png',
+        contentType: MediaType('image', 'png'),
+      ));
+
+    // Send the request and wait for the response
+    final response = await request.send();
+    final responseBody = await response.stream.bytesToString();
+
+    if (response.statusCode == 200) {
+      print('Image uploaded successfully: $responseBody');
+    } else {
+      print('Failed to upload image: $responseBody');
+    }
   }
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
+    // Check if the current state differs from the old state
+    if (oldDelegate is OverlayPainter) {
+      return contractImage != oldDelegate.contractImage ||
+          predefinedAreas != oldDelegate.predefinedAreas;
+    }
+    return true; // Repaint if the old delegate is not an instance of OverlayPainter
   }
 }
+
+
+
+
+
+//   Future<void> saveCanvasAsImage(Size size) async {
+//     final recorder = ui.PictureRecorder();
+//     final tempCanvas = Canvas(recorder, Rect.fromLTWH(0, 0, size.width, size.height));
+//
+//     // Re-draw everything onto the temp canvas
+//     paint(tempCanvas, size);
+//
+//     // Create an image from the canvas
+//     final picture = recorder.endRecording();
+//     final img = await picture.toImage(size.width.toInt(), size.height.toInt());
+//
+//     // Optionally, call a callback if provided
+//     if (onSave != null) {
+//       onSave!(img);
+//     }
+//
+//     // Save the image as a PNG file
+//     await _saveImageAsPng(img);
+//   }
+//
+//   Future<void> _saveImageAsPng(ui.Image image) async {
+//     // Convert the image to a byte array (PNG format)
+//     final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+//     final pngBytes = byteData!.buffer.asUint8List();
+//
+//     // Get the path to save the image
+//     final directory = await getApplicationDocumentsDirectory();
+//     final path = '${directory.path}/contract_with_overlay.png';
+//
+//     // Save the image to the file
+//     final file = File(path);
+//     await file.writeAsBytes(pngBytes);
+//
+//     print('Image saved to $path');
+//   }
+//
+//   @override
+//   bool shouldRepaint(covariant CustomPainter oldDelegate) {
+//     return true;
+//   }
+// }

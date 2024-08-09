@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'features/contract_debug.dart';
-import 'features/report.dart';
-import 'features/contract.dart';
+import 'features/excel_edit_screen.dart';
 import 'splash.dart'; // splash.dart 파일 경로 추가
 
 void main() {
@@ -22,8 +21,8 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      // home: SplashScreen(), // 초기 화면을 스플래시 화면으로 설정
-      home: ContractFeatureDebug(), // 서명 칸 간격 디버깅용
+      home: SplashScreen(), // 초기 화면을 스플래시 화면으로 설정
+      // home: ExcelEditScreen(), // 서명 칸 간격 디버깅용
     );
   }
 }
@@ -43,12 +42,22 @@ class MyHomePage extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ReportFeature()),
+                  MaterialPageRoute(builder: (context) => ExcelEditScreen(reportType: '매입')), // '매입' 변수 전달
                 );
               },
-              child: Text('차량 매매 보고서'),
+              child: Text('차량 매매 보고서 (매입)'),
             ),
             SizedBox(height: 20), // 버튼 간 간격
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ExcelEditScreen(reportType: '판매')), // '판매' 변수 전달
+                );
+              },
+              child: Text('차량 매매 보고서 (판매)'),
+            ),
+            SizedBox(height: 20), // 버튼 간 간격 추가
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
@@ -64,3 +73,4 @@ class MyHomePage extends StatelessWidget {
     );
   }
 }
+

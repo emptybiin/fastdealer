@@ -1,18 +1,41 @@
-allprojects {
+buildscript {
+    ext.kotlin_version = '1.8.0' // Use the latest compatible version
     repositories {
         google()
         mavenCentral()
     }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        // other classpath dependencies
+    }
 }
 
+
 rootProject.buildDir = "../build"
+
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
-}
-subprojects {
     project.evaluationDependsOn(":app")
 }
 
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
+}
+
+// Add this to ensure compatibility with newer versions
+subprojects {
+    // Define the Java version used for compilation
+    tasks.withType(JavaCompile) {
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
+    }
+
+    // Apply dependency versions alignment
+    configurations.all {
+        resolutionStrategy {
+            // Force specific versions of dependencies to avoid conflicts
+            force 'com.android.tools:build-gradle:8.1.0'
+            force 'org.jetbrains.kotlin:kotlin-stdlib:1.8.0'
+        }
+    }
 }

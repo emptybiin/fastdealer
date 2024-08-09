@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
+import 'package:share/share.dart';
 
 
 class ExcelEditScreen extends StatefulWidget {
@@ -18,6 +19,7 @@ class ExcelEditScreen extends StatefulWidget {
 class _ExcelEditScreenState extends State<ExcelEditScreen> {
   final List<TextEditingController> _controllers = List.generate(21, (_) => TextEditingController());
   final List<FocusNode> _focusNodes = List.generate(21, (_) => FocusNode());
+  File? _excelFile;
 
   @override
   void initState() {
@@ -77,11 +79,23 @@ class _ExcelEditScreenState extends State<ExcelEditScreen> {
         await file.writeAsBytes(fileBytes);
 
         print('File saved to $filePath');
+
+        // Store the file for sharing
+        _excelFile = file;
+        _shareExcelFile();
       } else {
         print('Failed: ${response.statusCode} ${response.body}');
       }
     } catch (e) {
       print('Error: $e');
+    }
+  }
+
+  Future<void> _shareExcelFile() async {
+    if (_excelFile != null) {
+      Share.shareFiles([_excelFile!.path], text: 'Updated Excel file');
+    } else {
+      print('No file to share');
     }
   }
 

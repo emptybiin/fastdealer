@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       home: SplashScreen(), // 초기 화면을 스플래시 화면으로 설정
-      // home: ExcelEditScreen(), // 서명 칸 간격 디버깅용
+      // home: ContractFeatureDebug(), // 서명 칸 간격 디버깅용
     );
   }
 }

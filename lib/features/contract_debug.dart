@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:share/share.dart';
 import 'package:signature/signature.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
@@ -899,15 +900,15 @@ class OverlayPainter extends CustomPainter {
   final List<CustomRect> predefinedAreas;
   final Function(ui.Image)? onSave;
 
-  OverlayPainter(
-      this.contractImage,
+  OverlayPainter(this.contractImage,
       this.predefinedAreas, {
         this.onSave,
       });
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..isAntiAlias = true;
+    final paint = Paint()
+      ..isAntiAlias = true;
     final imageScale = size.width / contractImage.width;
     final scaledHeight = contractImage.height * imageScale;
     final centeredTop = (size.height - scaledHeight) / 2;
@@ -915,7 +916,8 @@ class OverlayPainter extends CustomPainter {
     // Draw the contract image
     canvas.drawImageRect(
       contractImage,
-      Rect.fromLTWH(0, 0, contractImage.width.toDouble(), contractImage.height.toDouble()),
+      Rect.fromLTWH(0, 0, contractImage.width.toDouble(),
+          contractImage.height.toDouble()),
       Rect.fromLTWH(0, centeredTop, size.width, scaledHeight),
       paint,
     );
@@ -951,7 +953,8 @@ class OverlayPainter extends CustomPainter {
 
   Future<void> saveCanvasAsImage(Size size) async {
     final recorder = ui.PictureRecorder();
-    final tempCanvas = Canvas(recorder, Rect.fromLTWH(0, 0, size.width, size.height));
+    final tempCanvas = Canvas(
+        recorder, Rect.fromLTWH(0, 0, size.width, size.height));
 
     // Re-draw everything onto the temp canvas
     paint(tempCanvas, size);
@@ -960,44 +963,25 @@ class OverlayPainter extends CustomPainter {
     final picture = recorder.endRecording();
     final img = await picture.toImage(size.width.toInt(), size.height.toInt());
 
-    // Optionally, call a callback if provided
-    if (onSave != null) {
-      onSave!(img);
-    }
-
     // Convert the image to PNG byte data
     final byteData = await img.toByteData(format: ui.ImageByteFormat.png);
     final pngBytes = byteData!.buffer.asUint8List();
 
-    // Send the image via HTTP POST
-    await _uploadImage(pngBytes);
+    // Save the image to local storage
+    final directory = await getApplicationDocumentsDirectory();
+    final filePath = '${directory.path}/image.png';
+    final file = File(filePath);
+    await file.writeAsBytes(pngBytes);
+
+    // Share the image file
+    _shareImageFile(filePath);
   }
 
-  Future<void> _uploadImage(Uint8List imageBytes) async {
-    // URL of the API endpoint
-    final url = Uri.parse('https://your-api-gateway-endpoint.amazonaws.com/your-lambda-function');
-
-    // Create a multipart request
-    final request = http.MultipartRequest('POST', url)
-      ..fields['metadata'] = jsonEncode({
-        'key1': 'value1',
-        'key2': 'value2'
-      })
-      ..files.add(http.MultipartFile.fromBytes(
-        'image_data',
-        imageBytes,
-        filename: 'image.png',
-        contentType: MediaType('image', 'png'),
-      ));
-
-    // Send the request and wait for the response
-    final response = await request.send();
-    final responseBody = await response.stream.bytesToString();
-
-    if (response.statusCode == 200) {
-      print('Image uploaded successfully: $responseBody');
+  Future<void> _shareImageFile(String filePath) async {
+    if (File(filePath).existsSync()) {
+      Share.shareFiles([filePath], text: 'Here is the image file');
     } else {
-      print('Failed to upload image: $responseBody');
+      print('File does not exist at path: $filePath');
     }
   }
 
@@ -1010,10 +994,9 @@ class OverlayPainter extends CustomPainter {
     }
     return true; // Repaint if the old delegate is not an instance of OverlayPainter
   }
+
+
 }
-
-
-
 
 
 //   Future<void> saveCanvasAsImage(Size size) async {

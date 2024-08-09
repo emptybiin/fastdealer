@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 
 
 class ExcelEditScreen extends StatefulWidget {
@@ -57,7 +60,23 @@ class _ExcelEditScreenState extends State<ExcelEditScreen> {
       final response = await http.get(Uri.parse(url));
 
       if (response.statusCode == 200) {
-        print('Success: ${response.body}');
+        final responseData = jsonDecode(response.body);
+        final encodedFileContent = responseData['file_content'];
+        final fileName = responseData['file_name'];
+        print('Success: File received');
+
+        // Decode the file content
+        final fileBytes = base64.decode(encodedFileContent);
+
+        // Get the directory for saving the file
+        final directory = await getApplicationDocumentsDirectory();
+        final filePath = '${directory.path}/$fileName';
+
+        // Save the file
+        final file = File(filePath);
+        await file.writeAsBytes(fileBytes);
+
+        print('File saved to $filePath');
       } else {
         print('Failed: ${response.statusCode} ${response.body}');
       }

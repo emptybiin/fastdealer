@@ -1,41 +1,35 @@
 buildscript {
-    ext.kotlin_version = '1.8.0' // Use the latest compatible version
+    ext.kotlin_version = '1.6.0'
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        // other classpath dependencies
+        classpath 'com.android.tools.build:gradle:7.4.2'  // Kotlin 1.6.0과 호환되는 Gradle 버전으로 변경
     }
 }
-
 
 rootProject.buildDir = "../build"
 
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
     project.evaluationDependsOn(":app")
-}
 
-tasks.register("clean", Delete) {
-    delete rootProject.buildDir
-}
-
-// Add this to ensure compatibility with newer versions
-subprojects {
-    // Define the Java version used for compilation
     tasks.withType(JavaCompile) {
         sourceCompatibility = '1.8'
         targetCompatibility = '1.8'
     }
 
-    // Apply dependency versions alignment
     configurations.all {
         resolutionStrategy {
-            // Force specific versions of dependencies to avoid conflicts
-            force 'com.android.tools:build-gradle:8.1.0'
-            force 'org.jetbrains.kotlin:kotlin-stdlib:1.8.0'
+            force "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+            force "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+            // 'com.android.tools:build-gradle' 강제 설정은 호환성을 위해 제거
         }
     }
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
 }

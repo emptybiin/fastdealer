@@ -26,5 +26,5 @@ flutter:
   assets:
     - assets/contract.xlsx
     - assets/report.xlsx
-    - assets/contract_image2.png
+    - assets/contract_image.png
     - assets/

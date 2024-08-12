@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'features/contract_img.dart';
 import 'main.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -12,6 +13,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     _navigateToHome();
+    ChnageImage();
   }
 
   _navigateToHome() async {

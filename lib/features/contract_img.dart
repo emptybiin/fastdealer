@@ -31,20 +31,15 @@ class _ChnageImageState extends State<ChnageImage> {
 
   @override
   void initState() {
+    print('ChnageImage();');
     super.initState();
-    _processImage(); // Start the entire image processing pipeline in initState
-  }
-
-  Future<void> _processImage() async {
-    await loadContractImage();
-    await _overlayTextToImage();
-    await _drawOverlayOnContract();
+    loadContractImage();
   }
 
   List<CustomRect> _calculatePredefinedAreas(double imageWidth, double imageHeight) {
     return [
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.283, imageHeight * 0.128,
+          Rect.fromLTWH(imageWidth * 0.285, imageHeight * 0.128,
               imageWidth * 0.18, imageHeight * 0.024),
           'topDate'),
       // 상단 날짜
@@ -60,12 +55,14 @@ class _ChnageImageState extends State<ChnageImage> {
     ByteData data = await rootBundle.load('assets/contract_image.png');
     final codec = await ui.instantiateImageCodec(data.buffer.asUint8List());
     final frame = await codec.getNextFrame();
-
-    contractImage = frame.image;
-    predefinedAreas = _calculatePredefinedAreas(
-      contractImage!.width.toDouble(),
-      contractImage!.height.toDouble(),
-    );
+    setState(() {
+      contractImage = frame.image;
+      predefinedAreas = _calculatePredefinedAreas(
+        contractImage!.width.toDouble(),
+        contractImage!.height.toDouble(),
+      );
+      _overlayTextToImage();
+    });
   }
 
   Future<void> _overlayTextToImage() async {
@@ -78,22 +75,24 @@ class _ChnageImageState extends State<ChnageImage> {
         dateString,
         area.rect.width,
         area.rect.height,
-        37, // Font size
+        38, // Font size
         align: TextAlign.center,
       );
 
-      area.overlayImage = textImage;
+      setState(() {
+        area.overlayImage = textImage;
+      });
     }
+
+    _drawOverlayOnContract();
   }
 
   String _getCurrentDateString() {
-
     final now = DateTime.now();
     final year = now.year;
     final month = now.month.toString().padLeft(2, '0');
     final day = now.day.toString().padLeft(2, '0');
     return '$year-$month-$day';
-    //return '2024-05-08kloj';
   }
 
   Future<ui.Image> _textToImage(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'features/contract_debug.dart';
+import 'features/contract_img.dart';
 import 'features/excel_edit_screen.dart';
 import 'splash.dart'; // splash.dart 파일 경로 추가
 
@@ -60,6 +61,7 @@ class MyHomePage extends StatelessWidget {
             SizedBox(height: 20), // 버튼 간 간격 추가
             ElevatedButton(
               onPressed: () {
+                ChnageImage();
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => ContractFeatureDebug()),
@@ -67,6 +69,17 @@ class MyHomePage extends StatelessWidget {
               },
               child: Text('관인 계약서'),
             ),
+            // SizedBox(height: 20), // 버튼 간 간격 추가
+            // ElevatedButton(
+            //   onPressed: () {
+            //     ChnageImage();
+            //     Navigator.push(
+            //       context,
+            //       MaterialPageRoute(builder: (context) => ChnageImage()),
+            //     );
+            //   },
+            //   child: Text('이미지변경'),
+            // ),
           ],
         ),
       ),

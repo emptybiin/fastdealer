@@ -34,7 +34,7 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
   );
   ui.Image? contractImage;
   ui.Image? combinedImage;
-
+  List<Offset> touchCoordinates = [];
   bool isImageLoaded = false;
   bool isSignatureMode = false;
   bool isTextInputMode = false;
@@ -52,7 +52,9 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
     setState(() {
       _selectedArea = area;
       print(
-          'Selected Area Updated: ${_selectedArea?.name}'); // CustomRect의 name 속성 사용
+          'Selected Area Updated: ${_selectedArea
+              ?.rect}'); // CustomRect의 name 속성 사용
+
     });
   }
 
@@ -64,8 +66,10 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
   }
 
   Future<void> loadContractImage() async {
-    ByteData data = await rootBundle.load('assets/contract_image.png');
-    final codec = await ui.instantiateImageCodec(data.buffer.asUint8List());
+    final filePath = '/data/user/0/com.groonui.fastdealer/app_flutter/contract_image_input.png';
+    final file = File(filePath);
+    final data = await file.readAsBytes();
+    final codec = await ui.instantiateImageCodec(data);
     final frame = await codec.getNextFrame();
     setState(() {
       contractImage = frame.image;
@@ -76,10 +80,19 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
   }
 
 
-
-  List<CustomRect> _calculatePredefinedAreas(
-      double imageWidth, double imageHeight) {
+  List<CustomRect> _calculatePredefinedAreas(double imageWidth,
+      double imageHeight) {
     return [
+      // CustomRect(
+      //     Rect.fromLTWH(imageWidth * 0, imageHeight * 0, imageWidth * 0.1,
+      //         imageHeight * 1),
+      //     'transferorName'),
+      // CustomRect(
+      //     Rect.fromLTWH(imageWidth * 0, imageHeight * 0, imageWidth * 1,
+      //         imageHeight * 0.1),
+      //     'transferorName'),
+
+
       CustomRect(
           Rect.fromLTWH(imageWidth * 0.6, imageHeight * 0.117, imageWidth * 0.1,
               imageHeight * 0.023),
@@ -172,16 +185,16 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
               imageWidth * 0.453, imageHeight * 0.025),
           'remarks'),
       // 비고
-      CustomRect(
-          Rect.fromLTWH(imageWidth * 0.285, imageHeight * 0.128,
-              imageWidth * 0.18, imageHeight * 0.024),
-          'topDate'),
-      // 상단 날짜
-      CustomRect(
-          Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.770,
-              imageWidth * 0.72, imageHeight * 0.024),
-          'contractDate'),
-      // 계약 날짜
+      // CustomRect(
+      //     Rect.fromLTWH(imageWidth * 0.285, imageHeight * 0.128,
+      //         imageWidth * 0.18, imageHeight * 0.024),
+      //     'topDate'),
+      // // 상단 날짜
+      // CustomRect(
+      //     Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.770,
+      //         imageWidth * 0.72, imageHeight * 0.024),
+      //     'contractDate'),
+      // // 계약 날짜
       CustomRect(
           Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.794,
               imageWidth * 0.241, imageHeight * 0.024),
@@ -231,6 +244,7 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
     final frame = await codec.getNextFrame();
     return frame.image;
   }
+
   String formatNumberWithCommas(String text) {
     try {
       final intValue = int.parse(text);
@@ -252,8 +266,7 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
     }
   }
 
-  Future<ui.Image> _textToImage(
-      String text,
+  Future<ui.Image> _textToImage(String text,
       double width,
       double height,
       double fontSize, {
@@ -307,9 +320,8 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
   }
 
 
-
-  Future<ui.Image> _combineImages(
-      ui.Image baseImage, ui.Image overlayImage, Rect rect) async {
+  Future<ui.Image> _combineImages(ui.Image baseImage, ui.Image overlayImage,
+      Rect rect) async {
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(
         recorder,
@@ -431,8 +443,8 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
     }
   }
 
-  Future<void> copyAssetFileToLocalDir(
-      String assetPath, String localFileName) async {
+  Future<void> copyAssetFileToLocalDir(String assetPath,
+      String localFileName) async {
     ByteData data = await rootBundle.load(assetPath);
     List<int> bytes = data.buffer.asUint8List();
     String localPath = await getFilePath(localFileName);
@@ -443,7 +455,7 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
   void _handleCellSelection(CustomRect area) {
     setState(() {
       selectedArea = area;
-      print('Selected Area Name: ${area.name}');
+      //print('Selected Area Name: ${area.name}');
       isSignatureMode = false;
       isTextInputMode = false;
 
@@ -459,7 +471,13 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
 
   @override
   Widget build(BuildContext context) {
-    final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+    final keyboardHeight = MediaQuery
+        .of(context)
+        .viewInsets
+        .bottom;
+    final appBarHeight = AppBar().preferredSize.height;
+    print(appBarHeight);
+
 
     // Function to show snackbar
     void _showSnackBar(String message) {
@@ -498,26 +516,50 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
               Positioned.fill(
                 child: GestureDetector(
                   onTapDown: (details) {
-                    final imageScale = MediaQuery.of(context).size.width /
-                        contractImage!.width;
-                    final scaledHeight = contractImage!.height * imageScale;
-                    final imageTopOffset =
-                        (MediaQuery.of(context).size.height * imageScale -
-                                scaledHeight) /
-                            2;
+                    final deviceWidth = MediaQuery.of(context).size.width;
+                    final padding = MediaQuery.of(context).padding;
+                    final deviceHeight = MediaQuery.of(context).size.height  - padding.top - padding.bottom;
+                    final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
 
-                    final touchPosition = Offset(
-                      details.localPosition.dx / imageScale,
-                      (details.localPosition.dy / imageScale) +
-                          imageTopOffset * 3,
-                    );
+                    // Original touch position
+                    final originalPosition = details.localPosition;
 
-                    final tappedArea = predefinedAreas.firstWhere(
-                      (area) => area.contains(touchPosition),
-                      orElse: () => CustomRect(Rect.zero, ''),
-                    );
+                    if (contractImage != null) {
+                      final imageWidth = contractImage!.width.toDouble();
+                      final imageHeight = contractImage!.height.toDouble();
 
-                    _handleCellSelection(tappedArea);
+                      // Correct the touch position
+                      final correctedPosition = correctTouchOffset(
+                          originalPosition,
+                          imageWidth,
+                          imageHeight,
+                          deviceWidth,
+                          deviceHeight,
+                          appBarHeight,  // Top padding (AppBar height)
+                          keyboardHeight // Bottom padding (Keyboard height)
+                      );
+
+                      // Add the corrected position to the list
+                      touchCoordinates.add(originalPosition);
+                      if (touchCoordinates.length == 4) {
+                      double minX = touchCoordinates.map((p) => p.dx).reduce((a, b) => a < b ? a : b);
+                      double minY = touchCoordinates.map((p) => p.dy).reduce((a, b) => a < b ? a : b);}
+
+
+                      // Debug prints for validation
+                      print('Original touch position: $originalPosition');
+                      print('Corrected touch position: $correctedPosition');
+
+                      final tappedArea = predefinedAreas.firstWhere(
+                            (area) => area.contains(correctedPosition),
+                        orElse: () => CustomRect(Rect.zero, ''),
+                      );
+
+                      _handleCellSelection(tappedArea);
+                    } else {
+                      // Handle null contractImage scenario
+                      print('Error: contractImage is null');
+                    }
                   },
                   child: CustomPaint(
                     painter: ContractPainter(
@@ -530,25 +572,44 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
                 ),
               ),
 
+
             // Overlay TextField or Signature
             if ((isTextInputMode || isSignatureMode) &&
                 selectedArea != null &&
                 selectedArea!.rect != Rect.zero)
               Positioned(
-                bottom: MediaQuery.of(context).size.height * 0.25 - (isTextInputMode
-                    ? MediaQuery.of(context).size.width *
+                bottom: MediaQuery
+                    .of(context)
+                    .size
+                    .height * 0.25 - (isTextInputMode
+                    ? MediaQuery
+                    .of(context)
+                    .size
+                    .width *
                     1.5 *
                     ((selectedArea?.rect.height ?? 1) /
                         (selectedArea?.rect.width ?? 1)) +
                     100
                     : 150),
-                left: MediaQuery.of(context).size.width * 0.15,
-                right: MediaQuery.of(context).size.width * 0.15,
+                left: MediaQuery
+                    .of(context)
+                    .size
+                    .width * 0.15,
+                right: MediaQuery
+                    .of(context)
+                    .size
+                    .width * 0.15,
                 child: Container(
                   color: Colors.white.withOpacity(0.8),
-                  width: MediaQuery.of(context).size.width * 0.7,
+                  width: MediaQuery
+                      .of(context)
+                      .size
+                      .width * 0.7,
                   height: isTextInputMode
-                      ? MediaQuery.of(context).size.width *
+                      ? MediaQuery
+                      .of(context)
+                      .size
+                      .width *
                       1.5 *
                       ((selectedArea?.rect.height ?? 1) /
                           (selectedArea?.rect.width ?? 1)) +
@@ -557,11 +618,13 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
 
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Expanded(
+                      Container(
+                        height: 100,
                         child: isTextInputMode
                             ? Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.all(0.0),
                           child: TextField(
                             controller: textEditingController,
                             focusNode: textFocusNode,
@@ -574,19 +637,22 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
                               'year',
                               'transferorIdNumber',
                               'transfereeIdNumber'
-                            ].contains(selectedArea!.name)
-                                ? TextInputType.numberWithOptions(decimal: true, signed: false)
+                            ].contains(selectedArea?.name)
+                                ? TextInputType.numberWithOptions(
+                                decimal: true, signed: false)
                                 : TextInputType.text,
-                            style: TextStyle(color: Colors.black), // Set text color to black
+                            style: TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               border: OutlineInputBorder(
                                 borderSide: BorderSide(color: Colors.black),
                               ),
                               focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black, width: 2.0),
+                                borderSide: BorderSide(
+                                    color: Colors.black, width: 2.0),
                               ),
                               enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black, width: 1.0),
+                                borderSide: BorderSide(
+                                    color: Colors.black, width: 1.0),
                               ),
                               labelText: [
                                 'transactionAmount_fee',
@@ -597,7 +663,7 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
                                 'year',
                                 'transferorIdNumber',
                                 'transfereeIdNumber'
-                              ].contains(selectedArea!.name)
+                              ].contains(selectedArea?.name)
                                   ? '숫자를 입력하세요'
                                   : '텍스트를 입력하세요',
                               labelStyle: TextStyle(color: Colors.black),
@@ -606,13 +672,13 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
                               'leaseTransfer',
                               'downPayment',
                               'remainingBalance'
-                            ].contains(selectedArea!.name),
+                            ].contains(selectedArea?.name),
                             onTap: () async {
                               if ([
                                 'leaseTransfer',
                                 'downPayment',
                                 'remainingBalance'
-                              ].contains(selectedArea!.name)) {
+                              ].contains(selectedArea?.name)) {
                                 DateTime? selectedDate = await showDatePicker(
                                   context: context,
                                   initialDate: DateTime.now(),
@@ -625,7 +691,8 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
                                   "${selectedDate.toLocal()}".split(' ')[0];
                                 }
                               } else {
-                                FocusScope.of(context).requestFocus(textFocusNode);
+                                FocusScope.of(context).requestFocus(
+                                    textFocusNode);
                               }
                             },
                           ),
@@ -635,22 +702,9 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
                           backgroundColor: Colors.lightBlueAccent,
                         ),
                       ),
-                      SizedBox(height: 4), // Reduced height between the TextField and buttons
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          // Initialize Button
-                          // Expanded(
-                          //   child: ElevatedButton(
-                          //     onPressed: () {
-                          //       // Functionality for the Initialize button will be added later
-                          //       print('Initialize button pressed');
-                          //     },
-                          //     child: Text('초기화'),
-                          //   ),
-                          // ),
-                          SizedBox(width: 8),
-                          // Save Button
                           Expanded(
                             child: ElevatedButton(
                               onPressed: () {
@@ -663,14 +717,11 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
                       ),
                     ],
                   ),
-
-
                 ),
               ),
           ],
         ),
       ),
-
 
 
       bottomNavigationBar: BottomAppBar(
@@ -707,15 +758,29 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
                     }
                   });
                 },
-                child: Text('텍스트 입력'),
+                child: Text('텍스트'),
               ),
             ),
             Expanded(
               child: ElevatedButton(
                 onPressed: () {
-                  _saveSignatureOrText();
+                  // Clear previous coordinates
+                  touchCoordinates.clear();
+
+                  // Change to touch mode
+                  setState(() {
+                    isSignatureMode = false;
+                    isTextInputMode = false;
+                    // Show instructions
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Please touch 4 points on the image.'),
+                        duration: Duration(seconds: 4),
+                      ),
+                    );
+                  });
                 },
-                child: Text('저장'),
+                child: Text('터치보정'),
               ),
             ),
             Expanded(
@@ -725,8 +790,8 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
 
                   // Initialize the painter with the contract image and predefined areas
                   final overlayPainter = OverlayPainter(
-                    contractImage!,       // Your contract image
-                    predefinedAreas,     // Your list of CustomRect objects
+                    contractImage!, // Your contract image
+                    predefinedAreas, // Your list of CustomRect objects
                     onSave: (savedImage) {
                       // You can perform additional actions with the saved image if needed
                       print('Image saved successfully!');
@@ -735,10 +800,13 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
 
                   // Create a picture recorder and canvas to draw the image
                   final recorder = ui.PictureRecorder();
-                  final canvas = Canvas(recorder, Rect.fromLTWH(0, 0, contractImage!.width.toDouble(), contractImage!.height.toDouble()));
+                  final canvas = Canvas(recorder, Rect.fromLTWH(
+                      0, 0, contractImage!.width.toDouble(),
+                      contractImage!.height.toDouble()));
 
                   // Set the canvas size to match the contract image
-                  final size = Size(contractImage!.width.toDouble(), contractImage!.height.toDouble());
+                  final size = Size(contractImage!.width.toDouble(),
+                      contractImage!.height.toDouble());
 
                   // Paint the overlay image onto the canvas
                   overlayPainter.paint(canvas, size);
@@ -755,7 +823,66 @@ class _ContractFeatureDebugState extends State<ContractFeatureDebug> {
       ),
     );
   }
+
+
+  Offset correctTouchOffset(
+      Offset touchPosition,
+      double imageWidth,
+      double imageHeight,
+      double deviceWidth,
+      double deviceHeight,
+      double topPadding,
+      double bottomPadding
+      ) {
+    final imageAspectRatio = imageWidth / imageHeight;
+    final screenHeight = deviceHeight - topPadding * 2.5;
+    final screenAspectRatio = deviceWidth / screenHeight;
+
+    double imageScale;
+    double dx = 0, dy = 0;
+
+    if (screenAspectRatio > imageAspectRatio) {
+      // Screen is wider than the image
+      imageScale = screenHeight / imageHeight;
+      dx = (deviceWidth - imageWidth * imageScale) / 2; // Center the image horizontally
+    } else {
+      // Screen is narrower or matches the image's aspect ratio
+      imageScale = deviceWidth / imageWidth;
+      dy = (screenHeight - imageHeight * imageScale) / 2; // Center the image vertically
+    }
+
+    if (touchCoordinates.isNotEmpty) {
+      double minX = touchCoordinates.map((p) => p.dx).reduce((a, b) => a < b ? a : b);
+      double minY = touchCoordinates.map((p) => p.dy).reduce((a, b) => a < b ? a : b);
+
+      dx = minX;
+      dy = minY;
+    }
+
+    // Calculate corrected touch position
+    final correctedX = ((touchPosition.dx - dx)/ imageScale);
+    final correctedY = ((touchPosition.dy- dy) / imageScale) ;
+
+    // Adjust dx and dy based on smallest x and y values from touchCoordinates
+
+    // Debugging prints
+    print('Image width: $imageWidth');
+    print('Image height: $imageHeight');
+    print('Device width: $deviceWidth');
+    print('Device height: $deviceHeight');
+    print('Top padding: $topPadding');
+    print('Bottom padding: $bottomPadding');
+    print('Image aspect ratio: $imageAspectRatio');
+    print('Screen aspect ratio: $screenAspectRatio');
+    print('Image scale: $imageScale');
+    print('Horizontal offset (dx): $dx');
+    print('Vertical offset (dy): $dy');
+
+    return Offset(correctedX, correctedY);
+  }
 }
+
+
 
 class ContractPainter extends CustomPainter {
   final ui.Image contractImage;
@@ -770,54 +897,73 @@ class ContractPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..isAntiAlias = true;
-    final imageScale = size.width / contractImage.width;
+    final paint = Paint()..isAntiAlias = true;
+
+    // Calculate the scale to fit the image within the available size, keeping the aspect ratio
+    final imageAspectRatio = contractImage.width / contractImage.height;
+    final screenAspectRatio = size.width / size.height;
+
+    double imageScale;
+    double dx = 0, dy = 0;
+
+    if (screenAspectRatio > imageAspectRatio) {
+      // Screen is wider than the image
+      imageScale = size.height / contractImage.height;
+      dx = (size.width - contractImage.width * imageScale) / 2; // Center the image horizontally
+    } else {
+      // Screen is narrower or matches the image's aspect ratio
+      imageScale = size.width / contractImage.width;
+      dy = (size.height - contractImage.height * imageScale) / 2; // Center the image vertically
+    }
+
+    final scaledWidth = contractImage.width * imageScale;
     final scaledHeight = contractImage.height * imageScale;
-    final centeredTop = (size.height - scaledHeight) / 2;
 
-
-    // Draw contract image
+    // Draw contract image, centered within the available space
     canvas.drawImageRect(
       contractImage,
-      Rect.fromLTWH(0, 0, contractImage.width.toDouble(),
-          contractImage.height.toDouble()),
-      Rect.fromLTWH(0, centeredTop, size.width, scaledHeight),
+      Rect.fromLTWH(0, 0, contractImage.width.toDouble(), contractImage.height.toDouble()),
+      Rect.fromLTWH(dx, dy, scaledWidth, scaledHeight),
       paint,
     );
+    // print('Contract Image Rect: (${dx}, ${dy}, ${dx + scaledWidth}, ${dy + scaledHeight})');
 
-    // Draw combined image if available
+    // Draw combined image if available, centered within the available space
     if (combinedImage != null) {
       canvas.drawImageRect(
         combinedImage!,
-        Rect.fromLTWH(0, 0, combinedImage!.width.toDouble(),
-            combinedImage!.height.toDouble()),
-        Rect.fromLTWH(0, centeredTop, size.width, scaledHeight),
+        Rect.fromLTWH(0, 0, combinedImage!.width.toDouble(), combinedImage!.height.toDouble()),
+        Rect.fromLTWH(dx, dy, scaledWidth, scaledHeight),
         paint,
       );
     }
 
-
     // Prepare text style
     final textStyle = TextStyle(
       color: Colors.black,
-      fontSize: 10.4,
+      fontSize: 9,
       fontWeight: FontWeight.bold,
       backgroundColor: Colors.white,
     );
 
     // Get today's date as a string
-    final todayDate = DateTime.now().toLocal().toString().split(
-        ' ')[0]; // Format: YYYY-MM-DD
+    final todayDate = DateTime.now().toLocal().toString().split(' ')[0];
 
     // Draw predefined areas with overlay images
     for (var area in predefinedAreas) {
       final scaledRect = Rect.fromLTWH(
-        area.rect.left * imageScale,
-        centeredTop + area.rect.top * imageScale,
+        dx + area.rect.left * imageScale,
+        dy + area.rect.top * imageScale,
         area.rect.width * imageScale,
         area.rect.height * imageScale,
       );
+
+      if (area.name == 'carModel') {
+        // Assuming scaledRect is defined and calculated somewhere in your code
+        print(scaledRect);
+      }
+
+
       final rectPaint = Paint()
         ..color = Colors.red
         ..style = PaintingStyle.stroke
@@ -834,12 +980,12 @@ class ContractPainter extends CustomPainter {
         );
         canvas.drawImageRect(
           area.overlayImage!,
-          Rect.fromLTWH(0, 0, area.overlayImage!.width.toDouble(),
-              area.overlayImage!.height.toDouble()),
+          Rect.fromLTWH(0, 0, area.overlayImage!.width.toDouble(), area.overlayImage!.height.toDouble()),
           overlayRect,
           Paint(),
         );
       }
+
       if (['topDate', 'contractDate'].contains(area.name)) {
         // Prepare text for drawing with today's date
         final textSpan = TextSpan(
@@ -869,8 +1015,8 @@ class ContractPainter extends CustomPainter {
     // Draw selected area
     if (selectedArea != null) {
       final scaledSelectedRect = Rect.fromLTWH(
-        selectedArea!.rect.left * imageScale,
-        centeredTop + selectedArea!.rect.top * imageScale,
+        dx + selectedArea!.rect.left * imageScale,
+        dy + selectedArea!.rect.top * imageScale,
         selectedArea!.rect.width * imageScale,
         selectedArea!.rect.height * imageScale,
       );
@@ -881,6 +1027,7 @@ class ContractPainter extends CustomPainter {
       canvas.drawRect(scaledSelectedRect, selectedPaint);
     }
   }
+
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
@@ -913,7 +1060,7 @@ class OverlayPainter extends CustomPainter {
       contractImage,
       Rect.fromLTWH(0, 0, contractImage.width.toDouble(),
           contractImage.height.toDouble()),
-      Rect.fromLTWH(0, centeredTop, size.width, scaledHeight),
+      Rect.fromLTWH(0, 0, size.width, scaledHeight),
       paint,
     );
 
@@ -922,7 +1069,7 @@ class OverlayPainter extends CustomPainter {
       if (area.overlayImage != null) {
         final scaledRect = Rect.fromLTWH(
           area.rect.left * imageScale,
-          centeredTop + area.rect.top * imageScale,
+           area.rect.top * imageScale,
           area.rect.width * imageScale,
           area.rect.height * imageScale,
         );
@@ -964,13 +1111,14 @@ class OverlayPainter extends CustomPainter {
 
     // Save the image to local storage
     final directory = await getApplicationDocumentsDirectory();
-    final filePath = '${directory.path}/image.png';
+    final filePath = '${directory.path}/contract_image_output.png';
     final file = File(filePath);
     await file.writeAsBytes(pngBytes);
 
     // Share the image file
     _shareImageFile(filePath);
   }
+
 
   Future<void> _shareImageFile(String filePath) async {
     if (File(filePath).existsSync()) {

@@ -2,8 +2,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:open_file_plus/open_file_plus.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
+
 
 
 class ExcelEditScreen extends StatefulWidget {
@@ -39,7 +42,7 @@ class _ExcelEditScreenState extends State<ExcelEditScreen> {
     super.dispose();
   }
 
-  void _generateJson() async {
+  void _generateJson({required bool isPreview}) async {
     final Map<String, dynamic> data = {
       'type': widget.reportType,
     };
@@ -81,7 +84,13 @@ class _ExcelEditScreenState extends State<ExcelEditScreen> {
 
         // Store the file for sharing
         _excelFile = file;
-        _shareExcelFile();
+
+        // Open or share the file based on the action
+        if (isPreview) {
+          _openExcelFile();
+        } else {
+          _shareExcelFile();
+        }
       } else {
         print('Failed: ${response.statusCode} ${response.body}');
       }
@@ -95,11 +104,44 @@ class _ExcelEditScreenState extends State<ExcelEditScreen> {
       Share.shareFiles([_excelFile!.path], text: 'Updated Excel file');
     } else {
       print('No file to share');
+
     }
   }
 
+  Future<void> _openExcelFile() async {
+    _requestPermissions();
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final filePath = '${directory.path}/result.xlsx';
 
+      final result = await OpenFile.open(filePath);
 
+      if (result.type != ResultType.done) {
+        print('Failed to open file: ${result.message}');
+      } else {
+        print('File opened successfully');
+      }
+    } catch (e) {
+      print('Error opening file: $e');
+    }
+  }
+
+  Future<void> _requestPermissions() async {
+    var status = await Permission.storage.status;
+    if (!status.isGranted) {
+      final result = await Permission.storage.request();
+      if (result.isDenied) {
+        print('Storage permission denied');
+        return;
+      }
+      if (result.isPermanentlyDenied) {
+        print('Storage permission permanently denied');
+        await openAppSettings();
+        return;
+      }
+    }
+    print('Storage permission granted');
+  }
 
 
 
@@ -107,30 +149,29 @@ class _ExcelEditScreenState extends State<ExcelEditScreen> {
 
 
   void _onFieldSubmitted(int index) {
-    if (index == 5) {
-      _selectDate(context, _controllers[6], 6); // 차량매매가 입력 후 최종납입 날짜 캘린더를 자동으로 띄움
-    } else if (index < 16 && index != 6) {
+
+  if (index < 16) {
       FocusScope.of(context).requestFocus(_focusNodes[index + 1]);
     } else {
       FocusScope.of(context).unfocus();
     }
   }
 
-  Future<void> _selectDate(BuildContext context, TextEditingController controller, int currentIndex) async {
-    final DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
-
-    if (pickedDate != null) {
-      setState(() {
-        controller.text = "${pickedDate.toLocal()}".split(' ')[0];
-        FocusScope.of(context).requestFocus(_focusNodes[currentIndex + 1]); // 최종납입 날짜 선택 후 미회수원금으로 이동
-      });
-    }
-  }
+  // Future<void> _selectDate(BuildContext context, TextEditingController controller, int currentIndex) async {
+  //   final DateTime? pickedDate = await showDatePicker(
+  //     context: context,
+  //     initialDate: DateTime.now(),
+  //     firstDate: DateTime(2000),
+  //     lastDate: DateTime(2100),
+  //   );
+  //
+  //   if (pickedDate != null) {
+  //     setState(() {
+  //       controller.text = "${pickedDate.toLocal()}".split(' ')[0];
+  //       FocusScope.of(context).requestFocus(_focusNodes[currentIndex + 1]); // 최종납입 날짜 선택 후 미회수원금으로 이동
+  //     });
+  //   }
+  // }
 
 
   @override
@@ -156,17 +197,22 @@ class _ExcelEditScreenState extends State<ExcelEditScreen> {
                   textInputAction: i < 17 ? TextInputAction.next : TextInputAction.done,
                   onSubmitted: (value) => _onFieldSubmitted(i),
                   onTap: () {
-                    if (i == 6) {
-                      _selectDate(context, _controllers[i], i);
-                    }
-                  },
-                  readOnly: i == 6,
+
+                  }
                 ),
               ),
-            ElevatedButton(
-              onPressed: _generateJson,
-              child: Text('내보내기'),
-            ),
+            Row(
+              children: [
+                ElevatedButton(
+                  onPressed: () => _generateJson(isPreview: true),
+                  child: Text('미리보기'),
+                ),
+                ElevatedButton(
+                  onPressed: () => _generateJson(isPreview: false),
+                  child: Text('내보내기'),
+                ),
+              ],
+            )
           ],
         ),
       ),
@@ -223,9 +269,7 @@ class _ExcelEditScreenState extends State<ExcelEditScreen> {
   }
 
   TextInputType _getKeyboardType(int index) {
-    if (index == 6) {
-      return TextInputType.datetime;
-    } else if ([3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 20].contains(index)) {
+    if ([3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 20].contains(index)) {
       return TextInputType.number;
     }
     return TextInputType.text;

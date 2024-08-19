@@ -25,7 +25,6 @@ class ContractFeature extends StatefulWidget {
 
   ContractFeature({required this.reportType});
 
-
   @override
   _ContractFeatureState createState() => _ContractFeatureState();
 }
@@ -73,8 +72,7 @@ class _ContractFeatureState extends State<ContractFeature> {
     if (widget.reportType == '매입') {
       filePath =
           '/data/user/0/com.groonui.fastdealer/app_flutter/contract_image_purc_input.png';
-    }
-    else{
+    } else {
       filePath =
           '/data/user/0/com.groonui.fastdealer/app_flutter/contract_image_sale_input.png';
     }
@@ -102,180 +100,217 @@ class _ContractFeatureState extends State<ContractFeature> {
       //         imageHeight * 0.1),
       //     'transferorName'),
 
-
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.62, imageHeight * 0.16, imageWidth * 0.185,
-              imageHeight * 0.02),
+          Rect.fromLTWH(imageWidth * 0.687, imageHeight * 0.154,
+              imageWidth * 0.18, imageHeight * 0.025),
           'transfereeName'),
       // 양도인 이름
 
       CustomRect(
-      Rect.fromLTWH(imageWidth * 0.62, imageHeight * (0.16 +
-          0.02), imageWidth * 0.185,
-      imageHeight * 0.02),
+          Rect.fromLTWH(imageWidth * 0.687, imageHeight * (0.154 + 0.025),
+              imageWidth * 0.18, imageHeight * 0.025),
           'transferorName'),
       // 양수인 이름
 
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.83, imageHeight * 0.16,
-              imageWidth * 0.12, imageHeight * 0.02),
+          Rect.fromLTWH(imageWidth * 0.867, imageHeight * 0.154,
+              imageWidth * 0.1, imageHeight * 0.025),
           'transferorSignature'),
       // 양도인 서명
 
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.83, imageHeight * (0.16 +
-              0.02),
-              imageWidth * 0.12, imageHeight * 0.02),
+          Rect.fromLTWH(imageWidth * 0.867, imageHeight * (0.154 + 0.025),
+              imageWidth * 0.1, imageHeight * 0.025),
           'transfereeSignature'),
       // 양수인 서명
 
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.162, imageHeight * 0.224,
-              imageWidth * 0.291, imageHeight * 0.02),
+          Rect.fromLTWH(imageWidth * 0.232, imageHeight * 0.223,
+              imageWidth * 0.221, imageHeight * 0.0175),
           'vehicleRegistrationNumber'),
       // 차량 등록 번호
 
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.162, imageHeight * (0.224 + 0.02 * 1),
-              imageWidth * 0.15, imageHeight * 0.02),
+          Rect.fromLTWH(imageWidth * 0.162, imageHeight * (0.223 + 0.0175 * 1),
+              imageWidth * 0.15, imageHeight * 0.0175),
           'vehicleType'),
       // 차량 종류
 
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.39, imageHeight * (0.224 + 0.02 * 1),
-              imageWidth * 0.063, imageHeight * 0.02),
+          Rect.fromLTWH(imageWidth * 0.39, imageHeight * (0.223 + 0.0175 * 1),
+              imageWidth * 0.063, imageHeight * 0.0175),
           'year'),
       // 연식
 
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.162, imageHeight * (0.224 + 0.02 * 2),
-              imageWidth * 0.291, imageHeight * 0.02),
+          Rect.fromLTWH(imageWidth * 0.232, imageHeight * (0.223 + 0.0175 * 2),
+              imageWidth * 0.221, imageHeight * 0.0175),
           'carModel'),
-      // 차종
+      // 차명
 
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.162, imageHeight * (0.224 + 0.02 * 3),
-              imageWidth * 0.291, imageHeight * 0.02),
+          Rect.fromLTWH(imageWidth * 0.232, imageHeight * (0.223 + 0.0175 * 3),
+              imageWidth * 0.221, imageHeight * 0.0175),
           'chassisNumber'),
       // 차대 번호
 
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.162, imageHeight * (0.224 + 0.02 * 4),
-              imageWidth * 0.291, imageHeight * 0.02),
+          Rect.fromLTWH(imageWidth * 0.232, imageHeight * (0.223 + 0.0175 * 4),
+              imageWidth * 0.157, imageHeight * 0.0175),
           'registrationFee'),
       // 등록비용
 
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.547, imageHeight * 0.224,
-              imageWidth * 0.422, imageHeight * 0.02),
+          Rect.fromLTWH(imageWidth * 0.617, imageHeight * 0.223,
+              imageWidth * 0.28, imageHeight * 0.0175),
           'transactionAmount'),
       // 매매 금액
 
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.547, imageHeight * (0.224 + 0.02 * 1),
-              imageWidth * 0.278, imageHeight * 0.02),
+          Rect.fromLTWH(imageWidth * 0.617, imageHeight * (0.223 + 0.0175 * 1),
+              imageWidth * 0.135, imageHeight * 0.0175),
           'leaseTransfer'),
       // 계약금 날짜
-
+      //
       CustomRect(
-
-          Rect.fromLTWH(imageWidth * 0.547, imageHeight * (0.224 + 0.02  * 2),
-              imageWidth * 0.278, imageHeight * 0.02),
+          Rect.fromLTWH(imageWidth * 0.617, imageHeight * (0.223 + 0.0175 * 2),
+              imageWidth * 0.135, imageHeight * 0.0175),
           'downPayment'),
       // 인도금 날짜
 
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.547, imageHeight * (0.224 + 0.02 * 3),
-              imageWidth * 0.278, imageHeight * 0.02),
+          Rect.fromLTWH(imageWidth * 0.617, imageHeight * (0.223 + 0.0175 * 3),
+              imageWidth * 0.135, imageHeight * 0.0175),
           'remainingBalance'),
       // 잔금 날짜
-
+      //
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.825, imageHeight * (0.224 + 0.02 * 1),
-              imageWidth * 0.144, imageHeight * 0.02),
+          Rect.fromLTWH(imageWidth * 0.7975, imageHeight * (0.223 + 0.0175 * 1),
+              imageWidth * 0.1, imageHeight * 0.0175),
           'leaseTransfer_fee'),
       // 계약금 금액
 
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.825, imageHeight * (0.224 + 0.02 * 2),
-              imageWidth * 0.144, imageHeight * 0.02),
+          Rect.fromLTWH(imageWidth * 0.7975, imageHeight * (0.223 + 0.0175 * 2),
+              imageWidth * 0.1, imageHeight * 0.0175),
           'downPayment_fee'),
       // 인도금
 
-
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.825, imageHeight * (0.224 + 0.02 * 3),
-              imageWidth * 0.144, imageHeight * 0.02),
+          Rect.fromLTWH(imageWidth * 0.7975, imageHeight * (0.223 + 0.0175 * 3),
+              imageWidth * 0.1, imageHeight * 0.0175),
           'remainingBalance_fee'),
       // 잔금
 
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.547, imageHeight * (0.224 + 0.02 * 4),
-              imageWidth * 0.422, imageHeight * 0.02),
+          Rect.fromLTWH(imageWidth * 0.547, imageHeight * (0.223 + 0.0175 * 4),
+              imageWidth * 0.422, imageHeight * 0.0175),
           'remarks'),
       // 비고
 
-      // CustomRect(
-      //     Rect.fromLTWH(imageWidth * 0.302, imageHeight * 0.171,
-      //         imageWidth * 0.18, imageHeight * 0.024),
-      //     'topDate'),
-      // // 상단 날짜
-      //
-      // CustomRect(
-      //     Rect.fromLTWH(imageWidth * 0.31, imageHeight * (0.721 - 0.02),
-      //         imageWidth * 0.659, imageHeight * 0.02),
-      //     'contractDate'),
-      // // 계약 날짜
-
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.255, imageHeight * 0.167,
+              imageWidth * 0.18, imageHeight * 0.024),
+          'topDate'),
+      // 상단 날짜
 
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.31, imageHeight * 0.721,
-              imageWidth * 0.444, imageHeight * 0.02),
+          Rect.fromLTWH(imageWidth * 0.312, imageHeight * (0.706 - 0.0175),
+              imageWidth * 0.653, imageHeight * 0.0175),
+          'contractDate'),
+      // 계약 날짜
+
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.312, imageHeight * 0.706,
+              imageWidth * 0.233, imageHeight * 0.0175),
           'transferorNameFull'),
-      // 양도인 이름 (풀네임)
+      // 양도인 이름
 
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.754, imageHeight * 0.721,
-              imageWidth * 0.215, imageHeight * 0.02),
+          Rect.fromLTWH(imageWidth * 0.545, imageHeight * 0.706,
+              imageWidth * 0.205, imageHeight * 0.0175),
+          'transferorPhoneNumber'),
+      // 양도인 전화번호
+
+
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.750, imageHeight * 0.706,
+              imageWidth * 0.215, imageHeight * 0.0175*4),
           'transferorSignatureOrSeal'),
       // 양도인 서명 또는 도장
 
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.31, imageHeight * (0.721 + 0.02 * 1),
-              imageWidth * 0.444, imageHeight * 0.02),
+          Rect.fromLTWH(imageWidth * 0.312, imageHeight * (0.706+ 0.0175 * 1),
+              imageWidth * 0.233, imageHeight * 0.0175),
           'transferorIdNumber'),
-      // 양도인 주민등록번호
+      // 양도인 주민등록번호(사업자번호)
+
 
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.31, imageHeight * (0.721 + 0.02 * 2),
-              imageWidth * 0.444, imageHeight * 0.02),
+          Rect.fromLTWH(imageWidth * 0.312, imageHeight * (0.706 + 0.0175 * 2),
+              imageWidth * 0.438, imageHeight * 0.0175 * 2),
           'transferorAddressAndPhone'),
       // 양도인 주소 및 전화번호
 
 
+
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.31, imageHeight * (0.721 + 0.02 * 3),
-              imageWidth * 0.444, imageHeight * 0.02),
+          Rect.fromLTWH(imageWidth * 0.312, imageHeight * (0.706 + 0.0175 * 4),
+              imageWidth * 0.233, imageHeight * 0.0175),
           'transfereeNameFull'),
       // 양수인 이름 (풀네임)
 
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.754, imageHeight * (0.721 + 0.02 * 3),
-              imageWidth * 0.215, imageHeight * 0.02),
-          'transfereeSignatureOrSeal'),
-      // 양수인 서명 또는 도장
+          Rect.fromLTWH(imageWidth * 0.545, imageHeight * (0.706 + 0.0175 * 4),
+              imageWidth * 0.205, imageHeight * 0.0175),
+          'transfereePhoneNumber'),
+      // 양수인 핸드폰번호
 
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.31, imageHeight * (0.721 + 0.02 * 4),
-              imageWidth * 0.444, imageHeight * 0.02),
+          Rect.fromLTWH(imageWidth * 0.312, imageHeight * (0.706 + 0.0175 * 5),
+              imageWidth * 0.233, imageHeight * 0.0175),
           'transfereeIdNumber'),
-      // 양수인 주민등록번호
+      // 양수인 사업자번호
+
+
 
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.31, imageHeight * (0.721 + 0.02 * 5),
-              imageWidth * 0.444, imageHeight * 0.02),
+          Rect.fromLTWH(imageWidth * 0.750, imageHeight *  (0.706 + 0.0175 * 4),
+              imageWidth * 0.215, imageHeight * 0.0175*4),
+          'transfereeSignatureOrSeal'),
+      // 양도인 서명 또는 도장
+
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.312, imageHeight * (0.706 + 0.0175 * 6),
+              imageWidth * 0.438, imageHeight * 0.0175*2),
           'transfereeAddressAndPhone'),
       // 양수인 주소 및 전화번호
+
+
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.085, imageHeight *  0.577,
+              imageWidth * 0.605, imageHeight * 0.024),
+          'add1'),
+      // 추가 1 섹션
+
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.085, imageHeight *  (0.577 + 0.024),
+              imageWidth * 0.605, imageHeight * 0.024),
+          'add1data'),
+
+      // 추가 1 데이터
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.085, imageHeight *   (0.577 + 0.024*2),
+              imageWidth * 0.605, imageHeight * 0.024),
+          'add2'),
+      // 추가 2 섹션
+
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.085, imageHeight *   (0.577 + 0.024*3),
+              imageWidth * 0.605, imageHeight * 0.024),
+          'add2data'),
+      // 추가 2 데이터
+
 
     ];
   }
@@ -403,12 +438,12 @@ class _ContractFeatureState extends State<ContractFeature> {
         // Ensure _signatureToImage is correctly implemented
         overlayImage = await _signatureToImage();
       } else if (isTextInputMode) {
-        double fontSize = 40.0;
+        double fontSize = 32.0;
         TextAlign textAlign = TextAlign.center;
 
         if (['leaseTransfer_fee', 'downPayment_fee', 'remainingBalance_fee']
             .contains(selectedArea!.name)) {
-          fontSize = 35.0;
+          fontSize = 30.0;
           textAlign = TextAlign.left;
         } else if (['leaseTransfer', 'downPayment', 'remainingBalance']
             .contains(selectedArea!.name)) {
@@ -520,7 +555,8 @@ class _ContractFeatureState extends State<ContractFeature> {
 
     // Function to show snackbar
     void _showSnackBar(String message) {
-      ScaffoldMessenger.of(context).clearSnackBars(); // Clear existing SnackBars
+      ScaffoldMessenger.of(context)
+          .clearSnackBars(); // Clear existing SnackBars
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(message),
@@ -586,7 +622,7 @@ class _ContractFeatureState extends State<ContractFeature> {
                       print('Corrected touch position: $correctedPosition');
 
                       final tappedArea = predefinedAreas.firstWhere(
-                            (area) => area.contains(correctedPosition),
+                        (area) => area.contains(correctedPosition),
                         orElse: () => CustomRect(Rect.zero, ''),
                       );
 
@@ -600,12 +636,9 @@ class _ContractFeatureState extends State<ContractFeature> {
 
                           if (touchCoordinates.length == 4) {
                             _showSnackBar('완료했습니다');
-
                           }
-                        } else {
-                        }
+                        } else {}
                       }
-
                     } else {
                       // Handle null contractImage scenario
                       print('Error: contractImage is null');
@@ -655,7 +688,7 @@ class _ContractFeatureState extends State<ContractFeature> {
                         height: 100,
                         child: isTextInputMode
                             ? Padding(
-                                padding: const EdgeInsets.all(0.0),
+                                padding: const EdgeInsets.all(5.0),
                                 child: TextField(
                                   controller: textEditingController,
                                   focusNode: textFocusNode,
@@ -668,7 +701,9 @@ class _ContractFeatureState extends State<ContractFeature> {
                                     'year',
                                     'transferorIdNumber',
                                     'transfereeIdNumber',
-                                    'transactionAmount'
+                                    'transactionAmount',
+                                    'transferorPhoneNumber',
+                                    'transfereePhoneNumber'
                                   ].contains(selectedArea?.name)
                                       ? TextInputType.numberWithOptions(
                                           decimal: true, signed: false)
@@ -696,7 +731,9 @@ class _ContractFeatureState extends State<ContractFeature> {
                                       'year',
                                       'transferorIdNumber',
                                       'transfereeIdNumber',
-                                      'transactionAmount'
+                                      'transactionAmount',
+                                      'transferorPhoneNumber',
+                                      'transfereePhoneNumber'
                                     ].contains(selectedArea?.name)
                                         ? '숫자를 입력하세요'
                                         : '텍스트를 입력하세요',
@@ -718,7 +755,9 @@ class _ContractFeatureState extends State<ContractFeature> {
                                         context: context,
                                         initialDate: DateTime.now(),
                                         firstDate: DateTime(1990),
-                                        lastDate: DateTime(2101), locale: Locale('ko', 'KR'), // Set the locale to Korean
+                                        lastDate: DateTime(2101),
+                                        locale: Locale('ko',
+                                            'KR'), // Set the locale to Korean
                                       );
 
                                       if (selectedDate != null) {
@@ -810,8 +849,7 @@ class _ContractFeatureState extends State<ContractFeature> {
                     isSignatureMode = false;
                     isTextInputMode = false;
 
-                        _showSnackBar('이미지의 좌단 상단을 각각 2번씩 터치해주세요');
-
+                    _showSnackBar('이미지의 좌단 상단을 각각 2번씩 터치해주세요');
                   });
                 },
                 child: Text('터치보정'),
@@ -977,7 +1015,7 @@ class ContractPainter extends CustomPainter {
     );
 
     // Get today's date as a string
-    final todayDate = DateTime.now().toLocal().toString().split(' ')[0];
+    // final todayDate = DateTime.now().toLocal().toString().split(' ')[0];
 
     // Draw predefined areas with overlay images
     for (var area in predefinedAreas) {
@@ -1016,30 +1054,30 @@ class ContractPainter extends CustomPainter {
         );
       }
 
-      if (['topDate', 'contractDate'].contains(area.name)) {
-        // Prepare text for drawing with today's date
-        final textSpan = TextSpan(
-          text: todayDate,
-          style: textStyle,
-        );
-        final textPainter = TextPainter(
-          text: textSpan,
-          textAlign: TextAlign.center,
-          textDirection: TextDirection.ltr,
-        );
-
-        // Layout the text within the bounds of the scaledRect
-        textPainter.layout(maxWidth: scaledRect.width);
-
-        // Calculate position within the scaledRect
-        final offset = Offset(
-          scaledRect.left + (scaledRect.width - textPainter.width) / 2,
-          scaledRect.top + (scaledRect.height - textPainter.height) / 2,
-        );
-
-        // Draw text
-        textPainter.paint(canvas, offset);
-      }
+      // if (['topDate', 'contractDate'].contains(area.name)) {
+      //   // Prepare text for drawing with today's date
+      //   final textSpan = TextSpan(
+      //     text: todayDate,
+      //     style: textStyle,
+      //   );
+      //   final textPainter = TextPainter(
+      //     text: textSpan,
+      //     textAlign: TextAlign.center,
+      //     textDirection: TextDirection.ltr,
+      //   );
+      //
+      //   // Layout the text within the bounds of the scaledRect
+      //   textPainter.layout(maxWidth: scaledRect.width);
+      //
+      //   // Calculate position within the scaledRect
+      //   final offset = Offset(
+      //     scaledRect.left + (scaledRect.width - textPainter.width) / 2,
+      //     scaledRect.top + (scaledRect.height - textPainter.height) / 2,
+      //   );
+      //
+      //   // Draw text
+      //   textPainter.paint(canvas, offset);
+      // }
     }
 
     // Draw selected area

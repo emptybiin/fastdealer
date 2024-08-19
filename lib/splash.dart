@@ -46,7 +46,6 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 }
 
-
 class CustomRect {
   final Rect rect;
   final String name;
@@ -79,133 +78,183 @@ Future<String?> changeImage() async {
   // 판매
   for (var area in predefinedAreas) {
     // Check for specific names and apply the custom text
-    if (area.name == 'transferorIdNumber') {
-      area.text = '(주)기억 110111-6116308';
+    if (area.name == 'transferorNameFull') {
+      area.text = '(주)기억';
+    } else if (area.name == 'transferorIdNumber') {
+      area.text = '110111-6116308';
     } else if (area.name == 'transferorAddressAndPhone') {
       area.text = '서울시 서초구 양재대로 11길 36 은관 401호';
+    } else if (area.name == 'topDate' || area.name == 'contractDate') {
+      area.text =
+          _getCurrentDateString(); // Set current date for 'topDate' and 'contractDate'
     }
 
-    final textImage = await _textToImage(
-      area.text,
-      area.rect.width,
-      area.rect.height,
-      38, // Font size
-      align: TextAlign.center,
-    );
+    // Set font size based on the area name
+    double fontSize =
+        (area.name == 'topDate' || area.name == 'contractDate') ? 34 : 24;
+
+    final textImage = await _textToImage(area.text, area.rect.width,
+        area.rect.height, fontSize, // Conditional font size
+        align: TextAlign.center,
+        areaName: area.name);
     area.overlayImage = textImage;
-    area.text = '';
+    area.text = ''; // Clear text after it's used
   }
 
   // Draw overlay on contract for 판매
-  final finalImage = await _drawOverlayOnContract(contractImage, predefinedAreas);
+  final finalImage =
+      await _drawOverlayOnContract(contractImage, predefinedAreas);
 
   // Save the image to file for 판매
-  await _saveImageToFile(finalImage,'sale');
+  await _saveImageToFile(finalImage, 'sale');
 
   // 매입
   for (var area in predefinedAreas) {
-    // You can add similar conditional logic here for "매입" if needed
+    // Check for specific names and apply the custom text
     if (area.name == 'transfereeIdNumber') {
       area.text = '(주)기억 110111-6116308';
     } else if (area.name == 'transfereeAddressAndPhone') {
       area.text = '서울시 서초구 양재대로 11길 36 은관 401호';
+    } else if (area.name == 'topDate' || area.name == 'contractDate') {
+      area.text =
+          _getCurrentDateString(); // Set current date for 'topDate' and 'contractDate'
     }
-    final textImage = await _textToImage(
-      area.text,
-      area.rect.width,
-      area.rect.height,
-      38, // Font size
-      align: TextAlign.center,
-    );
+
+    // Set font size based on the area name
+    double fontSize =
+        (area.name == 'topDate' || area.name == 'contractDate') ? 34 : 24;
+
+    final textImage = await _textToImage(area.text, area.rect.width,
+        area.rect.height, fontSize, // Conditional font size
+        align: TextAlign.center,
+        areaName: area.name);
     area.overlayImage = textImage;
-    area.text = '';
+    area.text = ''; // Clear text after it's used
   }
 
   // Draw overlay on contract for 매입
-  final finalImage2 = await _drawOverlayOnContract(contractImage, predefinedAreas);
+  final finalImage2 =
+      await _drawOverlayOnContract(contractImage, predefinedAreas);
 
   // Save the image to file for 매입
-  await _saveImageToFile(finalImage2,'purc');
+  await _saveImageToFile(finalImage2, 'purc');
 }
 
-List<CustomRect> _calculatePredefinedAreas(double imageWidth, double imageHeight) {
+List<CustomRect> _calculatePredefinedAreas(
+    double imageWidth, double imageHeight) {
   return [
     CustomRect(
-        Rect.fromLTWH(imageWidth * 0.302, imageHeight * 0.171,
+        Rect.fromLTWH(imageWidth * 0.255, imageHeight * 0.167,
             imageWidth * 0.18, imageHeight * 0.024),
-        'topDate',_getCurrentDateString()),
+        'topDate',
+        _getCurrentDateString()),
     // 상단 날짜
 
     CustomRect(
-        Rect.fromLTWH(imageWidth * 0.31, imageHeight * (0.721 - 0.02),
-            imageWidth * 0.659, imageHeight * 0.02),
-        'contractDate',_getCurrentDateString()),
+        Rect.fromLTWH(imageWidth * 0.312, imageHeight * (0.706 - 0.0175),
+            imageWidth * 0.653, imageHeight * 0.0175),
+        'contractDate',
+        _getCurrentDateString()),
     // 계약 날짜
 
     CustomRect(
-        Rect.fromLTWH(imageWidth * 0.31, imageHeight * (0.721 + 0.02 * 1),
-            imageWidth * 0.444, imageHeight * 0.02),
-        'transferorIdNumber',''),
-    // 양도인 주민등록번호
+        Rect.fromLTWH(imageWidth * 0.312, imageHeight * 0.706,
+            imageWidth * 0.233, imageHeight * 0.0175),
+        'transferorNameFull',
+        ''),
+    // 양도인 이름 (주)기억
 
     CustomRect(
-        Rect.fromLTWH(imageWidth * 0.31, imageHeight * (0.721 + 0.02 * 2),
-            imageWidth * 0.444, imageHeight * 0.02),
-        'transferorAddressAndPhone',''),
+        Rect.fromLTWH(imageWidth * 0.312, imageHeight * (0.706 + 0.0175 * 1),
+            imageWidth * 0.233, imageHeight * 0.0175),
+        'transferorIdNumber',
+        ''),
+    // 양도인 주민등록번호(사업자번호) 1000~~
+    CustomRect(
+        Rect.fromLTWH(imageWidth * 0.312, imageHeight * (0.706 + 0.0175 * 2),
+            imageWidth * 0.438, imageHeight * 0.0175 * 2),
+        'transferorAddressAndPhone',
+        ''),
     // 양도인 주소 및 전화번호
 
     CustomRect(
-        Rect.fromLTWH(imageWidth * 0.31, imageHeight * (0.721 + 0.02 * 4),
-            imageWidth * 0.444, imageHeight * 0.02),
-        'transfereeIdNumber',''),
-    // 양수인 주민등록번호
+        Rect.fromLTWH(imageWidth * 0.312, imageHeight * (0.706 + 0.0175 * 4),
+            imageWidth * 0.233, imageHeight * 0.0175),
+        'transfereeNameFull',
+        ''),
+    // 양수인 이름 (풀네임)
 
     CustomRect(
-        Rect.fromLTWH(imageWidth * 0.31, imageHeight * (0.721 + 0.02 * 5),
-            imageWidth * 0.444, imageHeight * 0.02),
-        'transfereeAddressAndPhone',''),
+        Rect.fromLTWH(imageWidth * 0.312, imageHeight * (0.706 + 0.0175 * 5),
+            imageWidth * 0.233, imageHeight * 0.0175),
+        'transfereeIdNumber',
+        ''),
+    // 양수인 사업자번호
+    CustomRect(
+        Rect.fromLTWH(imageWidth * 0.312, imageHeight * (0.706 + 0.0175 * 6),
+            imageWidth * 0.438, imageHeight * 0.0175 * 2),
+        'transfereeAddressAndPhone',
+        ''),
     // 양수인 주소 및 전화번호
   ];
 }
-
-
 
 String _getCurrentDateString() {
   final now = DateTime.now();
   final year = now.year;
   final month = now.month.toString().padLeft(2, '0');
   final day = now.day.toString().padLeft(2, '0');
-  return '$year-$month-$day';
+  // return '$year-$month-$day';
+  return '2024년05월05일';
 }
 
 Future<ui.Image> _textToImage(
     String text, double width, double height, double fontSize,
-    {TextAlign align = TextAlign.center}) async {
+    {TextAlign align = TextAlign.center, String? areaName}) async {
   final recorder = ui.PictureRecorder();
   final canvas = Canvas(recorder, Rect.fromLTWH(0, 0, width, height));
 
+  // Set background color based on the area name
+  Color backgroundColor = (areaName == 'topDate' || areaName == 'contractDate')
+      ? Colors.white
+      : Colors.transparent;
+
+  // Set up the text painter
   final textPainter = TextPainter(
     text: TextSpan(
       text: text,
-      style: TextStyle(color: Colors.black, fontSize: fontSize, backgroundColor: Colors.white),
+      style: TextStyle(
+        color: Colors.black,
+        fontSize: fontSize,
+        backgroundColor: backgroundColor,
+      ),
     ),
     textDirection: TextDirection.ltr,
     textAlign: align,
   );
   textPainter.layout(maxWidth: width);
 
+  // Calculate text position
   final textWidth = textPainter.width;
   final textHeight = textPainter.height;
-  final Offset textOffset = Offset((width - textWidth) / 2, (height - textHeight) / 2);
+  final Offset textOffset =
+      Offset((width - textWidth) / 2, (height - textHeight) / 2);
 
+  // Paint the text onto the canvas
   textPainter.paint(canvas, textOffset);
+
+  // Finalize and return the image
   final picture = recorder.endRecording();
   return picture.toImage(width.toInt(), height.toInt());
 }
 
-Future<ui.Image> _drawOverlayOnContract(ui.Image contractImage, List<CustomRect> predefinedAreas) async {
+Future<ui.Image> _drawOverlayOnContract(
+    ui.Image contractImage, List<CustomRect> predefinedAreas) async {
   final recorder = ui.PictureRecorder();
-  final canvas = Canvas(recorder, Rect.fromLTWH(0, 0, contractImage.width.toDouble(), contractImage.height.toDouble()));
+  final canvas = Canvas(
+      recorder,
+      Rect.fromLTWH(0, 0, contractImage.width.toDouble(),
+          contractImage.height.toDouble()));
 
   canvas.drawImage(contractImage, Offset.zero, Paint());
 
@@ -213,7 +262,8 @@ Future<ui.Image> _drawOverlayOnContract(ui.Image contractImage, List<CustomRect>
     if (area.overlayImage != null) {
       canvas.drawImageRect(
         area.overlayImage!,
-        Rect.fromLTWH(0, 0, area.overlayImage!.width.toDouble(), area.overlayImage!.height.toDouble()),
+        Rect.fromLTWH(0, 0, area.overlayImage!.width.toDouble(),
+            area.overlayImage!.height.toDouble()),
         area.rect,
         Paint(),
       );

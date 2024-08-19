@@ -59,61 +59,65 @@ class MyHomePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ExcelEditScreen(reportType: '매입')), // '매입' 변수 전달
-                );
-              },
-              child: Text('차량 매매 보고서 (매입)'),
+            SizedBox(
+              width: 200, // 버튼의 가로 길이 고정
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ExcelEditScreen(reportType: '매입'),
+                    ), // '매입' 변수 전달
+                  );
+                },
+                child: Text('차량 매매 보고서 (매입)'),
+              ),
             ),
             SizedBox(height: 20), // 버튼 간 간격
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ExcelEditScreen(reportType: '판매')), // '판매' 변수 전달
-                );
-              },
-              child: Text('차량 매매 보고서 (판매)'),
+            SizedBox(
+              width: 200, // 버튼의 가로 길이 고정
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ExcelEditScreen(reportType: '판매'),
+                    ), // '판매' 변수 전달
+                  );
+                },
+                child: Text('차량 매매 보고서 (판매)'),
+              ),
             ),
             SizedBox(height: 20), // 버튼 간 간격 추가
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ContractFeature(reportType:'매입'),
-                ));
-              },
-              child: Text('관인 계약서(매입)'),
+            SizedBox(
+              width: 200, // 버튼의 가로 길이 고정
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ContractFeature(reportType: '매입'),
+                    ),
+                  );
+                },
+                child: Text('관인 계약서(매입)'),
+              ),
             ),
-        SizedBox(height: 20), 
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ContractFeature(reportType:'판매')),
-                );
-              },
-              child: Text('관인 계약서(판매)'),
+            SizedBox(height: 20), // 버튼 간 간격 추가
+            SizedBox(
+              width: 200, // 버튼의 가로 길이 고정
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ContractFeature(reportType: '판매'),
+                    ),
+                  );
+                },
+                child: Text('관인 계약서(판매)'),
+              ),
             ),
-
-
-
-
-
-            // SizedBox(height: 20), // 버튼 간 간격 추가
-            // ElevatedButton(
-            //   onPressed: () {
-            //     ChnageImage();
-            //     Navigator.push(
-            //       context,
-            //       MaterialPageRoute(builder: (context) => ChnageImage()),
-            //     );
-            //   },
-            //   child: Text('이미지변경'),
-            // ),
           ],
         ),
       ),

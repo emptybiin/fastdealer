@@ -6,11 +6,10 @@ import 'package:open_file_plus/open_file_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
-
-
+import 'fieldInfo.dart'; // Make sure this import matches your file structure
 
 class ExcelEditScreen extends StatefulWidget {
-  final String reportType; // 매입 또는 판매를 나타내는 변수
+  final String reportType;
 
   ExcelEditScreen({required this.reportType});
 
@@ -42,52 +41,40 @@ class _ExcelEditScreenState extends State<ExcelEditScreen> {
     super.dispose();
   }
 
-  void _generateJson({required bool isPreview}) async {
-    final Map<String, dynamic> data = {
-      'type': widget.reportType,
-    };
+  void _generateJson({required bool isPreview, required BuildContext context}) async {
+    final Map<String, dynamic> data = {'type': widget.reportType};
     for (int i = 0; i < _controllers.length; i++) {
-      final key = _getLabelText(i);
+      final key = getLabelText(i);
       data[key] = _controllers[i].text;
     }
 
     final jsonString = jsonEncode({'body': data});
     print(jsonString);
 
-    // URL-encode the JSON string
     final encodedJson = Uri.encodeComponent(jsonString);
-
-    // Construct the full URL with query string
     final url = 'https://9lplmto9of.execute-api.ap-northeast-2.amazonaws.com/default/fastdeal?body=$encodedJson';
 
     try {
       final response = await http.get(Uri.parse(url));
-
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
         final encodedFileContent = responseData['file_content'];
-        final fileName = responseData['file_name'];
+        final fileName = 'esens.xlsx';
         print('Success: File received');
 
-        // Decode the file content
         final fileBytes = base64.decode(encodedFileContent);
-
-        // Get the directory for saving the file
         final directory = await getApplicationDocumentsDirectory();
         final filePath = '${directory.path}/$fileName';
 
-        // Save the file
         final file = File(filePath);
         await file.writeAsBytes(fileBytes);
 
         print('File saved to $filePath');
 
-        // Store the file for sharing
         _excelFile = file;
 
-        // Open or share the file based on the action
         if (isPreview) {
-          _openExcelFile();
+          _openExcelFile(context);
         } else {
           _shareExcelFile();
         }
@@ -104,25 +91,32 @@ class _ExcelEditScreenState extends State<ExcelEditScreen> {
       Share.shareFiles([_excelFile!.path], text: 'Updated Excel file');
     } else {
       print('No file to share');
-
     }
   }
 
-  Future<void> _openExcelFile() async {
+  Future<void> _openExcelFile(BuildContext context) async {
     _requestPermissions();
     try {
-      final directory = await getApplicationDocumentsDirectory();
-      final filePath = '${directory.path}/result.xlsx';
-
-      final result = await OpenFile.open(filePath);
-
-      if (result.type != ResultType.done) {
-        print('Failed to open file: ${result.message}');
+      if (_excelFile != null) {
+        final result = await OpenFile.open(_excelFile!.path);
+        if (result.type != ResultType.done) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to open file: ${result.message}')),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('File opened successfully')),
+          );
+        }
       } else {
-        print('File opened successfully');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('No file to open')),
+        );
       }
     } catch (e) {
-      print('Error opening file: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error opening file: $e')),
+      );
     }
   }
 
@@ -143,36 +137,24 @@ class _ExcelEditScreenState extends State<ExcelEditScreen> {
     print('Storage permission granted');
   }
 
-
-
-
-
-
-  void _onFieldSubmitted(int index) {
-
-  if (index < 16) {
-      FocusScope.of(context).requestFocus(_focusNodes[index + 1]);
+  void _onFieldSubmitted(int index, String value) {
+    bool isValid = validateInput(index, value);
+    if (isValid) {
+      if (index < _controllers.length - 1) {
+        if (index < 16) {
+          // Move to the next focus node if index is 16 or less
+          FocusScope.of(context).requestFocus(_focusNodes[index + 1]);
+        } else {
+          // Remove focus if index is greater than 16
+          FocusScope.of(context).unfocus();
+        }
+      } else {
+        FocusScope.of(context).unfocus();
+      }
     } else {
-      FocusScope.of(context).unfocus();
+      _showErrorSnackBar(context, index);
     }
   }
-
-  // Future<void> _selectDate(BuildContext context, TextEditingController controller, int currentIndex) async {
-  //   final DateTime? pickedDate = await showDatePicker(
-  //     context: context,
-  //     initialDate: DateTime.now(),
-  //     firstDate: DateTime(2000),
-  //     lastDate: DateTime(2100),
-  //   );
-  //
-  //   if (pickedDate != null) {
-  //     setState(() {
-  //       controller.text = "${pickedDate.toLocal()}".split(' ')[0];
-  //       FocusScope.of(context).requestFocus(_focusNodes[currentIndex + 1]); // 최종납입 날짜 선택 후 미회수원금으로 이동
-  //     });
-  //   }
-  // }
-
 
   @override
   Widget build(BuildContext context) {
@@ -191,27 +173,30 @@ class _ExcelEditScreenState extends State<ExcelEditScreen> {
                   controller: _controllers[i],
                   focusNode: _focusNodes[i],
                   decoration: InputDecoration(
-                    labelText: _getLabelText(i),
+                    labelText: getFieldInfo(i).labelText,
+                    hintText: getExampleValue(i), // Add this line
+                    errorText: validateInput(i, _controllers[i].text) ? null : getFieldInfo(i).errorMessage,
                   ),
-                  keyboardType: _getKeyboardType(i),
-                  textInputAction: i < 17 ? TextInputAction.next : TextInputAction.done,
-                  onSubmitted: (value) => _onFieldSubmitted(i),
-                  onTap: () {
-
-                  }
+                  keyboardType: getKeyboardType(i),
+                  textInputAction: i < 16 ? TextInputAction.next : TextInputAction.done,
+                  onSubmitted: (value) => _onFieldSubmitted(i, value),
+                  onChanged: (value) {
+                    setState(() {});
+                  },
                 ),
               ),
             Row(
               children: [
                 ElevatedButton(
-                  onPressed: () => _generateJson(isPreview: true),
-                  child: Text('미리보기'),
+                  onPressed: () => _generateJson(isPreview: true, context: context),
+                  child: Text('Preview'),
                 ),
                 ElevatedButton(
-                  onPressed: () => _generateJson(isPreview: false),
-                  child: Text('내보내기'),
+                  onPressed: () => _generateJson(isPreview: false, context: context),
+                  child: Text('Export'),
                 ),
               ],
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
             )
           ],
         ),
@@ -219,60 +204,15 @@ class _ExcelEditScreenState extends State<ExcelEditScreen> {
     );
   }
 
-  String _getLabelText(int index) {
-    switch (index) {
-      case 0:
-        return '고객명';
-      case 1:
-        return '차량명';
-      case 2:
-        return '리스사명';
-      case 3:
-        return '실행횟수';
-      case 4:
-        return '납입횟수';
-      case 5:
-        return '차량매매가';
-      case 6:
-        return '최종납입 날짜';
-      case 7:
-        return '미회수원금';
-      case 8:
-        return '보증금';
-      case 9:
-        return '선납금';
-      case 10:
-        return '잔존가치';
-      case 11:
-        return '리스료';
-      case 12:
-        return '일할차세';
-      case 13:
-        return '일할이자';
-      case 14:
-        return '승계수수료';
-      case 15:
-        return '판매수수료';
-      case 16:
-        return '기타비용';
-      case 17:
-        return '추가 입력 1';
-      case 18:
-        return '추가 입력 1 내용';
-      case 19:
-        return '추가 입력 2';
-      case 20:
-        return '추가 입력 2 내용';
-      default:
-        return '필드 ${index + 1}의 값을 입력하세요';
-    }
-  }
+  void _showErrorSnackBar(BuildContext context, int index) {
+    final snackBar = SnackBar(
+      content: Text(getFieldInfo(index).errorMessage),
+      duration: Duration(seconds: 2),
+    );
 
-  TextInputType _getKeyboardType(int index) {
-    if ([3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 20].contains(index)) {
-      return TextInputType.number;
-    }
-    return TextInputType.text;
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+    FocusScope.of(context).requestFocus(_focusNodes[index]);
   }
 }
-

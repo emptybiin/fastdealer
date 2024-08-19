@@ -16,8 +16,10 @@ dependencies:
   path_provider: ^2.0.11
   url_launcher: ^6.0.9
   open_file_plus: ^3.4.1+1
-
   permission_handler: ^10.0.0
+
+  flutter_localizations:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:

@@ -47,7 +47,18 @@ class _SplashScreenState extends State<SplashScreen> {
 }
 
 
+class CustomRect {
+  final Rect rect;
+  final String name;
+  String text;
+  ui.Image? overlayImage;
 
+  CustomRect(this.rect, this.name, this.text, {this.overlayImage});
+
+  bool contains(Offset point) {
+    return rect.contains(point);
+  }
+}
 
 Future<String?> changeImage() async {
   ui.Image? contractImage;
@@ -65,23 +76,56 @@ Future<String?> changeImage() async {
     contractImage.height.toDouble(),
   );
 
-  // Overlay text on the image
+  // 판매
   for (var area in predefinedAreas) {
+    // Check for specific names and apply the custom text
+    if (area.name == 'transferorIdNumber') {
+      area.text = '(주)기억 110111-6116308';
+    } else if (area.name == 'transferorAddressAndPhone') {
+      area.text = '서울시 서초구 양재대로 11길 36 은관 401호';
+    }
+
     final textImage = await _textToImage(
-      _getCurrentDateString(),
+      area.text,
       area.rect.width,
       area.rect.height,
       38, // Font size
       align: TextAlign.center,
     );
     area.overlayImage = textImage;
+    area.text = '';
   }
 
-  // Draw overlay on contract
+  // Draw overlay on contract for 판매
   final finalImage = await _drawOverlayOnContract(contractImage, predefinedAreas);
 
-  // Save the image to file
-  return await _saveImageToFile(finalImage);
+  // Save the image to file for 판매
+  await _saveImageToFile(finalImage,'sale');
+
+  // 매입
+  for (var area in predefinedAreas) {
+    // You can add similar conditional logic here for "매입" if needed
+    if (area.name == 'transfereeIdNumber') {
+      area.text = '(주)기억 110111-6116308';
+    } else if (area.name == 'transfereeAddressAndPhone') {
+      area.text = '서울시 서초구 양재대로 11길 36 은관 401호';
+    }
+    final textImage = await _textToImage(
+      area.text,
+      area.rect.width,
+      area.rect.height,
+      38, // Font size
+      align: TextAlign.center,
+    );
+    area.overlayImage = textImage;
+    area.text = '';
+  }
+
+  // Draw overlay on contract for 매입
+  final finalImage2 = await _drawOverlayOnContract(contractImage, predefinedAreas);
+
+  // Save the image to file for 매입
+  await _saveImageToFile(finalImage2,'purc');
 }
 
 List<CustomRect> _calculatePredefinedAreas(double imageWidth, double imageHeight) {
@@ -89,13 +133,43 @@ List<CustomRect> _calculatePredefinedAreas(double imageWidth, double imageHeight
     CustomRect(
       Rect.fromLTWH(imageWidth * 0.285, imageHeight * 0.128, imageWidth * 0.18, imageHeight * 0.024),
       'topDate',
+        _getCurrentDateString()
     ),
+    // 상단 날짜
     CustomRect(
       Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.770, imageWidth * 0.72, imageHeight * 0.024),
       'contractDate',
+        _getCurrentDateString()
     ),
+    // 하단 날짜
+    CustomRect(
+        Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.818,
+            imageWidth * 0.482, imageHeight * 0.024),
+        'transferorIdNumber',
+    ''),
+    // 양도인 주민등록번호
+    CustomRect(
+        Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.843,
+            imageWidth * 0.482, imageHeight * 0.024),
+        'transferorAddressAndPhone',
+    ''),
+    // 양도인 주소 및 전화번호
+    CustomRect(
+        Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.892,
+            imageWidth * 0.482, imageHeight * 0.024),
+        'transfereeIdNumber',
+    ''),
+    // 양수인 주민등록번호
+    CustomRect(
+        Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.916,
+            imageWidth * 0.482, imageHeight * 0.024),
+        'transfereeAddressAndPhone',
+    ''),
+    // 양수인 주소 및 전화번호
   ];
 }
+
+
 
 String _getCurrentDateString() {
   final now = DateTime.now();
@@ -151,27 +225,15 @@ Future<ui.Image> _drawOverlayOnContract(ui.Image contractImage, List<CustomRect>
   return picture.toImage(contractImage.width, contractImage.height);
 }
 
-Future<String?> _saveImageToFile(ui.Image image) async {
+Future<String?> _saveImageToFile(ui.Image image, String path) async {
   final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
   final uint8list = byteData!.buffer.asUint8List();
 
   final directory = await getApplicationDocumentsDirectory();
-  final file = File('${directory.path}/contract_image_input.png');
+  final file = File('${directory.path}/contract_image_${path}_input.png');
 
   await file.writeAsBytes(uint8list);
 
   print('Image saved to ${file.path}');
   return file.path;
-}
-
-class CustomRect {
-  final Rect rect;
-  final String name;
-  ui.Image? overlayImage;
-
-  CustomRect(this.rect, this.name, {this.overlayImage});
-
-  bool contains(Offset point) {
-    return rect.contains(point);
-  }
 }

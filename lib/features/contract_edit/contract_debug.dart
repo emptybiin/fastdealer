@@ -102,148 +102,181 @@ class _ContractFeatureState extends State<ContractFeature> {
       //         imageHeight * 0.1),
       //     'transferorName'),
 
-      CustomRect(
-          Rect.fromLTWH(imageWidth * 0.6, imageHeight * 0.117, imageWidth * 0.1,
-              imageHeight * 0.023),
-          'transferorName'),
-      // 양도인 이름
-      CustomRect(
-          Rect.fromLTWH(imageWidth * 0.6, imageHeight * 0.140, imageWidth * 0.1,
-              imageHeight * 0.023),
-          'transfereeName'),
-      // 양수인 이름
-      CustomRect(
-          Rect.fromLTWH(imageWidth * 0.85, imageHeight * 0.115,
-              imageWidth * 0.12, imageHeight * 0.023),
-          'transferorSignature'),
-      // 양도인 서명
-      CustomRect(
-          Rect.fromLTWH(imageWidth * 0.85, imageHeight * 0.138,
-              imageWidth * 0.12, imageHeight * 0.023),
-          'transfereeSignature'),
-      // 양수인 서명
-      CustomRect(
-          Rect.fromLTWH(imageWidth * 0.124, imageHeight * 0.191,
-              imageWidth * 0.312, imageHeight * 0.024),
-          'vehicleRegistrationNumber'),
-      // 차량 등록 번호
-      CustomRect(
-          Rect.fromLTWH(imageWidth * 0.124, imageHeight * (0.191 + 0.024 * 1),
-              imageWidth * 0.16, imageHeight * 0.024),
-          'vehicleType'),
-      // 차량 종류
-      CustomRect(
-          Rect.fromLTWH(imageWidth * 0.37, imageHeight * (0.191 + 0.024 * 1),
-              imageWidth * 0.067, imageHeight * 0.024),
-          'year'),
-      // 연식
-      CustomRect(
-          Rect.fromLTWH(imageWidth * 0.124, imageHeight * (0.191 + 0.024 * 2),
-              imageWidth * 0.312, imageHeight * 0.024),
-          'carModel'),
-      // 차종
-      CustomRect(
-          Rect.fromLTWH(imageWidth * 0.124, imageHeight * (0.191 + 0.024 * 3),
-              imageWidth * 0.312, imageHeight * 0.024),
-          'chassisNumber'),
-      // 차대 번호
-      CustomRect(
-          Rect.fromLTWH(imageWidth * 0.124, imageHeight * (0.191 + 0.024 * 4),
-              imageWidth * 0.312, imageHeight * 0.025),
-          'registrationFee'),
-      // 등록비
-      CustomRect(
-          Rect.fromLTWH(imageWidth * 0.543, imageHeight * 0.191,
-              imageWidth * 0.453, imageHeight * 0.024),
-          'transactionAmount'),
-      // 매매 금액
-      CustomRect(
-          Rect.fromLTWH(imageWidth * 0.543, imageHeight * (0.191 + 0.024 * 1),
-              imageWidth * 0.3, imageHeight * 0.024),
-          'leaseTransfer'),
-      // 리스 승계
-      CustomRect(
-          Rect.fromLTWH(imageWidth * 0.543, imageHeight * (0.191 + 0.024 * 2),
-              imageWidth * 0.3, imageHeight * 0.024),
-          'downPayment'),
-      // 인도금
-      CustomRect(
-          Rect.fromLTWH(imageWidth * 0.543, imageHeight * (0.191 + 0.024 * 3),
-              imageWidth * 0.3, imageHeight * 0.024),
-          'remainingBalance'),
-      // 잔금
 
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.843, imageHeight * (0.191 + 0.024 * 1),
-              imageWidth * 0.153, imageHeight * 0.024),
-          'leaseTransfer_fee'),
-      // 리스 승계
+          Rect.fromLTWH(imageWidth * 0.62, imageHeight * 0.16, imageWidth * 0.185,
+              imageHeight * 0.02),
+          'transfereeName'),
+      // 양도인 이름
+
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.843, imageHeight * (0.191 + 0.024 * 2),
-              imageWidth * 0.153, imageHeight * 0.024),
+      Rect.fromLTWH(imageWidth * 0.62, imageHeight * (0.16 +
+          0.02), imageWidth * 0.185,
+      imageHeight * 0.02),
+          'transferorName'),
+      // 양수인 이름
+
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.83, imageHeight * 0.16,
+              imageWidth * 0.12, imageHeight * 0.02),
+          'transferorSignature'),
+      // 양도인 서명
+
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.83, imageHeight * (0.16 +
+              0.02),
+              imageWidth * 0.12, imageHeight * 0.02),
+          'transfereeSignature'),
+      // 양수인 서명
+
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.162, imageHeight * 0.224,
+              imageWidth * 0.291, imageHeight * 0.02),
+          'vehicleRegistrationNumber'),
+      // 차량 등록 번호
+
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.162, imageHeight * (0.224 + 0.02 * 1),
+              imageWidth * 0.15, imageHeight * 0.02),
+          'vehicleType'),
+      // 차량 종류
+
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.39, imageHeight * (0.224 + 0.02 * 1),
+              imageWidth * 0.063, imageHeight * 0.02),
+          'year'),
+      // 연식
+
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.162, imageHeight * (0.224 + 0.02 * 2),
+              imageWidth * 0.291, imageHeight * 0.02),
+          'carModel'),
+      // 차종
+
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.162, imageHeight * (0.224 + 0.02 * 3),
+              imageWidth * 0.291, imageHeight * 0.02),
+          'chassisNumber'),
+      // 차대 번호
+
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.162, imageHeight * (0.224 + 0.02 * 4),
+              imageWidth * 0.291, imageHeight * 0.02),
+          'registrationFee'),
+      // 등록비용
+
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.547, imageHeight * 0.224,
+              imageWidth * 0.422, imageHeight * 0.02),
+          'transactionAmount'),
+      // 매매 금액
+
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.547, imageHeight * (0.224 + 0.02 * 1),
+              imageWidth * 0.278, imageHeight * 0.02),
+          'leaseTransfer'),
+      // 계약금 날짜
+
+      CustomRect(
+
+          Rect.fromLTWH(imageWidth * 0.547, imageHeight * (0.224 + 0.02  * 2),
+              imageWidth * 0.278, imageHeight * 0.02),
+          'downPayment'),
+      // 인도금 날짜
+
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.547, imageHeight * (0.224 + 0.02 * 3),
+              imageWidth * 0.278, imageHeight * 0.02),
+          'remainingBalance'),
+      // 잔금 날짜
+
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.825, imageHeight * (0.224 + 0.02 * 1),
+              imageWidth * 0.144, imageHeight * 0.02),
+          'leaseTransfer_fee'),
+      // 계약금 금액
+
+      CustomRect(
+          Rect.fromLTWH(imageWidth * 0.825, imageHeight * (0.224 + 0.02 * 2),
+              imageWidth * 0.144, imageHeight * 0.02),
           'downPayment_fee'),
       // 인도금
+
+
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.843, imageHeight * (0.191 + 0.024 * 3),
-              imageWidth * 0.153, imageHeight * 0.024),
+          Rect.fromLTWH(imageWidth * 0.825, imageHeight * (0.224 + 0.02 * 3),
+              imageWidth * 0.144, imageHeight * 0.02),
           'remainingBalance_fee'),
       // 잔금
 
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.543, imageHeight * (0.191 + 0.024 * 4),
-              imageWidth * 0.453, imageHeight * 0.025),
+          Rect.fromLTWH(imageWidth * 0.547, imageHeight * (0.224 + 0.02 * 4),
+              imageWidth * 0.422, imageHeight * 0.02),
           'remarks'),
       // 비고
+
       // CustomRect(
-      //     Rect.fromLTWH(imageWidth * 0.285, imageHeight * 0.128,
+      //     Rect.fromLTWH(imageWidth * 0.302, imageHeight * 0.171,
       //         imageWidth * 0.18, imageHeight * 0.024),
       //     'topDate'),
       // // 상단 날짜
+      //
       // CustomRect(
-      //     Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.770,
-      //         imageWidth * 0.72, imageHeight * 0.024),
+      //     Rect.fromLTWH(imageWidth * 0.31, imageHeight * (0.721 - 0.02),
+      //         imageWidth * 0.659, imageHeight * 0.02),
       //     'contractDate'),
       // // 계약 날짜
+
+
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.794,
-              imageWidth * 0.482, imageHeight * 0.024),
+          Rect.fromLTWH(imageWidth * 0.31, imageHeight * 0.721,
+              imageWidth * 0.444, imageHeight * 0.02),
           'transferorNameFull'),
       // 양도인 이름 (풀네임)
+
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.764, imageHeight * 0.794,
-              imageWidth * 0.238, imageHeight * 0.024),
+          Rect.fromLTWH(imageWidth * 0.754, imageHeight * 0.721,
+              imageWidth * 0.215, imageHeight * 0.02),
           'transferorSignatureOrSeal'),
       // 양도인 서명 또는 도장
+
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.818,
-              imageWidth * 0.482, imageHeight * 0.024),
+          Rect.fromLTWH(imageWidth * 0.31, imageHeight * (0.721 + 0.02 * 1),
+              imageWidth * 0.444, imageHeight * 0.02),
           'transferorIdNumber'),
       // 양도인 주민등록번호
+
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.843,
-              imageWidth * 0.482, imageHeight * 0.024),
+          Rect.fromLTWH(imageWidth * 0.31, imageHeight * (0.721 + 0.02 * 2),
+              imageWidth * 0.444, imageHeight * 0.02),
           'transferorAddressAndPhone'),
       // 양도인 주소 및 전화번호
+
+
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.867,
-              imageWidth * 0.482, imageHeight * 0.024),
+          Rect.fromLTWH(imageWidth * 0.31, imageHeight * (0.721 + 0.02 * 3),
+              imageWidth * 0.444, imageHeight * 0.02),
           'transfereeNameFull'),
       // 양수인 이름 (풀네임)
+
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.764, imageHeight * 0.867,
-              imageWidth * 0.238, imageHeight * 0.024),
+          Rect.fromLTWH(imageWidth * 0.754, imageHeight * (0.721 + 0.02 * 3),
+              imageWidth * 0.215, imageHeight * 0.02),
           'transfereeSignatureOrSeal'),
       // 양수인 서명 또는 도장
+
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.892,
-              imageWidth * 0.482, imageHeight * 0.024),
+          Rect.fromLTWH(imageWidth * 0.31, imageHeight * (0.721 + 0.02 * 4),
+              imageWidth * 0.444, imageHeight * 0.02),
           'transfereeIdNumber'),
       // 양수인 주민등록번호
+
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.916,
-              imageWidth * 0.482, imageHeight * 0.024),
+          Rect.fromLTWH(imageWidth * 0.31, imageHeight * (0.721 + 0.02 * 5),
+              imageWidth * 0.444, imageHeight * 0.02),
           'transfereeAddressAndPhone'),
       // 양수인 주소 및 전화번호
+
     ];
   }
 
@@ -285,6 +318,7 @@ class _ContractFeatureState extends State<ContractFeature> {
 
     // Conditionally format the text based on the name
     final shouldFormat = [
+      'transactionAmount',
       'transactionAmount_fee',
       'leaseTransfer_fee',
       'remainingBalance_fee',
@@ -633,7 +667,8 @@ class _ContractFeatureState extends State<ContractFeature> {
                                     'registrationFee',
                                     'year',
                                     'transferorIdNumber',
-                                    'transfereeIdNumber'
+                                    'transfereeIdNumber',
+                                    'transactionAmount'
                                   ].contains(selectedArea?.name)
                                       ? TextInputType.numberWithOptions(
                                           decimal: true, signed: false)
@@ -660,7 +695,8 @@ class _ContractFeatureState extends State<ContractFeature> {
                                       'registrationFee',
                                       'year',
                                       'transferorIdNumber',
-                                      'transfereeIdNumber'
+                                      'transfereeIdNumber',
+                                      'transactionAmount'
                                     ].contains(selectedArea?.name)
                                         ? '숫자를 입력하세요'
                                         : '텍스트를 입력하세요',
@@ -935,7 +971,7 @@ class ContractPainter extends CustomPainter {
     // Prepare text style
     final textStyle = TextStyle(
       color: Colors.black,
-      fontSize: 9,
+      fontSize: 10,
       fontWeight: FontWeight.bold,
       backgroundColor: Colors.white,
     );

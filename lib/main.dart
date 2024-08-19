@@ -43,7 +43,7 @@ class MyApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       home: SplashScreen(), // 초기 화면을 스플래시 화면으로 설정
-      // home: ContractFeatureDebug(), // 서명 칸 간격 디버깅용
+      // home: ContractFeature(reportType:'매입'), // 서명 칸 간격 디버깅용
     );
   }
 }

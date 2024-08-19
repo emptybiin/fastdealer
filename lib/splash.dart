@@ -131,40 +131,39 @@ Future<String?> changeImage() async {
 List<CustomRect> _calculatePredefinedAreas(double imageWidth, double imageHeight) {
   return [
     CustomRect(
-      Rect.fromLTWH(imageWidth * 0.285, imageHeight * 0.128, imageWidth * 0.18, imageHeight * 0.024),
-      'topDate',
-        _getCurrentDateString()
-    ),
+        Rect.fromLTWH(imageWidth * 0.302, imageHeight * 0.171,
+            imageWidth * 0.18, imageHeight * 0.024),
+        'topDate',_getCurrentDateString()),
     // 상단 날짜
+
     CustomRect(
-      Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.770, imageWidth * 0.72, imageHeight * 0.024),
-      'contractDate',
-        _getCurrentDateString()
-    ),
-    // 하단 날짜
+        Rect.fromLTWH(imageWidth * 0.31, imageHeight * (0.721 - 0.02),
+            imageWidth * 0.659, imageHeight * 0.02),
+        'contractDate',_getCurrentDateString()),
+    // 계약 날짜
+
     CustomRect(
-        Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.818,
-            imageWidth * 0.482, imageHeight * 0.024),
-        'transferorIdNumber',
-    ''),
+        Rect.fromLTWH(imageWidth * 0.31, imageHeight * (0.721 + 0.02 * 1),
+            imageWidth * 0.444, imageHeight * 0.02),
+        'transferorIdNumber',''),
     // 양도인 주민등록번호
+
     CustomRect(
-        Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.843,
-            imageWidth * 0.482, imageHeight * 0.024),
-        'transferorAddressAndPhone',
-    ''),
+        Rect.fromLTWH(imageWidth * 0.31, imageHeight * (0.721 + 0.02 * 2),
+            imageWidth * 0.444, imageHeight * 0.02),
+        'transferorAddressAndPhone',''),
     // 양도인 주소 및 전화번호
+
     CustomRect(
-        Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.892,
-            imageWidth * 0.482, imageHeight * 0.024),
-        'transfereeIdNumber',
-    ''),
+        Rect.fromLTWH(imageWidth * 0.31, imageHeight * (0.721 + 0.02 * 4),
+            imageWidth * 0.444, imageHeight * 0.02),
+        'transfereeIdNumber',''),
     // 양수인 주민등록번호
+
     CustomRect(
-        Rect.fromLTWH(imageWidth * 0.282, imageHeight * 0.916,
-            imageWidth * 0.482, imageHeight * 0.024),
-        'transfereeAddressAndPhone',
-    ''),
+        Rect.fromLTWH(imageWidth * 0.31, imageHeight * (0.721 + 0.02 * 5),
+            imageWidth * 0.444, imageHeight * 0.02),
+        'transfereeAddressAndPhone',''),
     // 양수인 주소 및 전화번호
   ];
 }

@@ -444,34 +444,21 @@ class _ContractFeatureState extends State<ContractFeature> {
         if (['leaseTransfer_fee', 'downPayment_fee', 'remainingBalance_fee']
             .contains(selectedArea!.name)) {
           fontSize = 30.0;
-          textAlign = TextAlign.left;
+          textAlign = TextAlign.center;
         } else if (['leaseTransfer', 'downPayment', 'remainingBalance']
             .contains(selectedArea!.name)) {
-          textAlign = TextAlign.left;
+          textAlign = TextAlign.center;
         }
-
-        final imageWidth = selectedArea!.rect.width;
-        final spaceWidth = fontSize / 2;
 
         String textToRender = textEditingController.text;
         final segments = textToRender.split('-');
 
-        StringBuffer sb = StringBuffer();
-        for (int i = 0; i < segments.length; i++) {
-          if (i > 0) {
-            int numSpaces;
-            if (i == 1) {
-              numSpaces = (0.3 * (imageWidth / spaceWidth)).floor();
-            } else if (i == 2) {
-              numSpaces = (0.3 * (imageWidth / spaceWidth)).floor();
-            } else {
-              numSpaces = (imageWidth / spaceWidth).floor();
-            }
-            sb.write(' ' * numSpaces);
-          }
-          sb.write(segments[i]);
+        // 분할된 텍스트에 '년', '월', '일' 추가
+        if (segments.length == 3) {
+          textToRender =
+          '${segments[0]}년${segments[1]}월${segments[2]}일';
+          fontSize = 30.0;
         }
-        textToRender = sb.toString();
 
         overlayImage = await _textToImage(
           textToRender,
@@ -622,7 +609,7 @@ class _ContractFeatureState extends State<ContractFeature> {
                       print('Corrected touch position: $correctedPosition');
 
                       final tappedArea = predefinedAreas.firstWhere(
-                        (area) => area.contains(correctedPosition),
+                            (area) => area.contains(correctedPosition),
                         orElse: () => CustomRect(Rect.zero, ''),
                       );
 
@@ -637,7 +624,7 @@ class _ContractFeatureState extends State<ContractFeature> {
                           if (touchCoordinates.length == 4) {
                             _showSnackBar('완료했습니다');
                           }
-                        } else {}
+                        }
                       }
                     } else {
                       // Handle null contractImage scenario
@@ -663,10 +650,10 @@ class _ContractFeatureState extends State<ContractFeature> {
                 bottom: MediaQuery.of(context).size.height * 0.25 -
                     (isTextInputMode
                         ? MediaQuery.of(context).size.width *
-                                1.5 *
-                                ((selectedArea?.rect.height ?? 1) /
-                                    (selectedArea?.rect.width ?? 1)) +
-                            100
+                        1.5 *
+                        ((selectedArea?.rect.height ?? 1) /
+                            (selectedArea?.rect.width ?? 1)) +
+                        100
                         : 150),
                 left: MediaQuery.of(context).size.width * 0.15,
                 right: MediaQuery.of(context).size.width * 0.15,
@@ -675,10 +662,10 @@ class _ContractFeatureState extends State<ContractFeature> {
                   width: MediaQuery.of(context).size.width * 0.7,
                   height: isTextInputMode
                       ? MediaQuery.of(context).size.width *
-                              1.5 *
-                              ((selectedArea?.rect.height ?? 1) /
-                                  (selectedArea?.rect.width ?? 1)) +
-                          100
+                      1.5 *
+                      ((selectedArea?.rect.height ?? 1) /
+                          (selectedArea?.rect.width ?? 1)) +
+                      100
                       : 150,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -688,94 +675,95 @@ class _ContractFeatureState extends State<ContractFeature> {
                         height: 100,
                         child: isTextInputMode
                             ? Padding(
-                                padding: const EdgeInsets.all(5.0),
-                                child: TextField(
-                                  controller: textEditingController,
-                                  focusNode: textFocusNode,
-                                  keyboardType: [
-                                    'transactionAmount_fee',
-                                    'leaseTransfer_fee',
-                                    'remainingBalance_fee',
-                                    'downPayment_fee',
-                                    'registrationFee',
-                                    'year',
-                                    'transferorIdNumber',
-                                    'transfereeIdNumber',
-                                    'transactionAmount',
-                                    'transferorPhoneNumber',
-                                    'transfereePhoneNumber'
-                                  ].contains(selectedArea?.name)
-                                      ? TextInputType.numberWithOptions(
-                                          decimal: true, signed: false)
-                                      : TextInputType.text,
-                                  style: TextStyle(color: Colors.black),
-                                  decoration: InputDecoration(
-                                    border: OutlineInputBorder(
-                                      borderSide:
-                                          BorderSide(color: Colors.black),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.black, width: 2.0),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.black, width: 1.0),
-                                    ),
-                                    labelText: [
-                                      'transactionAmount_fee',
-                                      'leaseTransfer_fee',
-                                      'remainingBalance_fee',
-                                      'downPayment_fee',
-                                      'registrationFee',
-                                      'year',
-                                      'transferorIdNumber',
-                                      'transfereeIdNumber',
-                                      'transactionAmount',
-                                      'transferorPhoneNumber',
-                                      'transfereePhoneNumber'
-                                    ].contains(selectedArea?.name)
-                                        ? '숫자를 입력하세요'
-                                        : '텍스트를 입력하세요',
-                                    labelStyle: TextStyle(color: Colors.black),
-                                  ),
-                                  readOnly: [
-                                    'leaseTransfer',
-                                    'downPayment',
-                                    'remainingBalance'
-                                  ].contains(selectedArea?.name),
-                                  onTap: () async {
-                                    if ([
-                                      'leaseTransfer',
-                                      'downPayment',
-                                      'remainingBalance'
-                                    ].contains(selectedArea?.name)) {
-                                      DateTime? selectedDate =
-                                          await showDatePicker(
-                                        context: context,
-                                        initialDate: DateTime.now(),
-                                        firstDate: DateTime(1990),
-                                        lastDate: DateTime(2101),
-                                        locale: Locale('ko',
-                                            'KR'), // Set the locale to Korean
-                                      );
-
-                                      if (selectedDate != null) {
-                                        textEditingController.text =
-                                            "${selectedDate.toLocal()}"
-                                                .split(' ')[0];
-                                      }
-                                    } else {
-                                      FocusScope.of(context)
-                                          .requestFocus(textFocusNode);
-                                    }
-                                  },
-                                ),
-                              )
-                            : Signature(
-                                controller: _controller,
-                                backgroundColor: Colors.lightBlueAccent,
+                          padding: const EdgeInsets.all(5.0),
+                          child: TextField(
+                            controller: textEditingController,
+                            focusNode: textFocusNode,
+                            keyboardType: [
+                              'transactionAmount_fee',
+                              'leaseTransfer_fee',
+                              'remainingBalance_fee',
+                              'downPayment_fee',
+                              'registrationFee',
+                              'year',
+                              'transferorIdNumber',
+                              'transfereeIdNumber',
+                              'transactionAmount',
+                              'transferorPhoneNumber',
+                              'transfereePhoneNumber'
+                            ].contains(selectedArea?.name)
+                                ? TextInputType.numberWithOptions(
+                                decimal: true, signed: false)
+                                : TextInputType.text,
+                            style: TextStyle(color: Colors.black),
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black),
                               ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Colors.black, width: 2.0),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Colors.black, width: 1.0),
+                              ),
+                              labelText: [
+                                'transactionAmount_fee',
+                                'leaseTransfer_fee',
+                                'remainingBalance_fee',
+                                'downPayment_fee',
+                                'registrationFee',
+                                'year',
+                                'transferorIdNumber',
+                                'transfereeIdNumber',
+                                'transactionAmount',
+                                'transferorPhoneNumber',
+                                'transfereePhoneNumber'
+                              ].contains(selectedArea?.name)
+                                  ? '숫자를 입력하세요'
+                                  : '텍스트를 입력하세요',
+                              labelStyle: TextStyle(color: Colors.black),
+                            ),
+                            readOnly: [
+                              'leaseTransfer',
+                              'downPayment',
+                              'remainingBalance'
+                            ].contains(selectedArea?.name),
+                            onTap: () async {
+                              if ([
+                                'leaseTransfer',
+                                'downPayment',
+                                'remainingBalance'
+                              ].contains(selectedArea?.name)) {
+                                DateTime? selectedDate =
+                                await showDatePicker(
+                                  context: context,
+                                  initialDate: DateTime.now(),
+                                  firstDate: DateTime(1990),
+                                  lastDate: DateTime(2101),
+                                  locale: Locale('ko', 'KR'), // Set the locale to Korean
+                                );
+
+                                if (selectedDate != null) {
+                                  textEditingController.text =
+                                  "${selectedDate.toLocal()}".split(' ')[0];
+
+                                  // Automatically request focus to the TextField
+                                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                                    FocusScope.of(context).requestFocus(textFocusNode);
+                                  });
+                                }
+                              } else {
+                                FocusScope.of(context).requestFocus(textFocusNode);
+                              }
+                            },
+                          ),
+                        )
+                            : Signature(
+                          controller: _controller,
+                          backgroundColor: Colors.lightBlueAccent,
+                        ),
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -845,7 +833,7 @@ class _ContractFeatureState extends State<ContractFeature> {
                   // Change to touch correction mode
                   setState(() {
                     _isTouchCorrectionMode =
-                        true; // Enable touch correction mode
+                    true; // Enable touch correction mode
                     isSignatureMode = false;
                     isTextInputMode = false;
 
@@ -887,7 +875,6 @@ class _ContractFeatureState extends State<ContractFeature> {
       ),
     );
   }
-
   Offset correctTouchOffset(
       Offset touchPosition,
       double imageWidth,

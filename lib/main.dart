@@ -51,6 +51,8 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Fast Deal'),
@@ -60,7 +62,7 @@ class MyHomePage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             SizedBox(
-              width: 200, // 버튼의 가로 길이 고정
+              width: screenWidth * 0.5, // 화면의 80% 너비로 설정
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.push(
@@ -75,7 +77,7 @@ class MyHomePage extends StatelessWidget {
             ),
             SizedBox(height: 20), // 버튼 간 간격
             SizedBox(
-              width: 200, // 버튼의 가로 길이 고정
+              width: screenWidth * 0.5, // 화면의 80% 너비로 설정
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.push(
@@ -90,7 +92,7 @@ class MyHomePage extends StatelessWidget {
             ),
             SizedBox(height: 20), // 버튼 간 간격 추가
             SizedBox(
-              width: 200, // 버튼의 가로 길이 고정
+              width: screenWidth * 0.5, // 화면의 80% 너비로 설정
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.push(
@@ -105,7 +107,7 @@ class MyHomePage extends StatelessWidget {
             ),
             SizedBox(height: 20), // 버튼 간 간격 추가
             SizedBox(
-              width: 200, // 버튼의 가로 길이 고정
+              width: screenWidth * 0.5, // 화면의 80% 너비로 설정
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.push(

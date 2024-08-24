@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:open_file_plus/open_file_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -51,6 +52,11 @@ class _ExcelEditScreenState extends State<ExcelEditScreen> {
     final jsonString = jsonEncode({'body': data});
     print(jsonString);
 
+    String customerName = data['고객명'];
+    String todayDate = DateFormat('yyyyMMdd').format(DateTime.now());
+    String type = data['type'];
+    String fileName = '${customerName}_${todayDate}_${type}.xlsx';
+
     final encodedJson = Uri.encodeComponent(jsonString);
     final url = 'https://9lplmto9of.execute-api.ap-northeast-2.amazonaws.com/default/fastdeal?body=$encodedJson';
 
@@ -59,7 +65,6 @@ class _ExcelEditScreenState extends State<ExcelEditScreen> {
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
         final encodedFileContent = responseData['file_content'];
-        final fileName = 'esens.xlsx';
         print('Success: File received');
 
         final fileBytes = base64.decode(encodedFileContent);

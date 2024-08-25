@@ -181,7 +181,7 @@ class MyHomePage extends StatelessWidget {
 //   }
 //
 //   Future<void> loadContractImage() async {
-//     ByteData data = await rootBundle.load('assets/contract_image.png');
+//     ByteData data = await rootBundle.load('assets/contract_image5.png');
 //     final codec = await ui.instantiateImageCodec(data.buffer.asUint8List());
 //     final frame = await codec.getNextFrame();
 //

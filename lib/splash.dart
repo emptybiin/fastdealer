@@ -204,8 +204,8 @@ String _getCurrentDateString() {
   final year = now.year;
   final month = now.month.toString().padLeft(2, '0');
   final day = now.day.toString().padLeft(2, '0');
-  // return '$year-$month-$day';
-  return '2024년05월05일';
+  return '$year년$month월$day일';
+  // return '2024년05월05일';
 }
 
 Future<ui.Image> _textToImage(

@@ -31,9 +31,9 @@ class ContractFeature extends StatefulWidget {
 
 class _ContractFeatureState extends State<ContractFeature> {
   SignatureController _controller = SignatureController(
-    penStrokeWidth: 5,
+    penStrokeWidth: 3.5,
     penColor: Colors.black,
-    exportBackgroundColor: Colors.transparent,
+    exportBackgroundColor: Colors.white,
   );
   ui.Image? contractImage;
   ui.Image? combinedImage;
@@ -101,14 +101,14 @@ class _ContractFeatureState extends State<ContractFeature> {
       //     'transferorName'),
 
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.687, imageHeight * 0.154,
-              imageWidth * 0.18, imageHeight * 0.025),
+          Rect.fromLTWH(imageWidth * 0.75, imageHeight * 0.154,
+              imageWidth * 0.117, imageHeight * 0.025),
           'transfereeName'),
       // 양도인 이름
 
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.687, imageHeight * (0.154 + 0.025),
-              imageWidth * 0.18, imageHeight * 0.025),
+          Rect.fromLTWH(imageWidth * 0.75, imageHeight * (0.154 + 0.025),
+              imageWidth * 0.117, imageHeight * 0.025),
           'transferorName'),
       // 양수인 이름
 
@@ -131,8 +131,8 @@ class _ContractFeatureState extends State<ContractFeature> {
       // 차량 등록 번호
 
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.162, imageHeight * (0.223 + 0.0175 * 1),
-              imageWidth * 0.15, imageHeight * 0.0175),
+          Rect.fromLTWH(imageWidth * 0.232, imageHeight * (0.223 + 0.0175 * 1),
+              imageWidth * 0.08, imageHeight * 0.0175),
           'vehicleType'),
       // 차량 종류
 
@@ -144,7 +144,7 @@ class _ContractFeatureState extends State<ContractFeature> {
 
       CustomRect(
           Rect.fromLTWH(imageWidth * 0.232, imageHeight * (0.223 + 0.0175 * 2),
-              imageWidth * 0.221, imageHeight * 0.0175),
+              imageWidth * 0.158, imageHeight * 0.0175),
           'carModel'),
       // 차명
 
@@ -156,13 +156,13 @@ class _ContractFeatureState extends State<ContractFeature> {
 
       CustomRect(
           Rect.fromLTWH(imageWidth * 0.232, imageHeight * (0.223 + 0.0175 * 4),
-              imageWidth * 0.157, imageHeight * 0.0175),
+              imageWidth * 0.158, imageHeight * 0.0175),
           'registrationFee'),
       // 등록비용
 
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.617, imageHeight * 0.223,
-              imageWidth * 0.28, imageHeight * 0.0175),
+          Rect.fromLTWH(imageWidth * 0.685, imageHeight * 0.223,
+              imageWidth * 0.212, imageHeight * 0.0175),
           'transactionAmount'),
       // 매매 금액
 
@@ -203,26 +203,26 @@ class _ContractFeatureState extends State<ContractFeature> {
       // 잔금
 
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.547, imageHeight * (0.223 + 0.0175 * 4),
-              imageWidth * 0.422, imageHeight * 0.0175),
+          Rect.fromLTWH(imageWidth * 0.617, imageHeight * (0.223 + 0.0175 * 4),
+              imageWidth * 0.245, imageHeight * 0.0175),
           'remarks'),
       // 비고
 
-      CustomRect(
-          Rect.fromLTWH(imageWidth * 0.255, imageHeight * 0.167,
-              imageWidth * 0.18, imageHeight * 0.024),
-          'topDate'),
-      // 상단 날짜
+      // CustomRect(
+      //     Rect.fromLTWH(imageWidth * 0.255, imageHeight * 0.167,
+      //         imageWidth * 0.18, imageHeight * 0.024),
+      //     'topDate'),
+      // // 상단 날짜
+
+      // CustomRect(
+      //     Rect.fromLTWH(imageWidth * 0.312, imageHeight * (0.706 - 0.0175),
+      //         imageWidth * 0.653, imageHeight * 0.0175),
+      //     'contractDate'),
+      // // 계약 날짜
 
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.312, imageHeight * (0.706 - 0.0175),
-              imageWidth * 0.653, imageHeight * 0.0175),
-          'contractDate'),
-      // 계약 날짜
-
-      CustomRect(
-          Rect.fromLTWH(imageWidth * 0.312, imageHeight * 0.706,
-              imageWidth * 0.233, imageHeight * 0.0175),
+          Rect.fromLTWH(imageWidth * 0.4, imageHeight * 0.706,
+              imageWidth * 0.145, imageHeight * 0.0175),
           'transferorNameFull'),
       // 양도인 이름
 
@@ -232,27 +232,23 @@ class _ContractFeatureState extends State<ContractFeature> {
           'transferorPhoneNumber'),
       // 양도인 전화번호
 
-
       CustomRect(
           Rect.fromLTWH(imageWidth * 0.750, imageHeight * 0.706,
-              imageWidth * 0.215, imageHeight * 0.0175*4),
+              imageWidth * 0.215, imageHeight * 0.0175 * 4),
           'transferorSignatureOrSeal'),
       // 양도인 서명 또는 도장
 
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.312, imageHeight * (0.706+ 0.0175 * 1),
+          Rect.fromLTWH(imageWidth * 0.312, imageHeight * (0.706 + 0.0175 * 1),
               imageWidth * 0.233, imageHeight * 0.0175),
           'transferorIdNumber'),
       // 양도인 주민등록번호(사업자번호)
-
 
       CustomRect(
           Rect.fromLTWH(imageWidth * 0.312, imageHeight * (0.706 + 0.0175 * 2),
               imageWidth * 0.438, imageHeight * 0.0175 * 2),
           'transferorAddressAndPhone'),
       // 양도인 주소 및 전화번호
-
-
 
       CustomRect(
           Rect.fromLTWH(imageWidth * 0.312, imageHeight * (0.706 + 0.0175 * 4),
@@ -272,46 +268,41 @@ class _ContractFeatureState extends State<ContractFeature> {
           'transfereeIdNumber'),
       // 양수인 사업자번호
 
-
-
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.750, imageHeight *  (0.706 + 0.0175 * 4),
-              imageWidth * 0.215, imageHeight * 0.0175*4),
+          Rect.fromLTWH(imageWidth * 0.750, imageHeight * (0.706 + 0.0175 * 4),
+              imageWidth * 0.215, imageHeight * 0.0175 * 4),
           'transfereeSignatureOrSeal'),
       // 양도인 서명 또는 도장
 
       CustomRect(
           Rect.fromLTWH(imageWidth * 0.312, imageHeight * (0.706 + 0.0175 * 6),
-              imageWidth * 0.438, imageHeight * 0.0175*2),
+              imageWidth * 0.438, imageHeight * 0.0175 * 2),
           'transfereeAddressAndPhone'),
       // 양수인 주소 및 전화번호
 
-
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.085, imageHeight *  0.577,
-              imageWidth * 0.605, imageHeight * 0.024),
+          Rect.fromLTWH(imageWidth * 0.085, imageHeight * 0.577,
+              imageWidth * 0.38, imageHeight * 0.024),
           'add1'),
       // 추가 1 섹션
 
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.085, imageHeight *  (0.577 + 0.024),
-              imageWidth * 0.605, imageHeight * 0.024),
+          Rect.fromLTWH(imageWidth * 0.085, imageHeight * (0.577 + 0.024),
+              imageWidth * 0.38, imageHeight * 0.024),
           'add1data'),
 
       // 추가 1 데이터
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.085, imageHeight *   (0.577 + 0.024*2),
-              imageWidth * 0.605, imageHeight * 0.024),
+          Rect.fromLTWH(imageWidth * 0.085, imageHeight * (0.577 + 0.024 * 2),
+              imageWidth * 0.38, imageHeight * 0.024),
           'add2'),
       // 추가 2 섹션
 
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.085, imageHeight *   (0.577 + 0.024*3),
-              imageWidth * 0.605, imageHeight * 0.024),
+          Rect.fromLTWH(imageWidth * 0.085, imageHeight * (0.577 + 0.024 * 3),
+              imageWidth * 0.38, imageHeight * 0.024),
           'add2data'),
       // 추가 2 데이터
-
-
     ];
   }
 
@@ -455,8 +446,7 @@ class _ContractFeatureState extends State<ContractFeature> {
 
         // 분할된 텍스트에 '년', '월', '일' 추가
         if (segments.length == 3) {
-          textToRender =
-          '${segments[0]}년${segments[1]}월${segments[2]}일';
+          textToRender = '${segments[0]}년${segments[1]}월${segments[2]}일';
           fontSize = 30.0;
         }
 
@@ -517,14 +507,29 @@ class _ContractFeatureState extends State<ContractFeature> {
   void _handleCellSelection(CustomRect area) {
     setState(() {
       selectedArea = area;
-      //print('Selected Area Name: ${area.name}');
       isSignatureMode = false;
       isTextInputMode = false;
 
-      // Reset signature controller
-      _controller.clear();
+      // Set the background color based on the area name
+      if (area.name == 'transferorSignature' ||
+          area.name == 'transfereeSignature' ||
+          area.name == 'transferorSignatureOrSeal' ||
+          area.name == 'transfereeSignatureOrSeal') {
+        _controller = SignatureController(
+          penStrokeWidth: 3.5,
+          penColor: Colors.black,
+          exportBackgroundColor: Colors.transparent, // Set to transparent
+        );
+      } else {
+        _controller = SignatureController(
+          penStrokeWidth: 3.5,
+          penColor: Colors.black,
+          exportBackgroundColor: Colors.white, // Set to white
+        );
+      }
 
-      // Clear text input controller
+      // Clear the controllers
+      _controller.clear();
       textEditingController.clear();
     });
   }
@@ -584,7 +589,8 @@ class _ContractFeatureState extends State<ContractFeature> {
                     final deviceHeight = MediaQuery.of(context).size.height -
                         padding.top -
                         padding.bottom;
-                    final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+                    final keyboardHeight =
+                        MediaQuery.of(context).viewInsets.bottom;
 
                     final originalPosition = details.localPosition;
 
@@ -603,7 +609,7 @@ class _ContractFeatureState extends State<ContractFeature> {
                       );
 
                       final tappedArea = predefinedAreas.firstWhere(
-                            (area) => area.contains(correctedPosition),
+                        (area) => area.contains(correctedPosition),
                         orElse: () => CustomRect(Rect.zero, ''),
                       );
 
@@ -633,7 +639,9 @@ class _ContractFeatureState extends State<ContractFeature> {
               ),
 
             // Overlay TextField or Signature
-            if ((isTextInputMode || isSignatureMode) && selectedArea != null && selectedArea!.rect != Rect.zero)
+            if ((isTextInputMode || isSignatureMode) &&
+                selectedArea != null &&
+                selectedArea!.rect != Rect.zero)
               Positioned(
                 top: MediaQuery.of(context).size.height * 0.375,
                 left: 0,
@@ -641,76 +649,138 @@ class _ContractFeatureState extends State<ContractFeature> {
                 child: Container(
                   color: Colors.white.withOpacity(0.8),
                   width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height * 0.25,
+                  height: MediaQuery.of(context).size.height * 0.35,
                   child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Container(
-                        height: MediaQuery.of(context).size.height * 0.15,
-                        child: isTextInputMode
-                            ? Padding(
-                          padding: const EdgeInsets.all(5.0),
-                          child: TextField(
-                            controller: textEditingController,
-                            focusNode: textFocusNode,
-                            keyboardType: TextInputType.text,
-                            style: TextStyle(color: Colors.black),
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black, width: 2.0),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black, width: 1.0),
-                              ),
-                              labelText: '텍스트를 입력하세요',
-                              labelStyle: TextStyle(color: Colors.black),
-                            ),
-                          ),
-                        )
-                            : Signature(
-                          controller: _controller,
-                          backgroundColor: Colors.lightBlueAccent,
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              if (isTextInputMode) {
+                                isSignatureMode = true;
+                                isTextInputMode = false;
+                              } else {
+                                isSignatureMode = false;
+                                isTextInputMode = true;
+                              }
+                            });
+                          },
+                          child: Text(isTextInputMode ? '서명 전환' : '텍스트 전환'),
                         ),
-                      ),
-                      SizedBox(height: 2),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                setState(() {
-                                  if (isTextInputMode) {
-                                    isSignatureMode = true;
-                                    isTextInputMode = false;
-                                  } else {
-                                    isSignatureMode = false;
-                                    isTextInputMode = true;
-                                  }
-                                });
-                              },
-                              child: Text(isTextInputMode ? '서명 전환' : '텍스트 전환'),
-                            ),
+                        SizedBox(height: 8),
+                        Flexible(
+                          // Use Flexible to constrain the height
+                          child: Container(
+                            child: isTextInputMode
+                                ? Padding(
+                                    padding: const EdgeInsets.all(5.0),
+                                    child: TextField(
+                                      controller: textEditingController,
+                                      focusNode: textFocusNode,
+                                      keyboardType: [
+                                        'transactionAmount_fee',
+                                        'leaseTransfer_fee',
+                                        'remainingBalance_fee',
+                                        'downPayment_fee',
+                                        'registrationFee',
+                                        'year',
+                                        'transferorIdNumber',
+                                        'transfereeIdNumber',
+                                        'transactionAmount',
+                                        'transferorPhoneNumber',
+                                        'transfereePhoneNumber'
+                                      ].contains(selectedArea?.name)
+                                          ? TextInputType.numberWithOptions(
+                                              decimal: true, signed: false)
+                                          : TextInputType.text,
+                                      style: TextStyle(color: Colors.black),
+                                      decoration: InputDecoration(
+                                        border: OutlineInputBorder(
+                                          borderSide:
+                                              BorderSide(color: Colors.black),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.black, width: 2.0),
+                                        ),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: Colors.black, width: 1.0),
+                                        ),
+                                        labelText: [
+                                          'transactionAmount_fee',
+                                          'leaseTransfer_fee',
+                                          'remainingBalance_fee',
+                                          'downPayment_fee',
+                                          'registrationFee',
+                                          'year',
+                                          'transferorIdNumber',
+                                          'transfereeIdNumber',
+                                          'transactionAmount',
+                                          'transferorPhoneNumber',
+                                          'transfereePhoneNumber'
+                                        ].contains(selectedArea?.name)
+                                            ? '숫자를 입력하세요'
+                                            : '텍스트를 입력하세요',
+                                        labelStyle:
+                                            TextStyle(color: Colors.black),
+                                      ),
+                                      readOnly: [
+                                        'leaseTransfer',
+                                        'downPayment',
+                                        'remainingBalance'
+                                      ].contains(selectedArea?.name),
+                                      onTap: () async {
+                                        if ([
+                                          'leaseTransfer',
+                                          'downPayment',
+                                          'remainingBalance'
+                                        ].contains(selectedArea?.name)) {
+                                          DateTime? selectedDate =
+                                              await showDatePicker(
+                                            context: context,
+                                            initialDate: DateTime.now(),
+                                            firstDate: DateTime(1990),
+                                            lastDate: DateTime(2101),
+                                            locale: Locale('ko',
+                                                'KR'), // Set the locale to Korean
+                                          );
+
+                                          if (selectedDate != null) {
+                                            textEditingController.text =
+                                                "${selectedDate.toLocal()}"
+                                                    .split(' ')[0];
+                                          }
+                                        } else {
+                                          FocusScope.of(context)
+                                              .requestFocus(textFocusNode);
+                                        }
+                                      },
+                                    ),
+                                  )
+                                : Signature(
+                                    controller: _controller,
+                                    backgroundColor: Colors.lightBlueAccent,
+                                  ),
                           ),
-                          SizedBox(width: 8), // Space between buttons
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                _saveSignatureOrText();
-                              },
-                              child: Text('저장'),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  _saveSignatureOrText();
+                                },
+                                child: Text('저장'),
+                              ),
+                            )
+                          ],
+                        ),
+                      ]),
                 ),
-              ),
+              )
           ],
         ),
       ),
@@ -762,7 +832,7 @@ class _ContractFeatureState extends State<ContractFeature> {
                   // Change to touch correction mode
                   setState(() {
                     _isTouchCorrectionMode =
-                    true; // Enable touch correction mode
+                        true; // Enable touch correction mode
                     isSignatureMode = false;
                     isTextInputMode = false;
 
@@ -804,8 +874,6 @@ class _ContractFeatureState extends State<ContractFeature> {
       ),
     );
   }
-
-
 
   Offset correctTouchOffset(
       Offset touchPosition,

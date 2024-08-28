@@ -643,30 +643,37 @@ class _ContractFeatureState extends State<ContractFeature> {
                 selectedArea != null &&
                 selectedArea!.rect != Rect.zero)
               Positioned(
-                top: MediaQuery.of(context).size.height * 0.375,
+                top: MediaQuery.of(context).size.height * 0.3,
                 left: 0,
                 right: 0,
                 child: Container(
                   color: Colors.white.withOpacity(0.8),
                   width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height * 0.35,
+                  height: MediaQuery.of(context).size.height * 0.3,
                   child: Column(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              if (isTextInputMode) {
-                                isSignatureMode = true;
-                                isTextInputMode = false;
-                              } else {
-                                isSignatureMode = false;
-                                isTextInputMode = true;
-                              }
-                            });
-                          },
-                          child: Text(isTextInputMode ? '서명 전환' : '텍스트 전환'),
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded( // 버튼이 X축으로 늘어나도록 Expanded로 감싸기
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      if (isTextInputMode) {
+                                        isSignatureMode = true;
+                                        isTextInputMode = false;
+                                      } else {
+                                        isSignatureMode = false;
+                                        isTextInputMode = true;
+                                      }
+                                    });
+                                  },
+                                  child: Text(isTextInputMode ? '서명 전환' : '텍스트 전환'),
+                                ),
+                              ),
+                            ]
                         ),
                         SizedBox(height: 8),
                         Flexible(

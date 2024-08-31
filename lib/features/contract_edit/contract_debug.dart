@@ -904,7 +904,7 @@ class _ContractFeatureState extends State<ContractFeature> {
       double topPadding,
       double bottomPadding) {
     final imageAspectRatio = imageWidth / imageHeight;
-    final screenHeight = deviceHeight - topPadding * 2.5;
+    final screenHeight = deviceHeight - topPadding * 2;
     final screenAspectRatio = deviceWidth / screenHeight;
 
     double imageScale;
@@ -1161,12 +1161,15 @@ class OverlayPainter extends CustomPainter {
             area.rect.height * imageScale * shrinkFactorY2,
           );
         } else {
-          // Use the normal scale
+          final shrinkFactorX = 0.995;
+          final shrinkFactorX2 = 0.95;
+          final shrinkFactorY = 0.995;
+          final shrinkFactorY2 = 0.75;
           scaledRect = Rect.fromLTWH(
-            area.rect.left * imageScale,
-            area.rect.top * imageScale,
-            area.rect.width * imageScale,
-            area.rect.height * imageScale,
+            area.rect.left * imageScale / shrinkFactorX,
+            area.rect.top * imageScale / shrinkFactorY,
+            area.rect.width * imageScale * shrinkFactorX2,
+            area.rect.height * imageScale * shrinkFactorY2,
           );
         }
 

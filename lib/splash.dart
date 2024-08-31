@@ -91,7 +91,7 @@ Future<String?> changeImage() async {
 
     // Set font size based on the area name
     double fontSize =
-        (area.name == 'topDate' || area.name == 'contractDate') ? 34 : 24;
+        (area.name == 'topDate') ? 40 : 24;
 
     final textImage = await _textToImage(area.text, area.rect.width,
         area.rect.height, fontSize, // Conditional font size
@@ -111,8 +111,10 @@ Future<String?> changeImage() async {
   // 매입
   for (var area in predefinedAreas) {
     // Check for specific names and apply the custom text
-    if (area.name == 'transfereeIdNumber') {
-      area.text = '(주)기억 110111-6116308';
+    if (area.name == 'transfereeNameFull') {
+      area.text = '(주)기억';}
+      else if (area.name == 'transfereeIdNumber') {
+      area.text = '110111-6116308';
     } else if (area.name == 'transfereeAddressAndPhone') {
       area.text = '서울시 서초구 양재대로 11길 36 은관 401호';
     } else if (area.name == 'topDate' || area.name == 'contractDate') {
@@ -122,7 +124,7 @@ Future<String?> changeImage() async {
 
     // Set font size based on the area name
     double fontSize =
-        (area.name == 'topDate' || area.name == 'contractDate') ? 34 : 24;
+        (area.name == 'topDate') ? 40 : 24;
 
     final textImage = await _textToImage(area.text, area.rect.width,
         area.rect.height, fontSize, // Conditional font size

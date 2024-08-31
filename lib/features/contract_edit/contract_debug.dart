@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'dart:async';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart' as intl;
 import 'package:share_plus/share_plus.dart';
 import 'package:signature/signature.dart';
 import 'dart:io';
@@ -33,7 +34,7 @@ class _ContractFeatureState extends State<ContractFeature> {
   SignatureController _controller = SignatureController(
     penStrokeWidth: 3.5,
     penColor: Colors.black,
-    exportBackgroundColor: Colors.white,
+    exportBackgroundColor: Colors.transparent,
   );
   ui.Image? contractImage;
   ui.Image? combinedImage;
@@ -126,7 +127,7 @@ class _ContractFeatureState extends State<ContractFeature> {
 
       CustomRect(
           Rect.fromLTWH(imageWidth * 0.232, imageHeight * 0.223,
-              imageWidth * 0.221, imageHeight * 0.0175),
+              imageWidth * 0.158, imageHeight * 0.0175),
           'vehicleRegistrationNumber'),
       // 차량 등록 번호
 
@@ -251,8 +252,8 @@ class _ContractFeatureState extends State<ContractFeature> {
       // 양도인 주소 및 전화번호
 
       CustomRect(
-          Rect.fromLTWH(imageWidth * 0.312, imageHeight * (0.706 + 0.0175 * 4),
-              imageWidth * 0.233, imageHeight * 0.0175),
+          Rect.fromLTWH(imageWidth * 0.4, imageHeight * (0.706 + 0.0175 * 4),
+              imageWidth * 0.145, imageHeight * 0.0175),
           'transfereeNameFull'),
       // 양수인 이름 (풀네임)
 
@@ -359,8 +360,8 @@ class _ContractFeatureState extends State<ContractFeature> {
         text: formattedText,
         style: TextStyle(color: Colors.black, fontSize: fontSize),
       ),
-      textDirection: TextDirection.ltr,
       textAlign: align,
+      textDirection: TextDirection.ltr, // Correct usage
     );
     textPainter.layout(maxWidth: width);
 
@@ -510,21 +511,30 @@ class _ContractFeatureState extends State<ContractFeature> {
       isSignatureMode = false;
       isTextInputMode = false;
 
-      // Set the background color based on the area name
-      if (area.name == 'transferorSignature' ||
-          area.name == 'transfereeSignature' ||
-          area.name == 'transferorSignatureOrSeal' ||
-          area.name == 'transfereeSignatureOrSeal') {
+      // Set the background color based on the reportType and area name
+      if (widget.reportType == '매입' && (
+          area.name == 'transfereeNameFull' ||
+              area.name == 'transfereeIdNumber' ||
+              area.name == 'transfereeAddressAndPhone')) {
         _controller = SignatureController(
           penStrokeWidth: 3.5,
           penColor: Colors.black,
-          exportBackgroundColor: Colors.transparent, // Set to transparent
+          exportBackgroundColor: Colors.white, // Set to transparent
+        );
+      } else if (widget.reportType == '판매' && (
+          area.name == 'transferorNameFull' ||
+              area.name == 'transferorIdNumber' ||
+              area.name == 'transferorAddressAndPhone')) {
+        _controller = SignatureController(
+          penStrokeWidth: 3.5,
+          penColor: Colors.black,
+          exportBackgroundColor: Colors.white, // Set to transparent
         );
       } else {
         _controller = SignatureController(
           penStrokeWidth: 3.5,
           penColor: Colors.black,
-          exportBackgroundColor: Colors.white, // Set to white
+          exportBackgroundColor: Colors.transparent, // Set to white
         );
       }
 
@@ -571,6 +581,96 @@ class _ContractFeatureState extends State<ContractFeature> {
     return Scaffold(
       appBar: AppBar(
         title: Text('계약서 서명 기능'),
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(60.0), // Adjust height as needed
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      if (selectedArea == null) {
+                        _showSelectCellSnackBar = true;
+                      } else {
+                        isSignatureMode = true;
+                        isTextInputMode = false;
+                        _isTouchCorrectionMode = false; // Ensure it's off
+                      }
+                    });
+                  },
+                  child: Text('서명'),
+                ),
+              ),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      if (selectedArea == null) {
+                        _showSelectCellSnackBar = true;
+                      } else {
+                        isTextInputMode = true;
+                        isSignatureMode = false;
+                        _isTouchCorrectionMode = false; // Ensure it's off
+                        Future.delayed(Duration(milliseconds: 100), () {
+                          FocusScope.of(context).requestFocus(textFocusNode);
+                        });
+                      }
+                    });
+                  },
+                  child: Text('텍스트'),
+                ),
+              ),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    // Clear previous coordinates
+                    touchCoordinates.clear();
+
+                    // Change to touch correction mode
+                    setState(() {
+                      _isTouchCorrectionMode =
+                      true; // Enable touch correction mode
+                      isSignatureMode = false;
+                      isTextInputMode = false;
+
+                      _showSnackBar('이미지의 좌단 상단을 각각 2번씩 터치해주세요');
+                    });
+                  },
+                  child: Text('터치보정'),
+                ),
+              ),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () async {
+                    final overlayPainter = OverlayPainter(
+                      contractImage!,
+                      predefinedAreas,
+                      onSave: (savedImage) {
+                        print('Image saved successfully!');
+                      },
+                    );
+
+                    final recorder = ui.PictureRecorder();
+                    final canvas = Canvas(
+                        recorder,
+                        Rect.fromLTWH(0, 0, contractImage!.width.toDouble(),
+                            contractImage!.height.toDouble()));
+
+                    final size = Size(contractImage!.width.toDouble(),
+                        contractImage!.height.toDouble());
+
+                    overlayPainter.paint(canvas, size);
+                    String todayDate = intl.DateFormat('yyyyMMddHHmm').format(DateTime.now());
+                    final fileName = '${todayDate}_${widget.reportType}';
+                    await overlayPainter.saveCanvasAsImage(size, fileName);
+                  },
+                  child: Text('내보내기'),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
       body: GestureDetector(
         onTap: () {
@@ -609,7 +709,7 @@ class _ContractFeatureState extends State<ContractFeature> {
                       );
 
                       final tappedArea = predefinedAreas.firstWhere(
-                        (area) => area.contains(correctedPosition),
+                            (area) => area.contains(correctedPosition),
                         orElse: () => CustomRect(Rect.zero, ''),
                       );
 
@@ -681,95 +781,95 @@ class _ContractFeatureState extends State<ContractFeature> {
                           child: Container(
                             child: isTextInputMode
                                 ? Padding(
-                                    padding: const EdgeInsets.all(5.0),
-                                    child: TextField(
-                                      controller: textEditingController,
-                                      focusNode: textFocusNode,
-                                      keyboardType: [
-                                        'transactionAmount_fee',
-                                        'leaseTransfer_fee',
-                                        'remainingBalance_fee',
-                                        'downPayment_fee',
-                                        'registrationFee',
-                                        'year',
-                                        'transferorIdNumber',
-                                        'transfereeIdNumber',
-                                        'transactionAmount',
-                                        'transferorPhoneNumber',
-                                        'transfereePhoneNumber'
-                                      ].contains(selectedArea?.name)
-                                          ? TextInputType.numberWithOptions(
-                                              decimal: true, signed: false)
-                                          : TextInputType.text,
-                                      style: TextStyle(color: Colors.black),
-                                      decoration: InputDecoration(
-                                        border: OutlineInputBorder(
-                                          borderSide:
-                                              BorderSide(color: Colors.black),
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                              color: Colors.black, width: 2.0),
-                                        ),
-                                        enabledBorder: OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                              color: Colors.black, width: 1.0),
-                                        ),
-                                        labelText: [
-                                          'transactionAmount_fee',
-                                          'leaseTransfer_fee',
-                                          'remainingBalance_fee',
-                                          'downPayment_fee',
-                                          'registrationFee',
-                                          'year',
-                                          'transferorIdNumber',
-                                          'transfereeIdNumber',
-                                          'transactionAmount',
-                                          'transferorPhoneNumber',
-                                          'transfereePhoneNumber'
-                                        ].contains(selectedArea?.name)
-                                            ? '숫자를 입력하세요'
-                                            : '텍스트를 입력하세요',
-                                        labelStyle:
-                                            TextStyle(color: Colors.black),
-                                      ),
-                                      readOnly: [
-                                        'leaseTransfer',
-                                        'downPayment',
-                                        'remainingBalance'
-                                      ].contains(selectedArea?.name),
-                                      onTap: () async {
-                                        if ([
-                                          'leaseTransfer',
-                                          'downPayment',
-                                          'remainingBalance'
-                                        ].contains(selectedArea?.name)) {
-                                          DateTime? selectedDate =
-                                              await showDatePicker(
-                                            context: context,
-                                            initialDate: DateTime.now(),
-                                            firstDate: DateTime(1990),
-                                            lastDate: DateTime(2101),
-                                            locale: Locale('ko',
-                                                'KR'), // Set the locale to Korean
-                                          );
-
-                                          if (selectedDate != null) {
-                                            textEditingController.text =
-                                                "${selectedDate.toLocal()}"
-                                                    .split(' ')[0];
-                                          }
-                                        } else {
-                                          FocusScope.of(context)
-                                              .requestFocus(textFocusNode);
-                                        }
-                                      },
-                                    ),
-                                  )
-                                : Signature(
-                                    controller: _controller,
-                                    backgroundColor: Colors.lightBlueAccent,
+                              padding: const EdgeInsets.all(5.0),
+                              child: TextField(
+                                controller: textEditingController,
+                                focusNode: textFocusNode,
+                                keyboardType: [
+                                  'transactionAmount_fee',
+                                  'leaseTransfer_fee',
+                                  'remainingBalance_fee',
+                                  'downPayment_fee',
+                                  'registrationFee',
+                                  'year',
+                                  'transferorIdNumber',
+                                  'transfereeIdNumber',
+                                  'transactionAmount',
+                                  'transferorPhoneNumber',
+                                  'transfereePhoneNumber'
+                                ].contains(selectedArea?.name)
+                                    ? TextInputType.numberWithOptions(
+                                    decimal: true, signed: false)
+                                    : TextInputType.text,
+                                style: TextStyle(color: Colors.black),
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(
+                                    borderSide:
+                                    BorderSide(color: Colors.black),
                                   ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Colors.black, width: 2.0),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Colors.black, width: 1.0),
+                                  ),
+                                  labelText: [
+                                    'transactionAmount_fee',
+                                    'leaseTransfer_fee',
+                                    'remainingBalance_fee',
+                                    'downPayment_fee',
+                                    'registrationFee',
+                                    'year',
+                                    'transferorIdNumber',
+                                    'transfereeIdNumber',
+                                    'transactionAmount',
+                                    'transferorPhoneNumber',
+                                    'transfereePhoneNumber'
+                                  ].contains(selectedArea?.name)
+                                      ? '숫자를 입력하세요'
+                                      : '텍스트를 입력하세요',
+                                  labelStyle:
+                                  TextStyle(color: Colors.black),
+                                ),
+                                readOnly: [
+                                  'leaseTransfer',
+                                  'downPayment',
+                                  'remainingBalance'
+                                ].contains(selectedArea?.name),
+                                onTap: () async {
+                                  if ([
+                                    'leaseTransfer',
+                                    'downPayment',
+                                    'remainingBalance'
+                                  ].contains(selectedArea?.name)) {
+                                    DateTime? selectedDate =
+                                    await showDatePicker(
+                                      context: context,
+                                      initialDate: DateTime.now(),
+                                      firstDate: DateTime(1990),
+                                      lastDate: DateTime(2101),
+                                      locale: Locale('ko',
+                                          'KR'), // Set the locale to Korean
+                                    );
+
+                                    if (selectedDate != null) {
+                                      textEditingController.text =
+                                      "${selectedDate.toLocal()}"
+                                          .split(' ')[0];
+                                    }
+                                  } else {
+                                    FocusScope.of(context)
+                                        .requestFocus(textFocusNode);
+                                  }
+                                },
+                              ),
+                            )
+                                : Signature(
+                              controller: _controller,
+                              backgroundColor: Colors.lightBlueAccent,
+                            ),
                           ),
                         ),
                         Row(
@@ -791,96 +891,9 @@ class _ContractFeatureState extends State<ContractFeature> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomAppBar(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Expanded(
-              child: ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    if (selectedArea == null) {
-                      _showSelectCellSnackBar = true;
-                    } else {
-                      isSignatureMode = true;
-                      isTextInputMode = false;
-                      _isTouchCorrectionMode = false; // Ensure it's off
-                    }
-                  });
-                },
-                child: Text('서명'),
-              ),
-            ),
-            Expanded(
-              child: ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    if (selectedArea == null) {
-                      _showSelectCellSnackBar = true;
-                    } else {
-                      isTextInputMode = true;
-                      isSignatureMode = false;
-                      _isTouchCorrectionMode = false; // Ensure it's off
-                      Future.delayed(Duration(milliseconds: 100), () {
-                        FocusScope.of(context).requestFocus(textFocusNode);
-                      });
-                    }
-                  });
-                },
-                child: Text('텍스트'),
-              ),
-            ),
-            Expanded(
-              child: ElevatedButton(
-                onPressed: () {
-                  // Clear previous coordinates
-                  touchCoordinates.clear();
-
-                  // Change to touch correction mode
-                  setState(() {
-                    _isTouchCorrectionMode =
-                        true; // Enable touch correction mode
-                    isSignatureMode = false;
-                    isTextInputMode = false;
-
-                    _showSnackBar('이미지의 좌단 상단을 각각 2번씩 터치해주세요');
-                  });
-                },
-                child: Text('터치보정'),
-              ),
-            ),
-            Expanded(
-              child: ElevatedButton(
-                onPressed: () async {
-                  final overlayPainter = OverlayPainter(
-                    contractImage!,
-                    predefinedAreas,
-                    onSave: (savedImage) {
-                      print('Image saved successfully!');
-                    },
-                  );
-
-                  final recorder = ui.PictureRecorder();
-                  final canvas = Canvas(
-                      recorder,
-                      Rect.fromLTWH(0, 0, contractImage!.width.toDouble(),
-                          contractImage!.height.toDouble()));
-
-                  final size = Size(contractImage!.width.toDouble(),
-                      contractImage!.height.toDouble());
-
-                  overlayPainter.paint(canvas, size);
-
-                  await overlayPainter.saveCanvasAsImage(size);
-                },
-                child: Text('내보내기'),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
+
 
   Offset correctTouchOffset(
       Offset touchPosition,
@@ -1102,10 +1115,10 @@ class OverlayPainter extends CustomPainter {
   final Function(ui.Image)? onSave;
 
   OverlayPainter(
-    this.contractImage,
-    this.predefinedAreas, {
-    this.onSave,
-  });
+      this.contractImage,
+      this.predefinedAreas, {
+        this.onSave,
+      });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -1126,12 +1139,36 @@ class OverlayPainter extends CustomPainter {
     // Draw overlay images within their predefined areas
     for (var area in predefinedAreas) {
       if (area.overlayImage != null) {
-        final scaledRect = Rect.fromLTWH(
-          area.rect.left * imageScale,
-          area.rect.top * imageScale,
-          area.rect.width * imageScale,
-          area.rect.height * imageScale,
-        );
+        Rect scaledRect;
+
+        // Check conditions and shrink the rect if conditions are met
+        if
+        (
+                area.name == 'transfereeNameFull' ||
+                area.name == 'transfereeIdNumber' ||
+                area.name == 'transfereeAddressAndPhone' ||
+                area.name == 'transferorNameFull' ||
+                area.name == 'transferorIdNumber' ||
+                area.name == 'transferorAddressAndPhone') {
+          // Shrink the area by 10% for example
+          final shrinkFactorX = 0.995;
+          final shrinkFactorY = 0.995;
+          final shrinkFactorY2 = 0.75;
+          scaledRect = Rect.fromLTWH(
+            area.rect.left * imageScale / shrinkFactorX,
+            area.rect.top * imageScale / shrinkFactorY,
+            area.rect.width * imageScale * shrinkFactorX,
+            area.rect.height * imageScale * shrinkFactorY2,
+          );
+        } else {
+          // Use the normal scale
+          scaledRect = Rect.fromLTWH(
+            area.rect.left * imageScale,
+            area.rect.top * imageScale,
+            area.rect.width * imageScale,
+            area.rect.height * imageScale,
+          );
+        }
 
         // Define the source rectangle from the overlay image
         final srcRect = Rect.fromLTWH(
@@ -1152,7 +1189,7 @@ class OverlayPainter extends CustomPainter {
     }
   }
 
-  Future<void> saveCanvasAsImage(Size size) async {
+  Future<void> saveCanvasAsImage(Size size, String fileName) async {
     final recorder = ui.PictureRecorder();
     final tempCanvas =
         Canvas(recorder, Rect.fromLTWH(0, 0, size.width, size.height));
@@ -1170,7 +1207,7 @@ class OverlayPainter extends CustomPainter {
 
     // Save the image to local storage
     final directory = await getApplicationDocumentsDirectory();
-    final filePath = '${directory.path}/contract_image_output.png';
+    final filePath = '${directory.path}/$fileName.png';
     final file = File(filePath);
     await file.writeAsBytes(pngBytes);
 

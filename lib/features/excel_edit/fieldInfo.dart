@@ -58,8 +58,8 @@ FieldInfo getFieldInfo(int index) {
     case 6:
       return FieldInfo(
         labelText: '최종납입 날짜',
-        validationPattern: RegExp(r'^(0?[1-9]|1[0-2])[-./](0?[1-9]|[12][0-9]|3[01])$'),
-        errorMessage: '2024-08-15 -> 8.15 입력',
+        validationPattern: RegExp(r'^(0?[1-9]|1[0-2])\.(0?[1-9]|[12][0-9]|3[01])$'),
+        errorMessage: '올바른 형식은 MM.DD입니다. 예: 8.15',
       );
     case 17:
       return FieldInfo(

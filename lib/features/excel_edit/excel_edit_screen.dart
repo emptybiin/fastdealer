@@ -8,6 +8,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
 import 'fieldInfo.dart'; // Make sure this import matches your file structure
+import 'package:flutter/services.dart';
+
 
 class ExcelEditScreen extends StatefulWidget {
   final String reportType;
@@ -46,7 +48,7 @@ class _ExcelEditScreenState extends State<ExcelEditScreen> {
     final Map<String, dynamic> data = {'type': widget.reportType};
     for (int i = 0; i < _controllers.length; i++) {
       final key = getLabelText(i);
-      data[key] = _controllers[i].text;
+      data[key] = _controllers[i].text.replaceAll(',', ''); // Remove commas for raw data
     }
 
     final jsonString = jsonEncode({'body': data});
@@ -161,6 +163,8 @@ class _ExcelEditScreenState extends State<ExcelEditScreen> {
     }
   }
 
+  final Set<int> _commaFormattingIndices = {5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -179,14 +183,35 @@ class _ExcelEditScreenState extends State<ExcelEditScreen> {
                   focusNode: _focusNodes[i],
                   decoration: InputDecoration(
                     labelText: getFieldInfo(i).labelText,
-                    hintText: getExampleValue(i), // Add this line
+                    hintText: getExampleValue(i),
                     errorText: validateInput(i, _controllers[i].text) ? null : getFieldInfo(i).errorMessage,
                   ),
                   keyboardType: getKeyboardType(i),
                   textInputAction: i < 16 ? TextInputAction.next : TextInputAction.done,
-                  onSubmitted: (value) => _onFieldSubmitted(i, value),
+                  inputFormatters: [
+                    if (_commaFormattingIndices.contains(i)) // Apply only to specified indices
+                      FilteringTextInputFormatter.digitsOnly,
+                  ],
+                  onSubmitted: (value) {
+                    _onFieldSubmitted(i, value);
+                  },
                   onChanged: (value) {
+                    if (_commaFormattingIndices.contains(i)) {
+                      // Remove commas for raw value
+                      final rawValue = value.replaceAll(',', '');
+                      _controllers[i].text = rawValue;
+                      _controllers[i].selection = TextSelection.collapsed(offset: rawValue.length);
+                    }
                     setState(() {});
+                  },
+                  onEditingComplete: () {
+                    if (_commaFormattingIndices.contains(i)) {
+                      // Format the value when editing is complete
+                      final rawValue = _controllers[i].text.replaceAll(',', '');
+                      final formattedValue = formatWithCommas(rawValue);
+                      _controllers[i].text = formattedValue;
+                      _controllers[i].selection = TextSelection.collapsed(offset: formattedValue.length);
+                    }
                   },
                 ),
               ),
@@ -220,4 +245,15 @@ class _ExcelEditScreenState extends State<ExcelEditScreen> {
 
     FocusScope.of(context).requestFocus(_focusNodes[index]);
   }
+}
+// 5 7 8 9 10 11 12 13 14 15 16
+
+String formatWithCommas(String value) {
+  if (value.isEmpty) return value;
+
+  final number = int.tryParse(value);
+  if (number == null) return value;
+
+  final formatter = NumberFormat('#,###', 'en_US');
+  return formatter.format(number);
 }

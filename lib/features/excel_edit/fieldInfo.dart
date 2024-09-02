@@ -23,7 +23,7 @@ FieldInfo getFieldInfo(int index) {
     case 1:
       return FieldInfo(
         labelText: '차량명',
-        validationPattern: RegExp(r'^[a-zA-Z0-9\s]+$'),
+        validationPattern: RegExp(r'^[a-zA-Z가-힣\s]+$'),
         errorMessage: 'Invalid input for 차량명',
       );
     case 2:
@@ -34,6 +34,11 @@ FieldInfo getFieldInfo(int index) {
       );
     case 3:
     case 4:
+    return FieldInfo(
+      labelText: getLabelText(index),
+      validationPattern: RegExp(r'^\d+$'),
+      errorMessage: '${getLabelText(index)}는 숫자만 입력가능합니다.',
+    );
     case 5:
     case 7:
     case 8:
@@ -45,11 +50,11 @@ FieldInfo getFieldInfo(int index) {
     case 14:
     case 15:
     case 16:
-      return FieldInfo(
-        labelText: getLabelText(index),
-        validationPattern: RegExp(r'^\d+$'),
-        errorMessage: '${getLabelText(index)}는 숫자만 입력가능합니다.',
-      );
+    return FieldInfo(
+      labelText: getLabelText(index),
+      validationPattern: RegExp(r'^\d+(?:,\d{3})*$'), // Allows numbers with or without commas
+      errorMessage: '${getLabelText(index)}는 숫자만 입력가능합니다.',
+    );
     case 6:
       return FieldInfo(
         labelText: '최종납입 날짜',
